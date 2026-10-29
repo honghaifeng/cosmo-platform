@@ -411,6 +411,8 @@ docs/                  7 篇设计文档
 
 | 文档 | 讲什么 |
 |---|---|
+| [**ARCHITECTURE.md**](ARCHITECTURE.md) | **技术架构总纲**：进程模型、模块划分、SQL 闸门、媒体解析链、采集流水线、失败模式、技术债 |
+| [**workbench/ARCHITECTURE.md**](workbench/ARCHITECTURE.md) | 工作台技术架构：零构建前端、`/api/wb/*` 数据契约、页面依赖矩阵、口径算在哪 |
 | [01 · 拓扑](docs/01-topology.md) | 两个前端为什么共用一个进程、一份数据；和星河怎么组合 |
 | [03 · 工作台](docs/03-workbench.md) | 口径怎么算、为什么均赞比总赞有用 |
 | [04 · 逆龄观察](docs/04-niling.md) | 原文可还原、SQL 闸门怎么改写查询 |
