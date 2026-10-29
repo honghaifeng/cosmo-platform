@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>采集中心 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+  .stat>div{background:var(--card);padding:13px 15px}
+  .stat .t{font-size:11.5px;color:var(--ink-3)}
+  .stat .n{font-family:var(--mono);font-size:21px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .stat .d{font-size:11px;color:var(--ink-4);margin-top:2px}
+  .mtx{width:100%;border-collapse:collapse;font-size:12.5px}
+  .mtx th{font-size:11px;font-weight:600;color:var(--ink-3);padding:8px 9px;border-bottom:1px solid var(--rule-2);text-align:center;background:var(--paper-2);white-space:nowrap}
+  .mtx th:first-child{text-align:left}
+  .mtx td{padding:8px 9px;border-bottom:1px solid var(--rule);text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .mtx td:first-child{text-align:left;font-family:var(--sans)}
+  .mtx tbody tr:hover{background:#eef1f6}
+  .cell-has{color:var(--ok);font-weight:600}
+  .cell-none{color:var(--ink-4)}
+  .cell-na{color:var(--rule-2)}
+  .login{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:13px}
+  .lcard{border:1px solid var(--rule);border-radius:3px;background:var(--card);padding:13px 15px}
+  .lcard .n{font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .lcard .s{font-size:11.5px;color:var(--ink-3);margin-top:6px;line-height:1.6}
+  .task{display:flex;align-items:center;gap:12px;padding:11px 15px;border-bottom:1px solid var(--rule);font-size:12.5px}
+  .task:last-child{border-bottom:none}
+  .task .nm{flex:1;min-width:0}
+  .task .nm b{font-weight:600}
+  .task .nm .m{font-size:11px;color:var(--ink-3);margin-top:2px}
+  .sel{font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">作业 · 采集</div>
+          <h1>把品牌的每一层信息采回来</h1>
+          <p class="lead" style="margin-top:9px">
+            采集的目标不是「条数多」，是<b>品牌每一层都有东西</b>：产品有基础信息、渠道有官号名单、内容有正文和素材、媒体有收录。
+            这一页按品牌看还缺哪一块，缺的直接在这里排任务。
+          </p>
+        </div>
+        <div><select class="sel" id="bsel"></select></div>
+      </div>
+
+      <div class="stat" id="stat" style="margin-bottom:20px"></div>
+
+      <div class="sheet" style="margin-bottom:20px">
+        <div class="hd"><h2>品牌 × 平台采集矩阵</h2><div class="spacer"></div>
+          <span class="tiny">数字 = 已采条数；<span style="color:var(--ok)">绿</span> = 有，<span style="color:var(--ink-4)">灰</span> = 无，— = 不适用</span></div>
+        <div class="bd flush" style="overflow-x:auto"><table class="mtx" id="mtx"></table></div>
+      </div>
+
+      <div class="g2" style="margin-bottom:20px">
+        <div class="sheet">
+          <div class="hd"><h2>登录健康</h2><div class="spacer"></div><span class="tag ok">4 / 4 可用</span></div>
+          <div class="bd"><div class="login">
+            <div class="lcard"><div class="n">小红书 <span class="tag ok">正常</span></div>
+              <div class="s">Cookie 有效期剩 358 天<br>每日 30 条/轮增量</div></div>
+            <div class="lcard"><div class="n">抖音 <span class="tag ok">正常</span></div>
+              <div class="s">已登录态可复用<br>官号矩阵 30 个号</div></div>
+            <div class="lcard"><div class="n">视频号 <span class="tag warn">观察中</span></div>
+              <div class="s">可读不强发<br>量小（各品牌 1 条）</div></div>
+            <div class="lcard"><div class="n">百度/头条 <span class="tag ok">免登录</span></div>
+              <div class="s">走流水线抓取<br>无风控风险</div></div>
+          </div>
+          <div class="note" style="margin-top:13px">
+            <b>登录态是一级能力。</b>10-23 小红书 Cookie 过期，采集跑完返回 0 条却报「成功」，白等一天。
+            现在每次采集前先做健康检查，登录失效直接中止并告警，不再出现「跑完是空的」。
+          </div></div>
+        </div>
+
+        <div class="sheet">
+          <div class="hd"><h2>今天的采集任务</h2><div class="spacer"></div><span class="tiny">按品牌筛选后只看相关任务</span></div>
+          <div class="bd flush" id="tasks"></div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <div class="hd"><h2>采集缺口：还差哪一块</h2><div class="spacer"></div><span class="tag seal">按优先级</span></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th style="width:170px">缺口</th><th>影响什么</th><th style="width:100px">优先级</th><th style="width:210px">采法</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">官网 / 商城产品页</td><td>产品基础信息全空——规格、成分、价格、官方图都拿不到，产品横评做不了</td><td><span class="tag seal">P0</span></td><td>官网产品列表 + 详情页，逐页抓正文与主图</td></tr>
+            <tr><td class="strong">电商价格（天猫/京东/抖音小店）</td><td>价格带定位、单粒价对比、促销节奏</td><td><span class="tag seal">P0</span></td><td>商品详情页定时快照（价格会变，需时间序列）</td></tr>
+            <tr><td class="strong">小红书 / 视频号官号</td><td>只知道抖音官号，另外两个平台的官号阵地还是盲的</td><td><span class="tag warn">P1</span></td><td>按品牌词搜用户，人工核实认证后按账号爬</td></tr>
+            <tr><td class="strong">评论全量</td><td>口碑分析只有 1,918 条样本，评论区语言提炼不够用</td><td><span class="tag warn">P1</span></td><td>按爆文优先抓评论（≥1000 赞的笔记先抓）</td></tr>
+            <tr><td class="strong">互动数每日快照</td><td>算不出「发布 30 天点赞破千」这种口径，只能看当下值</td><td><span class="tag warn">P1</span></td><td>每日对已入库内容回采一次互动数，存时间序列</td></tr>
+            <tr><td class="strong">达人画像（粉丝/报价/历史）</td><td>不知道达人值多少钱，只能看内容数</td><td><span class="tag void">P2</span></td><td>星图/蒲公英后台，或按主页采集粉丝与历史作品</td></tr>
+          </tbody></table></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+const KEY = new URLSearchParams(location.search).get("brand") || "";
+renderRail("collect", KEY || null);
+topbar(`<b>作业</b> <span class="sep">/</span> 采集中心${KEY?` <span class="sep">/</span> ${esc((BRANDS.find(b=>b.key===KEY)||{}).cn||"")}`:""}`, "数据版本 2026-10-26");
+
+/* 品牌筛选器 */
+const sel = document.getElementById("bsel");
+sel.innerHTML = `<option value="">全部品牌</option>` + BRANDS.map(b=>
+  `<option value="${b.key}" ${KEY===b.key?"selected":""}>${esc(b.cn)}</option>`).join("");
+sel.addEventListener("change",()=>{ location.href = sel.value ? `collect.html?brand=${encodeURIComponent(sel.value)}` : "collect.html"; });
+
+const order = KEY ? [KEY] : BRANDS.map(b=>b.key);
+const tot = order.reduce((s,k)=>{const d=DATA.brands[k]; return {c:s.c+d.total, v:s.v+d.verified};},{c:0,v:0});
+
+document.getElementById("stat").innerHTML = `
+  <div><div class="t">采集总量</div><div class="n">${fmt(tot.c)}</div><div class="d">${KEY?"该品牌":"六品牌合计"}</div></div>
+  <div><div class="t">已验讫</div><div class="n">${fmt(tot.v)}</div><div class="d">可对外 ${pct(tot.v,tot.c)}</div></div>
+  <div><div class="t">待核</div><div class="n">${fmt(tot.c-tot.v)}</div><div class="d">进审核队列</div></div>
+  <div><div class="t">抖音官号</div><div class="n">${order.reduce((s,k)=>s+DATA.brands[k].official_acc,0)}</div><div class="d">有内容的认证号</div></div>
+  <div><div class="t">本地视频</div><div class="n">1,307</div><div class="d">封面 1,850</div></div>
+  <div><div class="t">登录可用</div><div class="n">4/4</div><div class="d">下次检查 明日 06:00</div></div>`;
+
+/* 矩阵 */
+const PLATS = ["xhs","douyin","shipinhao","baidu","toutiao","web"];
+document.getElementById("mtx").innerHTML = `
+  <thead><tr><th>品牌</th>${PLATS.map(p=>`<th>${PLAT_META[p].name}<br><span style="font-weight:400;color:var(--ink-4)">${PLAT_META[p].kind}</span></th>`).join("")}<th>官号</th></tr></thead>
+  <tbody>${order.map(k=>{
+    const d = DATA.brands[k];
+    return `<tr><td><span class="brandmark"><i style="width:7px;height:7px;background:${(BRANDS.find(b=>b.key===k)||{}).color};display:inline-block"></i>${esc((BRANDS.find(b=>b.key===k)||{}).cn)}</span></td>
+      ${PLATS.map(p=>{ const n = d.platform[p]||0;
+        return `<td class="${n?'cell-has':'cell-none'}">${n?fmt(n):"—"}</td>`; }).join("")}
+      <td class="${d.official_acc?'cell-has':'cell-none'}">${d.official_acc||"—"}</td></tr>`;
+  }).join("")}</tbody>`;
+
+/* 任务 */
+const TASKS = [
+  { b:"__all", nm:"小红书每日增量", m:"30 条/轮 · 六品牌品牌词 + 品类词", s:"已完成", tag:"ok" },
+  { b:"__all", nm:"百度流水线（fetch→clean→process→ingest）", m:"跑批中 · 分发到六品牌", s:"运行中", tag:"warn" },
+  { b:"LAIFE", nm:"抖音官号矩阵全量", m:"12 个号 · 1,192 条已入库", s:"已完成", tag:"ok" },
+  { b:"MitoQ", nm:"抖音官号矩阵全量", m:"4 个号 · 558 条已入库", s:"已完成", tag:"ok" },
+  { b:"GRANVER", nm:"抖音官号矩阵全量", m:"2 个号 · 14 条（3 个产品号空转）", s:"已完成", tag:"ok" },
+  { b:"塞乐瑞", nm:"补齐小红书正文", m:"正文率 42% · 每轮补 30 条", s:"待运行", tag:"void" },
+  { b:"COSMOBOUNTY", nm:"自有内容采集", m:"仅 138 条，官号未建", s:"待规划", tag:"void" },
+  { b:"__all", nm:"官网产品页（P0 缺口）", m:"规格/成分/价格/官方图 · 尚未开发", s:"未开始", tag:"seal" },
+];
+document.getElementById("tasks").innerHTML = TASKS.filter(t=>!KEY || t.b===KEY || t.b==="__all").map(t=>`
+  <div class="task">
+    <div class="nm"><b>${esc(t.nm)}</b><div class="m">${esc(t.m)}</div></div>
+    <span class="tag ${t.tag}">${t.s}</span>
+  </div>`).join("");
+</script>
+</body>
+</html>

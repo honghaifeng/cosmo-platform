@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>六品牌总盘 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">总盘 · <span id="gen">—</span></div>
+          <h1>六家都在讲抗衰，只有两家的内容真的被看见</h1>
+          <p class="lead" style="margin-top:9px">
+            这个工作台的组织方式是：<b>品牌是唯一入口</b>。点任意品牌，进去看它有哪些产品、在哪些平台发什么内容、
+            数据表现如何、用的什么打法、投了多少、效果怎样。这一页只做一件事——把六家放在同一把尺子上，让你先知道该先看谁。
+          </p>
+        </div>
+      </div>
+
+      <div class="kpis" style="margin-bottom:20px" id="kpis"></div>
+
+      <div class="g3" style="margin-bottom:22px" id="notes"></div>
+
+      <div class="sheet" style="margin-bottom:22px">
+        <div class="hd">
+          <h2>六品牌一览</h2>
+          <span class="tiny">点品牌名进入该品牌的工作台</span>
+          <div class="spacer"></div>
+          <span class="tag">已验讫口径</span>
+        </div>
+        <div class="bd flush">
+          <table class="tbl">
+            <thead><tr>
+              <th style="width:150px">品牌</th>
+              <th class="num">内容</th>
+              <th class="num">已验讫</th>
+              <th class="num">官号条 / 号数</th>
+              <th class="num">达人数</th>
+              <th class="num">累计赞</th>
+              <th class="num">均赞</th>
+              <th class="num">爆文</th>
+              <th style="width:210px">打法判读</th>
+            </tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <h2 style="margin-bottom:12px">进入品牌</h2>
+      <div class="bcards" id="cards"></div>
+
+      <div style="margin-top:26px" class="note">
+        口径说明：所有数字取自 <span class="mono">verified=1</span> 的子集；百度/头条/新闻源为媒体收录类内容，
+        没有互动机制，其 0 赞不代表无效果，故平台效率比较只在社媒（小红书/抖音/视频号）内部进行。
+        成本维度目前只有"内容投入量"这一个代理指标，详见各品牌的「成本与效果」页。
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+renderRail("index", null);
+topbar(`<b>总盘</b> <span class="sep">/</span> 六品牌`, "数据版本 " + DATA.generated);
+document.getElementById("gen").textContent = DATA.generated;
+
+const ORDER = ["MitoQ", "LAIFE", "GRANVER", "W+端粒塔", "塞乐瑞", "COSMOBOUNTY"];
+/* 判读只说结论；数字交给表格和 KPI，避免数据库一更新文案就成了错的 */
+const VERDICT = {
+  MitoQ:   "双轨最均衡：官号与达人都在真实产出，六家里唯一官号也有效的。",
+  LAIFE:   "单品集中 + 官号铺量：一个产品扛起大半内容，官号把产品词铺满搜索位，但互动全靠达人。",
+  GRANVER: "产品线分散、官号缺位：几条线同时推，内容铺出去却换不回互动。",
+  "W+端粒塔": "小体量试水：官号零互动，靠 NMN 品类词寄生达人内容。",
+  "塞乐瑞":  "投入了却几乎没回声：达人数不少、互动全库最低，问题在内容不在渠道。",
+  COSMOBOUNTY: "质量不差、量太少、没阵地：达人单条互动已接近对手水平，但没有官号。",
+};
+
+const maxLikes = Math.max(...ORDER.map(k => DATA.brands[k].likes_sum));
+const SUMV = ORDER.reduce((a,k)=>a+DATA.brands[k].verified,0);
+const SUMT = ORDER.reduce((a,k)=>a+DATA.brands[k].total,0);
+const SUML = ORDER.reduce((a,k)=>a+DATA.brands[k].likes_sum,0);
+const SUMV1K = ORDER.reduce((a,k)=>a+DATA.brands[k].viral1k,0);
+const CATC = DATA.category;
+
+document.getElementById("kpis").innerHTML = `
+  <div class="kpi"><div class="k">内容总量</div><div class="v">${fmt(SUMT + CATC.total)}</div><div class="x">六品牌 ${fmt(SUMT)} + 品类 ${fmt(CATC.total)}，另有 12 条待归品牌未计入</div></div>
+  <div class="kpi"><div class="k">已验讫可对外</div><div class="v">${fmt(SUMV + CATC.total)}</div><div class="x">占全部采集的 ${pct(SUMV + CATC.total, SUMT + CATC.total)}，其余留审核队列</div></div>
+  <div class="kpi"><div class="k">累计互动（赞）</div><div class="v">${fmt(SUML)}</div><div class="x">六品牌已验讫口径</div></div>
+  <div class="kpi"><div class="k">爆文（≥1000赞）</div><div class="v">${SUMV1K}</div><div class="x">${ORDER.slice().sort((a,b)=>DATA.brands[b].viral1k-DATA.brands[a].viral1k).slice(0,2).map(k=>k+" "+DATA.brands[k].viral1k).join(" · ")} 为主</div></div>
+  <div class="kpi"><div class="k">品类大盘</div><div class="v">${fmt(CATC.likes_sum)}</div><div class="x">${fmt(CATC.total)} 条泛品类内容，均赞 ${fmt(CATC.likes_avg)}</div></div>`;
+
+const top2 = ORDER.slice().sort((a,b)=>DATA.brands[b].likes_sum-DATA.brands[a].likes_sum).slice(0,2);
+const rest = ORDER.reduce((a,k)=>a+DATA.brands[k].likes_sum,0) - top2.reduce((a,k)=>a+DATA.brands[k].likes_sum,0);
+const lowest = ORDER.slice().sort((a,b)=>DATA.brands[a].likes_avg-DATA.brands[b].likes_avg)[0];
+const top2Sum = top2.reduce((a,k)=>a+DATA.brands[k].likes_sum,0);
+document.getElementById("notes").innerHTML = `
+  <div class="note"><b>声量极度集中。</b>${top2.map(k=>esc(k)).join(" 与 ")} 两家吃掉六品牌 ${pct(top2Sum, SUML)} 的互动，
+    剩下四家合计 ${fmt(rest)} 赞。均赞最低的是 ${esc(lowest)}（${DATA.brands[lowest].likes_avg}）。</div>
+  <div class="note seal"><b>六家全靠达人，官号几乎不出活。</b>没有一家的官号均赞超过达人。
+    LAIFE 官号发了 ${fmt(DATA.brands.LAIFE.eff.off_n)} 条、均赞 ${DATA.brands.LAIFE.eff.off_avg}——那是拿官号做搜索占位，不是做互动。</div>
+  <div class="note"><b>赛道流量在品类上，不在品牌上。</b>${fmt(CATC.total)} 条泛品类内容拿到 ${fmt(CATC.likes_sum)} 赞，
+    是六品牌总和（${fmt(SUML)}）的 ${(CATC.likes_sum/SUML).toFixed(1)} 倍。用户搜的是「抗衰/护肝怎么办」，不是品牌名。</div>`;
+
+document.getElementById("rows").innerHTML = ORDER.map(k => {
+  const d = DATA.brands[k], b = BRANDS.find(x => x.key === k), e = EFF[k];
+  return `<tr class="clickable" onclick="location.href='brand.html?brand=${encodeURIComponent(k)}'">
+    <td><span class="brandmark"><i style="background:${b.color}"></i>${esc(b.cn)}<span class="tiny" style="font-weight:400">${esc(b.name !== b.cn ? b.name : "")}</span></span></td>
+    <td class="num">${fmt(d.total)}</td>
+    <td class="num">${fmt(d.verified)}</td>
+    <td class="num">${e.off_n ? fmt(e.off_n) + " / " + e.off_avg : "—"}<span class="tiny"> · ${d.official_acc}号</span></td>
+    <td class="num">${d.creators}</td>
+    <td class="num strong">${fmt(d.likes_sum)}</td>
+    <td class="num">${d.likes_avg}</td>
+    <td class="num">${d.viral1k}</td>
+    <td class="tiny" style="line-height:1.5">${VERDICT[k].split("。")[0]}。</td>
+  </tr>`;
+}).join("");
+
+document.getElementById("cards").innerHTML = ORDER.map(k => {
+  const d = DATA.brands[k], b = BRANDS.find(x => x.key === k);
+  return `<a class="bcard" href="brand.html?brand=${encodeURIComponent(k)}">
+    <div class="nm"><i style="background:${b.color}"></i>${esc(b.cn)}</div>
+    <div class="meta">${esc(b.note)} · 官号 ${d.official_acc} 个 · 达人 ${d.creators} 位</div>
+    <div class="figs">
+      <div>累计赞<b>${fmt(d.likes_sum)}</b></div>
+      <div>均赞<b>${d.likes_avg}</b></div>
+      <div>爆文<b>${d.viral1k}</b></div>
+    </div>
+    <div class="verdict">${VERDICT[k]}</div>
+  </a>`;
+}).join("");
+</script>
+</body>
+</html>

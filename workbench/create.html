@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>创作中心 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .studio{display:grid;grid-template-columns:268px minmax(0,1fr) 286px;gap:18px;align-items:start}
+  @media(max-width:1240px){.studio{grid-template-columns:1fr}}
+  .panel{border:1px solid var(--rule);border-radius:3px;background:var(--card)}
+  .panel .h{padding:10px 14px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:9px}
+  .panel .h h3{font-size:12.5px}
+  .panel .h .spacer{flex:1}
+  .panel .b{padding:13px 14px}
+  .fld{margin-bottom:12px}
+  .fld label{display:block;font-size:11px;color:var(--ink-3);margin-bottom:5px;letter-spacing:.03em}
+  .fld select,.fld input,.fld textarea{
+    width:100%;font:inherit;font-size:12.5px;padding:6px 9px;border:1px solid var(--rule-2);
+    border-radius:2px;background:#fff;color:var(--ink);
+  }
+  .fld textarea{resize:vertical;min-height:118px;line-height:1.65}
+  .fld select:focus,.fld textarea:focus,.fld input:focus{outline:2px solid var(--seal);outline-offset:-1px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11.5px;padding:4px 9px;border:1px solid var(--rule-2);border-radius:2px;background:var(--paper-2);color:var(--ink-2);cursor:pointer}
+  .chip:hover{border-color:var(--ink-3)}
+  .chip.on{background:var(--ink);color:#f6f8fb;border-color:var(--ink)}
+  .out{background:#fafbfd;border:1px solid var(--rule);border-radius:2px;padding:12px 13px;font-size:12.5px;line-height:1.8;white-space:pre-wrap;min-height:118px;color:var(--ink-2);font-family:var(--mono);font-size:11.5px}
+  .ref{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:11.5px;line-height:1.5;align-items:flex-start}
+  .ref:last-child{border-bottom:none}
+  .ref .lk{font-family:var(--mono);color:var(--ink-3);flex:0 0 42px}
+  .ref .tx{flex:1;min-width:0;color:var(--ink-2)}
+  .ref .btn2{font-size:10.5px;padding:2px 7px;border:1px solid var(--rule-2);border-radius:2px;background:var(--paper-2);color:var(--ink-3);cursor:pointer;flex:0 0 auto}
+  .ref .btn2:hover{border-color:var(--seal);color:var(--seal)}
+  .checks{display:flex;flex-direction:column;gap:8px}
+  .chk{display:grid;grid-template-columns:1fr auto;gap:10px;padding:9px 11px;border-radius:2px;font-size:12px;line-height:1.6;align-items:start}
+  .chk.bad{background:var(--seal-bg);border-left:2px solid var(--seal)}
+  .chk.good{background:var(--ok-bg);border-left:2px solid var(--ok)}
+  .chk .cat{font-weight:600;font-size:11.5px;margin-bottom:2px}
+  .chk.bad .cat{color:#8f2b1c}
+  .chk .hit{font-family:var(--mono);font-size:11px;color:#a44535;background:#fff;padding:1px 5px;border-radius:2px;display:inline-block;margin-top:3px}
+  .chk .fix{font-size:11px;color:var(--ink-2);margin-top:4px}
+  .ctr{display:flex;gap:9px;flex-wrap:wrap}
+  .qitem{padding:8px 0;border-bottom:1px solid var(--rule);font-size:11.5px;line-height:1.55}
+  .qitem:last-child{border-bottom:none}
+  .qitem .s{font-size:10.5px;color:var(--ink-4);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">作业 · 创作</div>
+          <h1>借对手的结构，写自己的话</h1>
+          <p class="lead" style="margin-top:9px">
+            左边是这个品牌被验证过的爆文结构，中间选产品、平台、卖点生成提示词，写完立刻过合规检查，最后出发布包。
+            原则只有一条：<b>借结构不借词句</b>——对手怎么切入、怎么建立信任可以学，但他们的红线表达一句都不能复刻。
+          </p>
+        </div>
+        <div><select class="sel" id="bsel" style="font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card)"></select></div>
+      </div>
+
+      <div class="studio">
+        <!-- 左：选题来源 -->
+        <div class="panel">
+          <div class="h"><h3>选题来源</h3><div class="spacer"></div><span class="tag" id="refcnt"></span></div>
+          <div class="b" style="max-height:520px;overflow:auto">
+            <div class="tiny" style="margin-bottom:8px">该品牌高赞内容（点「借用」把结构带进中栏）</div>
+            <div id="refs"></div>
+            <div class="tiny" style="margin-top:14px;margin-bottom:7px">品类热点（赛道流量，非品牌）</div>
+            <div id="catrefs"></div>
+          </div>
+        </div>
+
+        <!-- 中：工作台 -->
+        <div class="panel">
+          <div class="h"><h3>创作配置</h3><div class="spacer"></div><span class="tag warn">提示词模板可换</span></div>
+          <div class="b">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="fld"><label>产品 / 产品线</label><select id="f-prod"></select></div>
+              <div class="fld"><label>平台</label><select id="f-plat">
+                <option value="xhs">小红书（笔记）</option>
+                <option value="douyin">抖音（口播脚本）</option>
+                <option value="shipinhao">视频号（口播脚本）</option>
+              </select></div>
+            </div>
+            <div class="fld"><label>内容结构（借自对手的哪一类）</label>
+              <div class="chips" id="f-struct">
+                <span class="chip on" data-v="痛点切入">痛点切入</span>
+                <span class="chip" data-v="成分拆解">成分拆解</span>
+                <span class="chip" data-v="人群对号">人群对号</span>
+                <span class="chip" data-v="实测记录">实测记录</span>
+                <span class="chip" data-v="误区纠正">误区纠正</span>
+              </div>
+            </div>
+            <div class="fld"><label>核心卖点（可多选）</label>
+              <div class="chips" id="f-sell">
+                <span class="chip" data-v="成分有依据">成分有依据</span>
+                <span class="chip" data-v="含量够高">含量够高</span>
+                <span class="chip" data-v="吸收率高">吸收率高</span>
+                <span class="chip" data-v="配方协同">配方协同</span>
+                <span class="chip" data-v="分时服用">分时服用</span>
+                <span class="chip" data-v="性价比">性价比</span>
+              </div>
+            </div>
+            <div class="fld"><label>选题（可直接改）</label><input id="f-topic" value=""></div>
+
+            <div class="ctr" style="margin-bottom:14px">
+              <button class="btn pri" id="gen">生成提示词</button>
+              <button class="btn" id="sample">填入示例文案</button>
+              <button class="btn" id="check">合规检查</button>
+              <button class="btn" id="pack">导出发布包</button>
+            </div>
+
+            <div class="fld"><label>生成结果 / 待检文案</label>
+              <textarea id="f-txt" placeholder="点「生成提示词」由模板产出，或直接粘贴你自己的文案再点「合规检查」"></textarea>
+            </div>
+
+            <div class="fld"><label>合规检查结果</label>
+              <div class="checks" id="chks"><div class="chk good"><div><div class="cat">尚未检查</div>写完点「合规检查」，会按 6 类红线逐条扫。</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 右：任务与产出 -->
+        <div class="panel">
+          <div class="h"><h3>这个品牌的创作任务</h3><div class="spacer"></div><a class="btn" href="publish.html" style="padding:3px 9px;font-size:11px">发布管理</a></div>
+          <div class="b">
+            <div id="queue"></div>
+            <div class="tiny" style="margin-top:14px;margin-bottom:6px">可用素材</div>
+            <div class="note" style="font-size:11.5px">本地已存 <b>1,307</b> 个抖音视频、<b>1,850</b> 张封面。
+              产品图必须用官方实拍，禁止 AI 重绘瓶身标签——这是上次图片比例错位的根因。</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/contents.js"></script>
+<script src="/api/wb/plat.js"></script>
+<script src="/api/wb/people.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const KEY = Q.get("brand") || "COSMOBOUNTY";
+const REF = Q.get("ref") || "";
+renderRail("create", KEY);
+topbar(`<b>作业</b> <span class="sep">/</span> 创作中心 <span class="sep">/</span> <b>${esc((BRANDS.find(b=>b.key===KEY)||{}).cn||"")}</b>`, "阶段一：出发布包，不直发");
+
+document.getElementById("bsel").innerHTML = BRANDS.map(b=>
+  `<option value="${b.key}" ${KEY===b.key?"selected":""}>${esc(b.cn)}</option>`).join("");
+document.getElementById("bsel").addEventListener("change", e=>{
+  location.href = `create.html?brand=${encodeURIComponent(e.target.value)}`;
+});
+
+/* 产品线（沿用品牌页的定义，缺省给通用） */
+const PROD = {
+  MitoQ:["奶蓟草护肝","姜黄素","心血管线（心/辅酶Q10）"],
+  LAIFE:["红宝瓶","红宝瓶 3.0","红宝瓶 4.0","乐轻肝"],
+  GRANVER:["吉清肺","吉瑞维","吉利肝","吉悦巢"],
+  "塞乐瑞":["干细胞概念（Stemax）","NMN 线","精倍莱"],
+  "W+端粒塔":["NMN 25000","抗衰通用"],
+  COSMOBOUNTY:["黑白分时（日活/夜修）"],
+};
+const prodSel = document.getElementById("f-prod");
+prodSel.innerHTML = (PROD[KEY]||["（未定义）"]).map(p=>`<option>${esc(p)}</option>`).join("");
+
+/* 选题来源 */
+const ct = contents[KEY] || {top:[], recent:[]};
+document.getElementById("refcnt").textContent = `${ct.top.length} 条`;
+document.getElementById("refs").innerHTML = ct.top.slice(0,8).map(it=>`
+  <div class="ref">
+    <div class="lk">${fmt(it.l)}</div>
+    <div class="tx">${esc(it.t.slice(0,44))}</div>
+    <button class="btn2" data-ref="${esc(it.t.slice(0,40))}">借用</button>
+  </div>`).join("") || `<div class="tiny">暂无</div>`;
+
+const catTop = (contents.__category||{top:[]}).top.slice(0,5);
+document.getElementById("catrefs").innerHTML = catTop.map(it=>`
+  <div class="ref">
+    <div class="lk">${fmt(it.l)}</div>
+    <div class="tx">${esc(it.t.slice(0,44))}</div>
+    <button class="btn2" data-ref="${esc(it.t.slice(0,40))}">借用</button>
+  </div>`).join("");
+
+/* 任务队列 */
+const QUEUE = {
+  COSMOBOUNTY:[["黑白分时·分时抗衰科普","小红书 · 待生成"],["夜修瓶场景种草","小红书 · 初稿"],["成分对比（对标 MitoQ）","小红书 · 待审核"]],
+  LAIFE:[["红宝瓶 4.0 上市预热","抖音 · 脚本"],["乐轻肝人群对号","小红书 · 初稿"]],
+  MitoQ:[["奶蓟草护肝·误区纠正","小红书 · 待审核"],["心血管线科普","小红书 · 初稿"]],
+};
+document.getElementById("queue").innerHTML = (QUEUE[KEY]||[["暂无任务","点左侧爆文可快速起一个新任务"]]).map(([t,s])=>`
+  <div class="qitem">${esc(t)}<div class="s">${esc(s)}</div></div>`).join("");
+
+/* chips 多选 */
+let struct = "痛点切入", sells = new Set();
+document.querySelectorAll("#f-struct .chip").forEach(c=>c.addEventListener("click",()=>{
+  document.querySelectorAll("#f-struct .chip").forEach(x=>x.classList.remove("on"));
+  c.classList.add("on"); struct = c.dataset.v;
+}));
+document.querySelectorAll("#f-sell .chip").forEach(c=>c.addEventListener("click",()=>{
+  c.classList.toggle("on");
+  c.classList.contains("on") ? sells.add(c.dataset.v) : sells.delete(c.dataset.v);
+}));
+
+/* 借用选题 */
+document.querySelectorAll("[data-ref]").forEach(b=>b.addEventListener("click",()=>{
+  document.getElementById("f-topic").value = b.dataset.ref;
+  document.getElementById("f-topic").focus();
+}));
+if (REF) document.getElementById("f-topic").value = REF;
+
+/* 提示词模板 */
+function buildPrompt() {
+  const brand = (BRANDS.find(b=>b.key===KEY)||{}).cn || KEY;
+  const prod = prodSel.value;
+  const plat = document.getElementById("f-plat").value;
+  const topic = document.getElementById("f-topic").value || "（未填，请先选一条爆文或自己写）";
+  const sell = [...sells].join("、") || "（未选卖点）";
+  const style = plat === "xhs"
+    ? "小红书笔记：口语化第一人称，开头 2 行必须让人停下划动；正文 300-500 字，分点但不用序号堆砌；结尾一个开放问题引导评论。"
+    : "短视频口播：前 3 秒抛出反常识判断；全程第二人称对话；60-90 秒，控制在 260 字以内；结尾给一个具体动作。";
+  return `【角色】你是 ${brand} 的内容编辑，写 ${prod} 的${plat==="xhs"?"小红书笔记":"短视频口播脚本"}。
+
+【选题】${topic}
+【结构】${struct}：${STRUCT_DESC[struct]}
+【必须体现的卖点】${sell}
+【平台规范】${style}
+
+【硬约束 · 违反即废稿】
+1. 不得出现任何疾病治疗、预防、抗癌、替代药物的表述；
+2. 不得使用"逆转衰老/返老还童/逆龄"这类绝对化功效词；
+3. 不得使用"最好/第一/唯一/100%"等绝对化用语；
+4. 不得虚构医生、专家、三甲医院的推荐；
+5. 成分与含量只写产品页上有的，没写的一律不编；
+6. 不贬低同行，不做直接对比攻击。
+
+【输出】只要正文，不要标题解释。`;
+}
+const STRUCT_DESC = {
+  "痛点切入":"先描述一个具体到能让人对号入座的生活场景，再说为什么常规做法没用，最后给方案",
+  "成分拆解":"从一个成分的作用机制讲起，说清为什么这个剂量有意义，落到产品上",
+  "人群对号":"先划分出 2-3 类人，逐类说他们的处境，让读者自己认领",
+  "实测记录":"以第一人称讲一段连续使用的时间线，只写体感和作息变化，不承诺疗效",
+  "误区纠正":"先立一个流行的错误认知，用常识和机制反驳它，再引出正确做法",
+};
+
+document.getElementById("gen").addEventListener("click", ()=>{
+  document.getElementById("f-txt").value = buildPrompt();
+});
+document.getElementById("sample").addEventListener("click", ()=>{
+  document.getElementById("f-txt").value =
+`这瓶东西能根治熬夜带来的肝损伤，是市面上最好的护肝产品，100% 有效。
+三甲医院医生推荐，可以替代药物治疗，坚持吃还能逆转衰老、抗癌防癌。
+我自己吃了 30 天，脂肪肝从重度变轻度，效果立竿见影。`;
+});
+
+/* 合规检查：6 类红线 */
+const RULES = [
+  { cat:"医疗宣称", re:/根治|治愈|治好|药到病除|治疗|疗效|康复/g, fix:"改成体感描述，如「熬夜后没那么沉」" },
+  { cat:"疾病预防/抗癌", re:/抗癌|防癌|杀死癌细胞|抑制肿瘤|抗肿瘤|预防癌/g, fix:"删除。疾病相关表述一律不能出现在食品/保健内容里" },
+  { cat:"绝对化功效", re:/逆转衰老|返老还童|逆龄|冻龄|永葆青春/g, fix:"改成「帮助维持状态」这类可承受的表述" },
+  { cat:"替代药物", re:/替代药物|代替吃药|可以停药|取代药物/g, fix:"删除。任何暗示替代治疗的说法都是红线" },
+  { cat:"绝对化用语", re:/最好|最强|第一品牌|唯一|100%|彻底|永久|立竿见影/g, fix:"改成有条件的表述，或直接去掉程度词" },
+  { cat:"虚构权威背书", re:/医生推荐|专家推荐|三甲医院|院士推荐|权威认证/g, fix:"除非有可查的书面授权，否则不能写" },
+];
+document.getElementById("check").addEventListener("click", ()=>{
+  const txt = document.getElementById("f-txt").value || "";
+  const box = document.getElementById("chks");
+  if (!txt.trim()) { box.innerHTML = `<div class="chk bad"><div><div class="cat">没有内容可检</div>先在上面的框里写文案或点「生成提示词」。</div></div>`; return; }
+  const hits = [];
+  RULES.forEach(r=>{
+    const m = txt.match(r.re);
+    if (m) hits.push({ cat:r.cat, words:[...new Set(m)], fix:r.fix });
+  });
+  if (!hits.length) {
+    box.innerHTML = `<div class="chk good"><div><div class="cat">6 类红线全过</div>可以出发布包。注意：这里只查了词面，事实性表述（成分、含量、数据）仍需人工核一遍。</div></div>`;
+    return;
+  }
+  box.innerHTML = hits.map(h=>`<div class="chk bad">
+      <div><div class="cat">${h.cat}</div>
+        <div>${h.words.map(w=>`<span class="hit">${esc(w)}</span>`).join(" ")}</div>
+        <div class="fix">建议：${h.fix}</div>
+      </div>
+      <span class="tag seal">${h.words.length} 处</span>
+    </div>`).join("") +
+    `<div class="tiny" style="margin-top:4px">共 ${hits.reduce((s,h)=>s+h.words.length,0)} 处需要改。改完再点一次检查。</div>`;
+});
+
+/* 发布包 */
+document.getElementById("pack").addEventListener("click", ()=>{
+  const brand = (BRANDS.find(b=>b.key===KEY)||{}).cn || KEY;
+  const plat = document.getElementById("f-plat").value;
+  const platName = (PLAT_META[plat]||{name:plat}).name;
+  const txt = document.getElementById("f-txt").value || "";
+  const md = `# 发布包 · ${brand} · ${prodSel.value} · ${platName}
+
+生成时间：${new Date().toLocaleString("zh-CN")}
+内容结构：${struct}
+卖点：${[...sells].join("、") || "（未选）"}
+选题：${document.getElementById("f-topic").value || "（未填）"}
+
+## 正文
+
+${txt}
+
+## 发布前自查
+
+- [ ] 已过合规检查（6 类红线）
+- [ ] 成分/含量与产品页一致，无编造
+- [ ] 配图使用官方实拍，未 AI 重绘瓶身
+- [ ] 未贬低同行
+- [ ] 已确认账号与投放方式
+
+## 发布记录（发布后填）
+
+- 实际发布时间：
+- 链接：
+- 24h 数据：
+- 7 天数据：
+`;
+  const blob = new Blob([md], { type:"text/markdown;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `发布包_${brand}_${prodSel.value}_${platName}_${new Date().toISOString().slice(0,10)}.md`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+});
+</script>
+</body>
+</html>

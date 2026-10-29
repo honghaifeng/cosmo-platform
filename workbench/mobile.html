@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>移动端 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .ph-wrap{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start}
+  .ph-col{flex:0 0 auto}
+  .ph-cap{font-size:12px;color:var(--ink-3);margin-bottom:9px;max-width:290px;line-height:1.6}
+  .ph-cap b{color:var(--ink)}
+  .phone{width:292px;border:1px solid var(--rule-2);border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,.07)}
+  .phone .bar{height:26px;background:var(--paper-2);display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:9.5px;color:var(--ink-4);border-bottom:1px solid var(--rule);letter-spacing:.04em}
+  .phone .scr{padding:0;min-height:472px;display:flex;flex-direction:column}
+  .phone .hd{padding:12px 14px 10px;border-bottom:1px solid var(--rule)}
+  .phone h4{font-size:14px;font-weight:600}
+  .phone .sub{font-size:10.5px;color:var(--ink-3);margin-top:2px}
+  .phone .ct{padding:12px 14px;flex:1;overflow:hidden}
+  .ph-kpi{display:flex;gap:14px;padding:10px 14px;border-bottom:1px solid var(--rule);background:var(--paper-2)}
+  .ph-kpi div{font-size:9.5px;color:var(--ink-4)}
+  .ph-kpi b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);font-weight:500;margin-top:1px}
+  .m-brand{display:flex;align-items:center;gap:9px;padding:11px 0;border-bottom:1px solid var(--rule)}
+  .m-brand i{width:8px;height:8px;border-radius:1px;flex:0 0 8px}
+  .m-brand .nm{flex:1;font-size:13px;font-weight:600}
+  .m-brand .f{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+  .m-brand .f span{font-size:9.5px;color:var(--ink-4);display:block;text-align:right}
+  .m-sec{font-size:10px;letter-spacing:.12em;color:var(--ink-4);text-transform:uppercase;padding:12px 0 7px}
+  .m-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rule);font-size:11.5px}
+  .m-row .v{font-family:var(--mono);font-size:11.5px}
+  .m-prod{border:1px solid var(--rule);border-radius:3px;padding:9px 11px;margin-bottom:7px}
+  .m-prod .t{font-size:12px;font-weight:600}
+  .m-prod .m{font-size:10px;color:var(--ink-4);margin-top:2px}
+  .m-card{border:1px solid var(--rule);border-radius:4px;padding:11px;margin-bottom:9px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .m-card .t{font-size:11.5px;line-height:1.5}
+  .m-card .m{font-size:10px;color:var(--ink-3);margin-top:5px}
+  .m-acts{display:flex;gap:7px;margin-top:9px}
+  .m-acts button{flex:1;font-size:11px;padding:5px 0;border-radius:2px;border:1px solid var(--rule-2);background:var(--paper-2);color:var(--ink-2)}
+  .m-acts button.a{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .m-acts button.r{background:var(--card)}
+  .ph-tabbar{display:flex;border-top:1px solid var(--rule);background:var(--paper-2)}
+  .ph-tabbar span{flex:1;text-align:center;padding:8px 0;font-size:9.5px;color:var(--ink-3)}
+  .ph-tabbar span.on{color:var(--seal);font-weight:600}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">形态 · 移动端</div>
+          <h1>手机上只看三件事：谁在涨、这个品牌怎么样、这条要不要过</h1>
+          <p class="lead" style="margin-top:9px">
+            移动端不是把 PC 页面缩小。它的分工是<b>看、批、警</b>——看盘速览、审核快审、异常提醒。
+            写内容、配产品、做横评这些重操作留在 PC，因为没有人在手机上调表格。
+          </p>
+        </div>
+      </div>
+
+      <div class="ph-wrap">
+
+        <div class="ph-col">
+          <div class="ph-cap"><b>① 看盘</b><br>进来先看六家谁在动。每张卡只给三个数：内容量、累计赞、爆文数。</div>
+          <div class="phone">
+            <div class="bar"><span>9:41</span><span>逆龄工作台</span></div>
+            <div class="scr">
+              <div class="hd"><h4>六品牌总盘</h4><div class="sub" id="m-sub">—</div></div>
+              <div class="ct">
+                <div id="m-brands"></div>
+                <div class="m-sec">今日变化</div>
+                <div class="m-row"><span>新增内容</span><span class="v">+66</span></div>
+                <div class="m-row"><span>待审核</span><span class="v" id="m-pending">—</span></div>
+                <div class="m-row"><span>采集中断</span><span class="v" style="color:var(--ok)">无</span></div>
+              </div>
+              <div class="ph-tabbar"><span class="on">总盘</span><span>品牌</span><span>审核</span><span>我</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ph-col">
+          <div class="ph-cap"><b>② 品牌速览</b><br>点一个品牌，第一屏就是「有哪些产品 + 在哪个平台 + 数据怎么样」，和 PC 的层级一致。</div>
+          <div class="phone">
+            <div class="bar"><span>9:41</span><span>科诗博缇</span></div>
+            <div class="scr">
+              <div class="hd"><h4>科诗博缇</h4><div class="sub">自有品牌 · 分时抗衰</div></div>
+              <div class="ph-kpi">
+                <div>内容<b id="cb-total">—</b></div><div>验讫<b id="cb-v">—</b></div><div>累计赞<b id="cb-l">—</b></div><div>均赞<b id="cb-a">—</b></div>
+              </div>
+              <div class="ct">
+                <div class="m-sec">产品线（1）</div>
+                <div class="m-prod"><div class="t">黑白分时（日活/夜修）</div><div class="m">内容 4 条 · 规格/成分/价格 待采</div></div>
+                <div class="m-sec">渠道</div>
+                <div class="m-row"><span>小红书</span><span class="v" id="cb-xhs">—</span></div>
+                <div class="m-row"><span>抖音</span><span class="v" id="cb-dy">—</span></div>
+                <div class="m-row"><span>百度 / 头条</span><span class="v" id="cb-media">—</span></div>
+                <div class="m-row"><span>官号</span><span class="v" style="color:var(--seal)">0 个</span></div>
+                <div class="m-row"><span>达人</span><span class="v">28 位</span></div>
+                <div class="m-sec">打法</div>
+                <div style="font-size:11px;line-height:1.6;color:var(--ink-2);background:var(--paper-2);padding:9px;border-radius:3px">
+                  质量不差、量太少、没阵地。均赞 181 接近 LAIFE 达人水平，但没有官号，内容量只有 MitoQ 的 1/23。
+                </div>
+              </div>
+              <div class="ph-tabbar"><span>总盘</span><span class="on">品牌</span><span>审核</span><span>我</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ph-col">
+          <div class="ph-cap"><b>③ 审核快审</b><br>这是移动端最值钱的场景：通勤路上刷完一屏，左滑驳回右滑采纳，每条带原文链接。</div>
+          <div class="phone">
+            <div class="bar"><span>9:41</span><span>审核 · 科诗博缇</span></div>
+            <div class="scr">
+              <div class="hd"><h4>待核 99 条</h4><div class="sub">最近 6 条 · 已处理 0</div></div>
+              <div class="ct">
+                <div class="m-card">
+                  <div class="t">一个不小心就发掘了尖叫瓶的巧用_新浪财经</div>
+                  <div class="m">未署名 · 今日头条 · <span style="color:var(--warn)">疑蹭词位</span></div>
+                  <div class="m-acts"><button class="a">采纳</button><button class="r">驳回</button></div>
+                </div>
+                <div class="m-card">
+                  <div class="t">分时抗衰到底有没有道理？聊聊昼夜节律</div>
+                  <div class="m">营养师小林 · 小红书 · <span style="color:var(--warn)">品牌词仅 1 次</span></div>
+                  <div class="m-acts"><button class="a">采纳</button><button class="r">驳回</button></div>
+                </div>
+                <div class="m-card">
+                  <div class="t">熬夜党必备：晚上这一粒比早上更重要</div>
+                  <div class="m">未署名 · 百度 · <span style="color:var(--warn)">缺正文</span></div>
+                  <div class="m-acts"><button class="a">采纳</button><button class="r">驳回</button></div>
+                </div>
+                <div style="font-size:10px;color:var(--ink-4);text-align:center;margin-top:8px">
+                  驳回需选原因，原因会写成 verify_note 留痕
+                </div>
+              </div>
+              <div class="ph-tabbar"><span>总盘</span><span>品牌</span><span class="on">审核</span><span>我</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sheet" style="margin-top:26px">
+        <div class="hd"><h2>PC 与移动的分工</h2></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th style="width:180px">能力</th><th style="width:110px">PC</th><th style="width:110px">移动</th><th>理由</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">看盘速览</td><td><span class="tag ok">主</span></td><td><span class="tag ok">主</span></td><td>两处都需要，移动端只保留三个关键数</td></tr>
+            <tr><td class="strong">品牌下钻（产品/渠道/内容）</td><td><span class="tag ok">主</span></td><td><span class="tag warn">简版</span></td><td>移动端只给结论，明细留 PC</td></tr>
+            <tr><td class="strong">审核队列</td><td><span class="tag ok">主</span></td><td><span class="tag ok">主</span></td><td>碎片时间最合适，滑动决策</td></tr>
+            <tr><td class="strong">创作工作台</td><td><span class="tag ok">主</span></td><td><span class="tag void">不做</span></td><td>写长文、比结构、改文案，需要大屏</td></tr>
+            <tr><td class="strong">产品档案维护</td><td><span class="tag ok">主</span></td><td><span class="tag void">不做</span></td><td>字段多，表格操作</td></tr>
+            <tr><td class="strong">异常推送</td><td>—</td><td><span class="tag seal">主</span></td><td>采集中断、爆文突破、竞品异动，主动推</td></tr>
+          </tbody></table></div>
+      </div>
+
+      <div class="note" style="margin-top:18px">
+        落地方式：不做原生 App。一套响应式代码 + PWA（可加到桌面、支持系统推送），
+        768px 以下切移动布局。这样只有一个代码库要维护，也不用跟应用商店打交道。
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+
+/* 移动端原型的数字也从 data.js 取，不手填——手填的一定会过时 */
+(function fillMobile() {
+  const $ = id => document.getElementById(id);
+  const bs = DATA.brands;
+  const vAll = Object.values(bs).reduce((a, b) => a + b.verified, 0);
+  const tAll = Object.values(bs).reduce((a, b) => a + b.total, 0);
+  if ($("m-sub")) $("m-sub").textContent = DATA.generated + " · 已验讫 " + vAll.toLocaleString() + " 条";
+  if ($("m-pending")) $("m-pending").textContent = (tAll - vAll).toLocaleString();
+  if ($("m-brands")) $("m-brands").innerHTML = Object.keys(bs)
+    .sort((a, b) => bs[b].likes_sum - bs[a].likes_sum)
+    .map(k => {
+      const b = bs[k];
+      return `<div class="m-brand"><i style="background:${brandColor(k)}"></i><div class="nm">${esc(brandCn(k))}</div>
+        <div class="f">${fmt(b.likes_sum)}<span>${fmt(b.total)} 条</span></div></div>`;
+    }).join("");
+  const c = bs.COSMOBOUNTY;
+  if ($("cb-total")) $("cb-total").textContent = fmt(c.total);
+  if ($("cb-v")) $("cb-v").textContent = fmt(c.verified);
+  if ($("cb-l")) $("cb-l").textContent = fmt(c.likes_sum);
+  if ($("cb-a")) $("cb-a").textContent = c.likes_avg;
+  const P = c.platform || {};
+  if ($("cb-xhs")) $("cb-xhs").textContent = (P.xhs || 0) + " 条";
+  if ($("cb-dy")) $("cb-dy").textContent = (P.douyin || 0) + " 条";
+  if ($("cb-media")) $("cb-media").textContent = ((P.baidu || 0) + (P.toutiao || 0) + (P.web || 0)) + " 条";
+})();
+
+renderRail("mobile", null);
+topbar(`<b>形态</b> <span class="sep">/</span> 移动端`, "PWA · 不加桌面也能用");
+</script>
+</body>
+</html>

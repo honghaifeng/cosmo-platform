@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "cosmobounty": {
+      "command": "/Users/v/.workbuddy/binaries/python/versions/3.13.12/bin/python3",
+      "args": ["/Users/v/Desktop/2026/秋峰/Demo/CosmoBounty/mcp/cosmobounty_server.py"],
+      "env": {
+        "COSMOBOUNTY_DB": "/Users/v/Desktop/2026/秋峰/Demo/CosmoBounty/db/cosmobounty.db"
+      }
+    }
+  }
+}

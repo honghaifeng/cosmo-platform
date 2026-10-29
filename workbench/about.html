@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>口径与边界 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .def{display:grid;grid-template-columns:150px 1fr;gap:14px;padding:11px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+  .def:last-child{border-bottom:none}
+  .def .k{font-weight:600;color:var(--ink)}
+  .def .v{color:var(--ink-2);line-height:1.7}
+  .def .v code{font-family:var(--mono);font-size:11.5px;background:var(--paper-2);padding:1px 4px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">说明</div>
+          <h1>每个数字都要能追到一条原文</h1>
+          <p class="lead" style="margin-top:9px">
+            这是这套系统的立身之本：所有对外数字都能点回原文，六个品牌用同一套判定规则，
+            包括我们自己的品牌——不打折也不放水。做不到的部分，这里逐条写明缺什么。
+          </p>
+        </div>
+      </div>
+
+      <div class="g2" style="margin-bottom:20px">
+        <div class="sheet">
+          <div class="hd"><h2>三层信息</h2></div>
+          <div class="bd">
+            <div class="def"><div class="k">知识层（事实）</div><div class="v">品牌有哪些产品、规格、成分、价格、官方图。
+              <b style="color:var(--seal)">目前基本空白</b>——官网和商城还没采，这是最大的缺口。</div></div>
+            <div class="def"><div class="k">社媒层（行为）</div><div class="v">谁在什么时候、在哪个平台、用什么账号、发了什么内容，拿到多少互动。这一层最完整。</div></div>
+            <div class="def"><div class="k">媒体层（舆论）</div><div class="v">百度、头条、新闻源的收录内容。用于看搜索结果占位和第三方报道口径，<b>不与社媒混算</b>。</div></div>
+          </div>
+        </div>
+
+        <div class="sheet">
+          <div class="hd"><h2>数据从哪来</h2></div>
+          <div class="bd">
+            <div class="def"><div class="k">小红书</div><div class="v">搜索流 + 笔记详情页，逐条抓正文、图片、评论；每日 30 条/轮增量</div></div>
+            <div class="def"><div class="k">抖音</div><div class="v">搜索流 + 创作者主页模式（官号矩阵 30 个号已登记）；视频与封面本地归档</div></div>
+            <div class="def"><div class="k">百度 / 头条 / 新闻源</div><div class="v">抓取管线 fetch → clean → process → ingest，只取正文页，无互动数据</div></div>
+            <div class="def"><div class="k">视频号</div><div class="v">可读，量很小（各品牌 1 条），暂未做成规模采集</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet" style="margin-bottom:20px">
+        <div class="hd"><h2>校验门：为什么只展示 verified=1</h2><div class="spacer"></div><span class="tag seal" id="gate">—</span></div>
+        <div class="bd">
+          <div class="note seal" style="margin-bottom:13px">
+            规则原话：「数据库里必须是经过校验过的、准确的数据。对外只展示没问题的数据。<b>所有没有校验过的，都不要对外展示。</b>」
+          </div>
+          <div class="def"><div class="k">准入条件</div><div class="v">品牌词在标题或正文双重命中；账号归属可信（官号按实名归属）；去重通过；
+            自有品牌额外校验归属。满足后打 <code>verified=1</code>。</div></div>
+          <div class="def"><div class="k">六个出口全部加闸</div><div class="v">MCP 工具、自由 SQL、HTTP API、导出接口、导出 CSV、归档页面——任何出口都只吐 <code>verified=1</code>。</div></div>
+          <div class="def"><div class="k">未验讫内容去哪</div><div class="v">留在库里但完全隔离，只在「审核队列」可见。不进任何对外页面，不参与横评。</div></div>
+          <div class="def"><div class="k">官号为什么能直接过</div><div class="v">账号实名归属即品牌归属（如 LAIFE海外旗舰店 发的就是 LAIFE 的内容），不走正文字面提及规则。
+            但仍记 <code>verify_note='official:账号实名归属'</code> 留痕，与搜索流内容在库里有明确分层。</div></div>
+        </div>
+      </div>
+
+      <div class="sheet" style="margin-bottom:20px">
+        <div class="hd"><h2>指标定义</h2></div>
+        <div class="bd">
+          <div class="def"><div class="k">均赞</div><div class="v">该集合内所有内容的点赞数算术平均。样本量小于 50 时容易单条爆款拉动，不宜当能力结论。</div></div>
+          <div class="def"><div class="k">爆文</div><div class="v">点赞 ≥ 1000。<b>注意这不是「发布 30 天点赞破千」</b>——那需要互动时间序列，我们现在只有当下快照。</div></div>
+          <div class="def"><div class="k">验讫率</div><div class="v">已验讫条数 ÷ 采集总条数。低不代表采集差，可能是品牌词判定严——严一点比松一点安全。</div></div>
+          <div class="def"><div class="k">爆文效率</div><div class="v">已验讫条数 ÷ 爆文数，意思是「平均发多少条能出一条爆文」。数字越小命中率越高。</div></div>
+          <div class="def"><div class="k">官号 / 达人</div><div class="v">官号 = 品牌自有或认证账号（<code>tags</code> 含 <code>official</code>）；达人 = 其他所有账号。<b>横评只算达人</b>，官号单独看打法。</div></div>
+          <div class="def"><div class="k">品类大盘</div><div class="v">命中品类/场景词但正文未提任何品牌的内容（316 条）。作为赛道流量参照，<b>不进品牌横评</b>。</div></div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <div class="hd"><h2>现在还缺什么（逐条）</h2><div class="spacer"></div><span class="tag void">6 项</span></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th style="width:180px">缺口</th><th>影响</th><th style="width:86px">优先级</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">官网 / 商城产品页</td><td>产品规格、成分、剂量、价格、官方图全空，产品横评无法做</td><td><span class="tag seal">P0</span></td></tr>
+            <tr><td class="strong">电商价格</td><td>价格带、单粒价、促销节奏不可比</td><td><span class="tag seal">P0</span></td></tr>
+            <tr><td class="strong">互动数时间序列</td><td>「30/90 天点赞破千」的爆文口径算不出，只能看当下值</td><td><span class="tag warn">P1</span></td></tr>
+            <tr><td class="strong">评论情感分析</td><td>1,918 条评论只存了没分析，口碑倾向说不清</td><td><span class="tag warn">P1</span></td></tr>
+            <tr><td class="strong">小红书 / 视频号官号</td><td>只有抖音官号名单，另两个平台的官号阵地是盲区</td><td><span class="tag warn">P1</span></td></tr>
+            <tr><td class="strong">成本与投放数据</td><td>没有达人报价、投放消耗、GMV，算不出 ROI</td><td><span class="tag void">P2</span></td></tr>
+          </tbody></table></div>
+        <div class="bd" style="border-top:1px solid var(--rule);padding:12px 16px">
+          <span class="tiny">另外两处小欠账：官号视频有 539 条因直链失效未能下载（封面已齐）；
+          商品「精华倍莱」12 条疑似「精倍莱」变体，待归一。</span>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:20px">
+        这套口径不是为了好看，是为了能被人当场核对。有人问「这个数字哪来的」，答案永远是一个可以点开的原文链接。
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+document.getElementById("gate").textContent = (function(){
+  const bs = Object.values(DATA.brands);
+  const v = bs.reduce((a,b)=>a+b.verified,0) + DATA.category.total;
+  const t = bs.reduce((a,b)=>a+b.total,0) + DATA.category.total;
+  return v.toLocaleString() + " / " + t.toLocaleString();
+})();
+renderRail("about", null);
+topbar(`<b>说明</b> <span class="sep">/</span> 口径与边界`, "数据版本 2026-10-26");
+</script>
+</body>
+</html>

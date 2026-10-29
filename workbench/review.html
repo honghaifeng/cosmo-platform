@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>审核队列 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+  .stat>div{background:var(--card);padding:13px 15px}
+  .stat .t{font-size:11.5px;color:var(--ink-3)}
+  .stat .n{font-family:var(--mono);font-size:21px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .stat .d{font-size:11px;color:var(--ink-4);margin-top:2px}
+  .qrow{display:grid;grid-template-columns:1fr 92px 108px 76px;gap:12px;padding:11px 15px;border-bottom:1px solid var(--rule);align-items:center;font-size:12.5px}
+  .qrow:hover{background:#eef1f6}
+  .qrow:last-child{border-bottom:none}
+  .qrow .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qrow .au{font-size:11px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .qrow .act{display:flex;gap:5px;justify-content:flex-end}
+  .mini{font-size:10.5px;padding:2px 7px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card);color:var(--ink-3);cursor:pointer}
+  .mini:hover{border-color:var(--seal);color:var(--seal)}
+  .mini.acc:hover{border-color:var(--ok);color:var(--ok)}
+  .reason{font-size:10.5px;color:var(--warn);background:var(--warn-bg);padding:1px 5px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">作业 · 审核</div>
+          <h1>未验讫的内容，只在这里存在</h1>
+          <p class="lead" style="margin-top:9px">
+            采回来不等于能用。这里的每一条都还没过校验门，<b>它们不出现在任何对外页面、不参与横评、不进导出</b>。
+            审核的动作只有三个：采纳（进库对外）、驳回（打标签隔离）、归一（品牌名对不上，人工指定）。
+          </p>
+        </div>
+        <div><select class="sel" id="bsel" style="font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card)"></select></div>
+      </div>
+
+      <div class="stat" id="stat" style="margin-bottom:20px"></div>
+
+      <div class="g23" style="margin-bottom:20px">
+        <div class="sheet">
+          <div class="hd"><h2>为什么这些内容过不了门</h2><div class="spacer"></div><span class="tag">四类常见原因</span></div>
+          <div class="bd flush"><table class="tbl">
+            <thead><tr><th style="width:150px">原因</th><th>说明</th><th style="width:120px">处理方式</th></tr></thead>
+            <tbody>
+              <tr><td class="strong">品牌词未双重命中</td><td>标题或正文只出现一次品牌词，或只出现在话题标签里——无法确认是讲这个品牌的</td><td class="tiny">人工看原文，命中即采纳</td></tr>
+              <tr><td class="strong">归一无匹配</td><td>品牌名是变体或错写（如「精华倍莱」疑为「精倍莱」），规则库没收录</td><td class="tiny">归一后并入目标品牌</td></tr>
+              <tr><td class="strong">正文为空</td><td>只抓到标题和图片，无法判断内容归属</td><td class="tiny">补正文后再判，或按媒体证据走</td></tr>
+              <tr><td class="strong">蹭词位</td><td>命中了搜索词但正文讲的是别的东西（如「尖叫瓶」被当成品类词捞进来）</td><td class="tiny">驳回，打「非品牌」标签</td></tr>
+            </tbody></table></div>
+        </div>
+
+        <div class="sheet">
+          <div class="hd"><h2>如果放它们出去会怎样</h2></div>
+          <div class="bd" style="display:flex;flex-direction:column;gap:11px">
+            <div class="note seal"><b>横评会失真。</b>未归一的内容混进品牌分母，竞品的声量会被算高或算低，六家就不可比了。</div>
+            <div class="note seal"><b>会被当场质疑。</b>10 月就出过一次——1901 条脏数据混着展示，被问「这跟品牌没关系，你是不是搞错了」。</div>
+            <div class="note"><b>裁决只在一次点击里。</b>下面是这个品牌最近的待核样例，每条都能直接采纳或驳回，操作会记 reason 留痕。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <div class="hd"><h2>待核样例（最近 6 条）</h2><div class="spacer"></div>
+          <span class="tag seal" id="ptag"></span>
+          <button class="btn" id="bulk" style="margin-left:8px">全部采纳（示例）</button></div>
+        <div class="bd flush" id="qlist"></div>
+        <div class="bd" style="border-top:1px solid var(--rule);padding:11px 15px">
+          <span class="tiny">这里只展示每个品牌最近的 6 条作为样例；全量待核在库里，走 <span class="mono">verify_and_gate.py</span> 批量打标后进队列。
+          采纳 ≠ 直接上线，采纳只是让 <span class="mono">verified=1</span>，之后仍受六出口闸门约束。</span>
+        </div>
+      </div>
+
+      <div class="sheet" style="margin-top:20px">
+        <div class="hd"><h2>各品牌待核量</h2><div class="spacer"></div><span class="tag">共 2,898 条</span></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th>品牌</th><th class="num">待核</th><th class="num">已验讫</th><th class="num">验讫率</th><th style="width:220px">进度</th><th>建议</th></tr></thead>
+          <tbody id="btbl"></tbody>
+        </table></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/pending.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+const KEY = new URLSearchParams(location.search).get("brand") || "";
+renderRail("review", KEY || null);
+topbar(`<b>作业</b> <span class="sep">/</span> 审核队列${KEY?` <span class="sep">/</span> ${esc((BRANDS.find(b=>b.key===KEY)||{}).cn||"")}`:""}`, "只有 verified=1 才对外");
+
+const sel = document.getElementById("bsel");
+sel.innerHTML = `<option value="">全部品牌</option>` + BRANDS.map(b=>
+  `<option value="${b.key}" ${KEY===b.key?"selected":""}>${esc(b.cn)}</option>`).join("");
+sel.addEventListener("change",()=>{ location.href = sel.value?`review.html?brand=${encodeURIComponent(sel.value)}`:"review.html"; });
+
+const order = KEY ? [KEY] : BRANDS.map(b=>b.key);
+const pend = order.reduce((s,k)=>s+(PENDING[k]?PENDING[k].pending:0),0);
+const ver = order.reduce((s,k)=>s+DATA.brands[k].verified,0);
+const all = order.reduce((s,k)=>s+DATA.brands[k].total,0);
+
+document.getElementById("stat").innerHTML = `
+  <div><div class="t">待核内容</div><div class="n">${fmt(pend)}</div><div class="d">${KEY?"该品牌":"六品牌合计"}</div></div>
+  <div><div class="t">已验讫</div><div class="n">${fmt(ver)}</div><div class="d">占 ${pct(ver,all)}</div></div>
+  <div><div class="t">采集总量</div><div class="n">${fmt(all)}</div><div class="d">待核 + 已验讫</div></div>
+  <div><div class="t">审核吞吐建议</div><div class="n">200/日</div><div class="d">按此速度约 ${Math.ceil(pend/200)} 天清完</div></div>`;
+
+const cur = KEY || "MitoQ";
+const p = PENDING[cur] || {pending:0, sample:[]};
+document.getElementById("ptag").textContent = `${esc((BRANDS.find(b=>b.key===cur)||{}).cn)} · ${fmt(p.pending)} 条待核`;
+let done = 0;
+function drawQ() {
+  document.getElementById("qlist").innerHTML = p.sample.map((s,i)=>`
+    <div class="qrow" data-i="${i}">
+      <div style="min-width:0">
+        <div class="tt">${esc(s.t) || '<span class="muted">（无标题）</span>'}</div>
+        <div class="au">${esc(s.a||"未署名")} · ${esc((PLAT_META[s.p]||{name:s.p}).name)} · ${esc(s.d)} ${s.note?`<span class="reason">${esc(s.note)}</span>`:'<span class="reason">品牌词未双重命中</span>'}</div>
+      </div>
+      <div>${s.u?`<a class="link tiny" href="${esc(s.u)}" target="_blank" rel="noopener">看原文</a>`:'<span class="tiny muted">无链接</span>'}</div>
+      <div class="tiny" style="color:var(--ink-3)">${s.t && s.t.length>8 ? "待人工判" : "缺正文"}</div>
+      <div class="act">
+        <button class="mini acc" data-acc="${i}">采纳</button>
+        <button class="mini" data-rej="${i}">驳回</button>
+      </div>
+    </div>`).join("") || `<div style="padding:18px" class="tiny">该品牌暂无待核样例</div>`;
+  bindQ();
+}
+function bindQ() {
+  document.querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>mark(b.closest(".qrow"), true));
+  document.querySelectorAll("[data-rej]").forEach(b=>b.onclick=()=>mark(b.closest(".qrow"), false));
+}
+function mark(row, ok) {
+  row.style.opacity = ".42";
+  row.style.background = ok ? "var(--ok-bg)" : "var(--paper-2)";
+  row.querySelector(".act").innerHTML = `<span class="tag ${ok?"ok":"void"}">${ok?"已采纳":"已驳回"}</span>`;
+  done++;
+}
+document.getElementById("bulk").onclick = ()=>{
+  document.querySelectorAll(".qrow").forEach((r,i)=>setTimeout(()=>mark(r,true), i*130));
+};
+drawQ();
+
+document.getElementById("btbl").innerHTML = BRANDS.map(b=>{
+  const d = DATA.brands[b.key], pn = (PENDING[b.key]||{}).pending || 0;
+  const rate = Math.round(d.verified/d.total*100);
+  const advice = rate>60 ? "验讫率高，保持" : rate>45 ? "规则基本可用，补少量人工" : "规则需放宽或补归一表";
+  return `<tr><td><span class="brandmark"><i style="width:7px;height:7px;background:${b.color};display:inline-block"></i>${esc(b.cn)}</span></td>
+    <td class="num">${fmt(pn)}</td><td class="num">${fmt(d.verified)}</td><td class="num">${rate}%</td>
+    <td><div class="bar-track"><div class="bar-fill" style="width:${rate}%;background:${b.color}"></div></div></td>
+    <td class="tiny" style="color:var(--ink-3)">${advice}</td></tr>`;
+}).join("");
+</script>
+</body>
+</html>

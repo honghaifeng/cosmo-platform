@@ -1,0 +1,114 @@
+# =============================================================================
+# 春科 · Cosmo 平台 —— 仓库忽略规则
+#
+# 一句话原则：**代码和文档进仓库，数据、媒体、密钥、运行产物一律不进。**
+#
+# 这个仓库管「逆龄观察 + 内容工作台」两个前端和一套数据。
+# 一旦把 db/、data/、knowledge/media/ 提交上去，等于把
+# 六个品牌的全部原始内容 + 客户名单 + 未公开文案推到互联网上。
+# 这些文件都在 .gitignore 里，别为了方便临时放行。
+# =============================================================================
+
+# ---------- 数据库（真实业务数据） ----------
+# 注意：不忽略 db/ 整个目录 —— db/schema.sql 必须进仓库。
+# 只忽略数据库文件本身，加规则时别写成 db/，否则 ! 白名单也救不回来。
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+db/backup/
+
+# ---------- 采集产物与原始层 ----------
+data/raw/
+data/clean/
+data/enriched/
+data-demo/
+*.jsonl
+*.pkl
+crawl_log/
+
+# ---------- 媒体（16.9GB，全在七牛，不进仓库） ----------
+knowledge/media/
+images/
+exports/
+generated-images/
+archives/
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.psd
+*.ai
+
+# ---------- 密钥与本地配置 ----------
+config.json
+config.local.json
+config/qiniu.json
+config/aliyun.json
+config/products.json
+config/products_manual.json
+data/token.txt
+.env
+.env.*
+!.env.example
+!**/config.example.json
+*.pem
+*.key
+*.p12
+
+# ---------- 浏览器登录态（小红书/抖音，绝不能公开） ----------
+browser_data/
+cookies*.json
+*_cookies.json
+login_state/
+storage_state*.json
+
+# ---------- 运行产物 ----------
+report/
+logs/
+*.log
+nohup.out
+dist/
+build/
+coverage/
+backups/
+*.tgz
+*.tar.gz
+*.zip
+
+# ---------- 依赖 ----------
+node_modules/
+package-lock.json
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ---------- 系统 / 编辑器 ----------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# ---------- 本仓库特有：部署时由脚本推送的分发目录 ----------
+workbench/_snapshot_bak/
+tools/
+
+# ---------- 运行时生成的凭据（脚本首次启动会自动写，绝不能提交） ----------
+data/
+service/data/
+**/data/token.txt
+**/data/sharecode.txt
+**/data/tokens.json
+**/data/version.json
+

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>跨品牌横评 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .dim{margin-bottom:22px}
+  .dim-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+  .dim-hd h3{font-size:13px}
+  .dim-hd .q{font-size:12px;color:var(--ink-4)}
+  .dim-body{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:14px 16px}
+  .rkg{display:flex;flex-direction:column;gap:7px}
+  .rkg .r{display:grid;grid-template-columns:112px 1fr 84px;gap:11px;align-items:center;font-size:12.5px}
+  .rkg .r .nm{display:flex;align-items:center;gap:7px;min-width:0}
+  .rkg .r .nm i{width:7px;height:7px;border-radius:1px;flex:0 0 7px}
+  .rkg .r .nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rkg .r .vv{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;font-size:12.5px}
+  .rkg .r.top .vv{font-weight:600}
+  .rkg .r.top .nm span{font-weight:600}
+  .bmk{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden;margin-bottom:22px}
+  .bmk>div{background:var(--card);padding:13px 15px}
+  .bmk .t{font-size:11px;color:var(--ink-3);letter-spacing:.03em}
+  .bmk .n{font-size:14px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:7px}
+  .bmk .n i{width:8px;height:8px;border-radius:1px}
+  .bmk .d{font-size:11px;color:var(--ink-4);margin-top:3px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">对比视角</div>
+          <h1>同一把尺子，六个品牌</h1>
+          <p class="lead" style="margin-top:9px">
+            品牌页是「进去看一家」，这一页是「横着比。每个维度一个排序，第一名标粗。
+            所有数字都是 <span class="mono">verified=1</span> 口径，六家同一套判定规则——包括我们自己的品牌，不打折也不放水。
+          </p>
+        </div>
+      </div>
+
+      <h2 style="margin-bottom:12px">各维度第一</h2>
+      <div class="bmk" id="bmk"></div>
+
+      <div id="dims"></div>
+
+      <div class="sheet">
+        <div class="hd"><h2>读这张表要注意的三件事</h2></div>
+        <div class="bd" style="display:flex;flex-direction:column;gap:11px">
+          <div class="note">
+            <b>① 内容量 ≠ 声量。</b>GRANVER 内容 921 条，是塞乐瑞的 2.6 倍，但赞量只有它的 13 倍——
+            两家都在底部，差别不是量的差别。真正拉开距离的是 MitoQ 和 LAIFE，而这两家恰好一个有爆文效率、一个有官号密度。
+          </div>
+          <div class="note">
+            <b>② 官号均赞低不等于官号没用。</b>LAIFE 官号上千条、均赞只有个位数，看起来极差；但它把这些内容铺在红宝瓶所有相关关键词上，
+            用户搜什么都能搜到它。这是搜索占位，衡量指标应该是「搜索结果里自家内容占比」，不是点赞——这个指标我们还没接。
+          </div>
+          <div class="note">
+            <b>③ 我们自己排第几，要诚实看。</b>科诗博缇在六个维度里没有一项第一，最好的成绩是「单条均赞 181」排第三。
+            但它的样本只有 39 条——样本量不足时，均值会被单条爆款拉动，不能当成能力结论。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+renderRail("compare", null);
+topbar(`<b>总盘</b> <span class="sep">/</span> 跨品牌横评`, "同口径 · 六家一致");
+
+const ORDER = ["MitoQ","LAIFE","GRANVER","W+端粒塔","塞乐瑞","COSMOBOUNTY"];
+const nm = k => (BRANDS.find(b=>b.key===k)||{}).cn || k;
+const col = k => (BRANDS.find(b=>b.key===k)||{}).color || "var(--ink-3)";
+
+const DIMS = [
+  { t:"内容总量", q:"谁在多发", get:k=>DATA.brands[k].total, fmt:v=>fmt(v), unit:"" },
+  { t:"累计互动（赞）", q:"谁被看见", get:k=>DATA.brands[k].likes_sum, fmt:v=>fmt(v), unit:"" },
+  { t:"单条均赞", q:"谁的内容更有效", get:k=>DATA.brands[k].likes_avg, fmt:v=>v, unit:" 赞" },
+  { t:"爆文数（≥1000赞）", q:"谁能出圈", get:k=>DATA.brands[k].viral1k, fmt:v=>v, unit:" 条" },
+  { t:"爆文效率（每N条出一条）", q:"谁的命中率高（越小越好）", get:k=>DATA.brands[k].viral1k?Math.round(DATA.brands[k].verified/DATA.brands[k].viral1k):9999, fmt:v=>v>=9999?"—":v, unit:" 条", asc:true },
+  { t:"官号内容量", q:"谁在做自有阵地", get:k=>EFF[k].off_n, fmt:v=>fmt(v), unit:" 条" },
+  { t:"官号均赞", q:"官号自己做得好不好", get:k=>EFF[k].off_avg, fmt:v=>v, unit:" 赞" },
+  { t:"达人数", q:"谁的达人盘更大", get:k=>DATA.brands[k].creators, fmt:v=>v, unit:" 位" },
+  { t:"达人均赞", q:"达人质量", get:k=>EFF[k].kol_avg, fmt:v=>v, unit:" 赞" },
+  { t:"验讫率", q:"数据干净程度", get:k=>Math.round(DATA.brands[k].verified/DATA.brands[k].total*100), fmt:v=>v, unit:"%" },
+];
+
+/* 标杆卡片全部由 data.js 现算：写死的数字是最容易出错的地方 */
+const ALL_L = ORDER.reduce((a,k)=>a+DATA.brands[k].likes_sum,0);
+const best = {
+  likes: ORDER.slice().sort((a,b)=>DATA.brands[b].likes_sum-DATA.brands[a].likes_sum)[0],
+  viral: ORDER.filter(k=>DATA.brands[k].viral1k>0).sort((a,b)=>(DATA.brands[a].verified/DATA.brands[a].viral1k)-(DATA.brands[b].verified/DATA.brands[b].viral1k))[0],
+  off:   ORDER.slice().sort((a,b)=>EFF[b].off_n-EFF[a].off_n)[0],
+  kol:   ORDER.slice().sort((a,b)=>EFF[b].kol_avg-EFF[a].kol_avg)[0],
+  focus: ORDER.slice().sort((a,b)=>((prodlineOf(b)[0]||[0,0])[1]/DATA.brands[b].verified)-((prodlineOf(a)[0]||[0,0])[1]/DATA.brands[a].verified))[0],
+  self:  ORDER.slice().sort((a,b)=>DATA.brands[a].likes_avg-DATA.brands[b].likes_avg)[0],
+};
+function prodlineOf(k){ const b=DATA.brands[k]; return (b.prodline||[]).slice().sort((x,y)=>y[1]-x[1]); }
+const pctOf = (k) => pct(DATA.brands[k].likes_sum, ALL_L);
+const focusP = (k) => { const p=(DATA.brands[k].prodline||[]).slice().sort((a,b)=>b[1]-a[1])[0]; return p?Math.round(p[1]/DATA.brands[k].verified*100):0; };
+
+document.getElementById("bmk").innerHTML = `
+  <div><div class="t">声量第一</div><div class="n"><i style="background:${col(best.likes)}"></i>${nm(best.likes)}</div><div class="d">${fmt(DATA.brands[best.likes].likes_sum)}赞 · 占六品牌 ${pctOf(best.likes)}</div></div>
+  <div><div class="t">爆文效率第一</div><div class="n"><i style="background:${col(best.viral||'MitoQ')}"></i>${nm(best.viral||"—")}</div><div class="d">${best.viral?`每 ${Math.round(DATA.brands[best.viral].verified/DATA.brands[best.viral].viral1k)} 条出一条 ≥1000 赞`:"暂无爆文"}</div></div>
+  <div><div class="t">官号阵地第一</div><div class="n"><i style="background:${col(best.off)}"></i>${nm(best.off)}</div><div class="d">${fmt(EFF[best.off].off_n)} 条 / ${DATA.brands[best.off].official_acc} 个官号</div></div>
+  <div><div class="t">达人单产第一</div><div class="n"><i style="background:${col(best.kol)}"></i>${nm(best.kol)}</div><div class="d">达人单条均 ${EFF[best.kol].kol_avg} 赞</div></div>
+  <div><div class="t">产品线最集中</div><div class="n"><i style="background:${col(best.focus)}"></i>${nm(best.focus)}</div><div class="d">${esc((prodlineOf(best.focus)[0]||["—"])[0])} 占内容 ${focusP(best.focus)}%</div></div>
+  <div><div class="t">我方均赞位次</div><div class="n"><i style="background:${col("COSMOBOUNTY")}"></i>${nm("COSMOBOUNTY")}</div><div class="d">${DATA.brands.COSMOBOUNTY.likes_avg} 赞，排第 ${ORDER.slice().sort((a,b)=>DATA.brands[b].likes_avg-DATA.brands[a].likes_avg).indexOf("COSMOBOUNTY")+1}，样本 ${DATA.brands.COSMOBOUNTY.verified} 条</div></div>
+`;
+document.getElementById("dims").innerHTML = DIMS.map(d=>{
+  const vals = ORDER.map(k=>({k, v:d.get(k)}));
+  vals.sort((a,b)=> d.asc ? a.v-b.v : b.v-a.v);
+  const realVals = vals.filter(x=>x.v>0 && x.v<9999).map(x=>x.v);
+  const max = realVals.length ? Math.max(...realVals) : 1;
+  return `<div class="dim">
+    <div class="dim-hd"><h3>${d.t}</h3><span class="q">${d.q}</span></div>
+    <div class="dim-body"><div class="rkg">
+      ${vals.map((x,i)=>{
+        const w = (x.v>0 && x.v<9999) ? Math.max(1, x.v/max*100) : 0;
+        return `<div class="r ${i===0&&x.v>0&&x.v<9999?'top':''}">
+          <div class="nm"><i style="background:${col(x.k)}"></i><span>${nm(x.k)}</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${col(x.k)}"></div></div>
+          <div class="vv">${d.fmt(x.v)}${x.v>0&&x.v<9999?d.unit:""}</div>
+        </div>`;
+      }).join("")}
+    </div></div>
+  </div>`;
+}).join("");
+</script>
+</body>
+</html>

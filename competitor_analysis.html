@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>六品牌竞品分析 · 2026-10-26</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1a1d23;--sub:#5b6270;--line:#e6e8ee;
+  --warn:#c2410c;--warnbg:#fff4ec;--ok:#0f7b4f;--okbg:#eefaf4;--blue:#1d4ed8;--bluebg:#eef2ff;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.65}
+.wrap{max-width:1000px;margin:0 auto;padding:44px 24px 80px}
+header{margin-bottom:26px}
+.kicker{font-size:12px;letter-spacing:.14em;color:var(--sub);text-transform:uppercase}
+h1{font-size:29px;margin:9px 0 8px;letter-spacing:-.015em;line-height:1.3}
+.meta{font-size:13px;color:var(--sub)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:12.5px;font-weight:600}
+.badge.ok{background:var(--okbg);color:var(--ok);border:1px solid #c7ebd9}
+.badge.warn{background:var(--warnbg);color:var(--warn);border:1px solid #f8d8c2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin-bottom:16px}
+h2{font-size:16px;margin:0 0 16px;letter-spacing:.01em;display:flex;align-items:center;gap:9px}
+h2 .n{font-size:11px;font-weight:700;color:#fff;background:#1a1d23;border-radius:5px;padding:2px 7px;letter-spacing:.06em}
+h3{font-size:14px;margin:20px 0 10px;color:#2a2f38}
+p{margin:0 0 11px;font-size:14.2px}
+.sub{color:var(--sub);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;color:var(--sub);font-weight:600;letter-spacing:.04em;background:#fafbfc}
+tr:last-child td{border-bottom:none}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;text-align:right}
+.alert{border-left:3px solid var(--warn);background:var(--warnbg);padding:14px 16px;border-radius:0 8px 8px 0;font-size:13.6px;margin:14px 0 0}
+.note{border-left:3px solid #c9ced8;background:#fafbfc;padding:13px 16px;border-radius:0 8px 8px 0;font-size:13px;color:var(--sub);margin-top:14px}
+ul{margin:8px 0 0;padding-left:18px;font-size:14px}
+li{margin:6px 0}
+code{background:#f1f3f6;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 16px}
+.kpi .l{font-size:12px;color:var(--sub)}
+.kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:2px;letter-spacing:-.02em}
+.kpi .d{font-size:12px;color:var(--sub);margin-top:2px}
+/* bar */
+.brow{display:grid;grid-template-columns:138px 1fr 140px;align-items:center;gap:12px;
+  padding:7px 10px;border-radius:8px;border:1px solid transparent}
+.brow+.brow{margin-top:3px}
+.bname{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.own{font-size:10px;font-weight:700;color:#c2410c;background:#fff4ec;border:1px solid #fed7aa;border-radius:4px;padding:0 4px}
+.btrack{height:15px;background:#f1f3f6;border-radius:4px;overflow:hidden;position:relative}
+.bfill{height:100%;border-radius:4px}
+.bval{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.bu{display:block;font-size:11px;font-weight:400;color:var(--sub)}
+.brow.cost{grid-template-columns:138px 1fr 178px}
+.btrack.empty{background:transparent;display:flex;align-items:center}
+.none{font-size:11.5px;color:#9aa1ad;padding-left:2px;line-height:1.2}
+/* heat */
+.heat{width:100%;border-collapse:separate;border-spacing:2px;font-size:12.5px}
+.heat th{background:none;border:none;padding:5px 4px;font-size:11px;text-align:center;line-height:1.25}
+.heat .hname{text-align:left;font-size:12.5px;font-weight:600;color:var(--ink);white-space:nowrap;padding-left:0}
+.hcell{text-align:center;font-variant-numeric:tabular-nums;font-weight:600;border-radius:5px;padding:7px 4px;border:none}
+.ownrow .hname{color:#c2410c}
+.ownrow .hcell{outline:1px solid #fed7aa}
+/* brand cards */
+.bcard{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:12px;background:#fff}
+.bcard .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.bcard .nm{font-size:15.5px;font-weight:700}
+.bcard .pos{font-size:12.5px;color:var(--sub);background:#fafbfc;border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.bcard .one{font-size:13.6px;margin:0 0 8px}
+.bcard .weak{font-size:13.2px;color:#8a3a0f;background:#fff8f3;border-left:3px solid #f0b389;padding:9px 12px;border-radius:0 6px 6px 0}
+.bcard .weak b{color:#a33b0a}
+/* template */
+.tpl{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tcard{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.tcard .h{font-size:13px;font-weight:700;margin-bottom:5px}
+.tcard .q{font-size:12.6px;color:#3b4250;font-style:italic;margin-bottom:6px}
+.tcard .w{font-size:12.4px;color:var(--sub)}
+.tcard .hit{font-size:11.5px;font-weight:700;color:#0f766e}
+/* 账号矩阵 */
+.mx{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 8px}
+.mxb{border:1px solid var(--line);border-radius:12px;padding:14px 15px;background:#fff}
+.mxh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding-bottom:7px;margin-bottom:9px;border-bottom:1px solid var(--line)}
+.mxh b{font-size:14.5px}
+.mxh span{font-size:11px;color:var(--sub);text-align:right;line-height:1.35}
+.mxp{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.mp{background:#fafbfc;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.mp .k{font-size:10.5px;color:var(--sub);letter-spacing:.06em}
+.mp .n{font-size:12.8px;font-weight:700;margin-top:1px}
+.mp .l{font-size:11px;color:var(--sub);margin-top:1px}
+.mp .c{font-size:10.8px;color:#8a3a0f;margin-top:4px;line-height:1.5}
+.mp.media{background:#f4f5f7}
+.mp.media .c{color:#6b7280}
+.mxf{margin-top:9px;padding-top:8px;border-top:1px dashed var(--line);font-size:11px;color:var(--sub)}
+/* appendix */
+details{border:1px solid var(--line);border-radius:10px;padding:0;margin-bottom:8px;background:#fff;overflow:hidden}
+summary{cursor:pointer;padding:12px 16px;font-size:13.4px;list-style:none;display:flex;align-items:center;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:#9aa1ad;font-size:12px;transition:transform .15s}
+details[open] summary::before{transform:rotate(90deg)}
+details[open] summary{border-bottom:1px solid var(--line);background:#fafbfc}
+.sumb{font-size:12px;color:var(--sub);font-weight:400}
+table.apx{font-size:12.6px}
+table.apx th:nth-child(1),table.apx td:nth-child(1){width:34px}
+table.apx th:nth-child(2),table.apx td:nth-child(2){width:62px}
+table.apx th:nth-child(3),table.apx td:nth-child(3){width:56px}
+table.apx th:nth-child(5),table.apx td:nth-child(5){width:64px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+footer{margin-top:30px;font-size:12px;color:#8a909c;text-align:center;line-height:1.8}
+@media(max-width:760px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .brow{grid-template-columns:104px 1fr 108px}
+  .brow.cost{grid-template-columns:92px 1fr 150px}
+  .tpl{grid-template-columns:1fr}
+  .mx{grid-template-columns:1fr}
+  .heat{font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="kicker">CosmoBounty · 六品牌内容监测 · 竞品分析</div>
+  <h1>六品牌内容横评：谁的内容真有人看</h1>
+  <div class="meta">数据截至 2026-10-26 16:31 ·
+    <span class="badge ok">校验通过 2,933 条</span> ·
+    口径：小红书 / 抖音 / 百度 / 今日头条 / 新闻源</div>
+</header>
+
+<div class="kpis">
+  <div class="kpi"><div class="l">内容总量</div><div class="v">1,150</div><div class="d">六品牌达人可见内容</div></div>
+  <div class="kpi"><div class="l">总获赞</div><div class="v">37.5万</div><div class="d">达人内容，不含官号</div></div>
+  <div class="kpi"><div class="l">我方均赞排名</div><div class="v">第 3</div><div class="d">181 赞/条，仅 39 条</div></div>
+  <div class="kpi"><div class="l">本次修正</div><div class="v">9 条</div><div class="d">归属错误已下架</div></div>
+</div>
+
+<div class="card">
+  <h2><span class="n">先说结论</span>四段话</h2>
+
+  <p>把六家重新算了一遍，最反直觉的结果是 GRANVER 并不是声量第一。它的内容条数确实排在第二，一共 273 条，可达人内容总共只拿到 6,517 个赞，不到 LAIFE 的 3%。它铺的是搜索结果页，用户在信息流里刷不到它。</p>
+
+  <p>真正的第一是 LAIFE。255 条达人内容拿到 20.7 万个赞，均赞 1,465，六家里没有对手。但它官号那部分几乎白做：884 条官号内容（六家最多）只换来 6,888 个赞，平均一条 8 个，其中 516 条是同一个号的直播预告。钱主要花在两头，一头是小红书的女性生活方式种草，一头是抖音 67 个号的铺货。</p>
+
+  <p>官号和达人两条线都做起来的只有 MitoQ。官号 525 条均赞 190，但这 190 个赞几乎全来自「海外旗舰店」一个号：206 条讲溯源、CEO 访谈这类品牌故事，均赞 478。同一个品牌的「品牌直播间」发了 297 条切片，总共只有 1,148 个赞。搜索位和内容位它都站住了，是这几家里最难打的。</p>
+
+  <p>塞乐瑞在社媒上基本没有存在感，149 条内容合计 488 个赞，抖音连官方号都没有，对外声音主要来自百度资讯的财经稿。我们自己 39 条内容均赞 181，效率排第三，比 GRANVER、W+端粒塔、塞乐瑞都高。差的是量。效率已经被验证过，量补起来就行。</p>
+</div>
+
+<div class="card">
+  <h2><span class="n">01</span>这次检查修掉了什么</h2>
+  <p>这轮核查是从一条 5,894 赞的笔记开始的。它挂在我们名下，曾经是 COSMOBOUNTY 的历史第一爆款，点进去却是安热沙的防晒广告。</p>
+  <p>原因出在产品词上。当初写识别规则时，把「夜修瓶」「日活瓶」「黑白胶囊」「分时」都当成了我们独有的词。可安热沙也有一款夜修瓶，Gaibu、凌创、玛丽安保莱也做黑白胶囊和分时概念，抖音上还堆着大量讲「日活瓶颈」的行业文章。规则只认词不认人，这些内容就都被记到了我们头上。塞乐瑞那边也有一条，是海南干细胞产业的政策报道，一个泛词就命中了。</p>
+  <p>一共 9 条，现在全部隔离（<code>verified=0</code> 并注明原因），数据没有删，留在库里可以复查。</p>
+  <table>
+    <thead><tr><th>误入品牌</th><th>条数</th><th>实际是什么</th><th>为什么漏过</th></tr></thead>
+    <tbody>
+      <tr><td>COSMOBOUNTY</td><td class="num">4</td><td>安热沙「夜修瓶」防晒营销</td><td>「夜修瓶」与我方产品同名，被当成产品词命中</td></tr>
+      <tr><td>COSMOBOUNTY</td><td class="num">1</td><td>抖音日活 500 万的行业分析</td><td>「日活」与我方「日活瓶」撞词</td></tr>
+      <tr><td>COSMOBOUNTY</td><td class="num">3</td><td>Gaibu / 凌创 / 玛丽安保莱 的「黑白胶囊、分时」产品</td><td>「黑白胶囊」「分时」被当成独占词</td></tr>
+      <tr><td>塞乐瑞</td><td class="num">1</td><td>海南干细胞产业政策报道（全文未提品牌）</td><td>「干细胞」泛词命中</td></tr>
+    </tbody>
+  </table>
+  <div class="alert">如果不修，任何对外报告都会把别人的防晒广告算成我们的成绩。数字差一点可以忍，把别人的东西算成自己的不能忍。</div>
+  <p class="sub" style="margin-top:14px">顺带把基础数也对了一遍。五份竞品档案和知识库总纲里的基线还停在 477 条，实际是 2,933 条，声量排序也是反的。档案已经全部升到 v1.1。</p>
+</div>
+
+<div class="card">
+  <h2><span class="n">02</span>声量：先把官号的量挤掉</h2>
+  <p>官号自己发的和达人发的混在一起算，那些靠账号数量堆量的品牌一定会被高估。下面这张图只算达人内容。</p>
+  <div class="brow">
+  <div class="bname">MitoQ</div>
+  <div class="btrack"><div class="bfill" style="width:67.4%;background:#0f766e"></div></div>
+  <div class="bval">139,203<span class="bu">赞 · 有互动 109/258 条</span></div>
+</div><div class="brow">
+  <div class="bname">LAIFE</div>
+  <div class="btrack"><div class="bfill" style="width:100.0%;background:#7c3aed"></div></div>
+  <div class="bval">206,541<span class="bu">赞 · 有互动 141/255 条</span></div>
+</div><div class="brow">
+  <div class="bname">W+端粒塔</div>
+  <div class="btrack"><div class="bfill" style="width:7.3%;background:#0369a1"></div></div>
+  <div class="bval">15,110<span class="bu">赞 · 有互动 93/190 条</span></div>
+</div><div class="brow" style="background:#fff7ed;border-color:#fed7aa">
+  <div class="bname">COSMOBOUNTY <span class="own">本牌</span></div>
+  <div class="btrack"><div class="bfill" style="width:3.4%;background:#c2410c"></div></div>
+  <div class="bval">7,078<span class="bu">赞 · 有互动 39/39 条</span></div>
+</div><div class="brow">
+  <div class="bname">GRANVER</div>
+  <div class="btrack"><div class="bfill" style="width:3.2%;background:#4b5563"></div></div>
+  <div class="bval">6,517<span class="bu">赞 · 有互动 167/259 条</span></div>
+</div><div class="brow">
+  <div class="bname">塞乐瑞</div>
+  <div class="btrack"><div class="bfill" style="width:0.6%;background:#9ca3af"></div></div>
+  <div class="bval">488<span class="bu">赞 · 有互动 56/149 条</span></div>
+</div>
+  <p class="sub" style="margin-top:12px">条形长度是达人内容的总获赞，右边是抓到互动数据的条数除以内容总数。六家覆盖率不一样，从 37% 到 100%，所以这些数字只能当下限看，真实值都比这高。</p>
+
+  <h3>官号发得多，不代表有人看</h3>
+  <div class="brow">
+  <div class="bname">MitoQ</div>
+  <div class="btrack"><div class="bfill" style="width:100.0%;background:#0f766e"></div></div>
+  <div class="bval">190<span class="bu">均赞 · 525 条</span></div>
+</div><div class="brow">
+  <div class="bname">LAIFE</div>
+  <div class="btrack"><div class="bfill" style="width:4.2%;background:#7c3aed"></div></div>
+  <div class="bval">8<span class="bu">均赞 · 884 条</span></div>
+</div><div class="brow">
+  <div class="bname">W+端粒塔</div>
+  <div class="btrack"><div class="bfill" style="width:0.8%;background:#0369a1"></div></div>
+  <div class="bval">0.0<span class="bu">均赞 · 44 条</span></div>
+</div><div class="brow"><div class="bname">COSMOBOUNTY</div><div class="btrack empty"><span class="none">无官号内容入库</span></div><div class="bval">—</div></div><div class="brow">
+  <div class="bname">GRANVER</div>
+  <div class="btrack"><div class="bfill" style="width:2.1%;background:#4b5563"></div></div>
+  <div class="bval">4<span class="bu">均赞 · 14 条</span></div>
+</div><div class="brow"><div class="bname">塞乐瑞</div><div class="btrack empty"><span class="none">无官号内容入库</span></div><div class="bval">—</div></div>
+  <div class="note">LAIFE 的官号 884 条，六家里最多，均赞只有 8。这 884 条里有 516 条来自「红宝瓶3.0胶囊」一个号，全是直播预告，加起来 688 个赞。W+端粒塔 44 条官号内容一共 5 个赞。这两家的官号更像货架和直播存档，本来也没打算靠它涨粉。<br>
+    MitoQ 的官号是例外，但例外得很具体：它的「海外旗舰店」206 条讲溯源和 CEO 访谈，拿到 98,549 个赞，均赞 478；同一个品牌的「品牌直播间」297 条切片只有 1,148 个赞，均赞 4。一个牌子两种做法，差了一百倍。所以官号有没有用，取决于发什么，跟发多少关系不大。</div>
+</div>
+
+<div class="card">
+  <h2><span class="n">03</span>账号矩阵：钱花在哪些平台上</h2>
+  <p>小红书和抖音是自己开号发内容，百度和资讯站没有账号，花钱买的是版面。所以矩阵要分两头看：账号数说的是自建能力，稿件数说的是买版面。下面把每个品牌在每个平台的号、条、赞和钱摆在一起。</p>
+
+  <div class="mx"><div class="mxb">
+    <div class="mxh"><b>MitoQ</b><span>97 个号 · 783 条 · 官号账号 3 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">50 号 · 53 条</div>
+        <div class="l">7.3 万 赞 · 均 1378 赞/条</div>
+        <div class="c">创作 6.7–15.4 万<br>投流 11.0–21.9 万</div>
+      </div><div class="mp">
+        <div class="k">抖音</div>
+        <div class="n">46 号 · 580 条</div>
+        <div class="l">16.6 万 赞 · 均 286 赞/条</div>
+        <div class="c">创作 17.3–37.9 万<br>投流 8.3–24.9 万</div>
+      </div><div class="mp media">
+        <div class="k">百度资讯</div>
+        <div class="n">无账号 · 124 篇</div>
+        <div class="c">创作 7.4–14.9 万</div>
+      </div><div class="mp media">
+        <div class="k">今日头条</div>
+        <div class="n">无账号 · 18 篇</div>
+        <div class="c">创作 0.5–0.9 万</div>
+      </div><div class="mp media">
+        <div class="k">新闻源</div>
+        <div class="n">无账号 · 7 篇</div>
+        <div class="c">创作 0.3–0.6 万</div>
+      </div><div class="mp">
+        <div class="k">视频号</div>
+        <div class="n">1 号 · 1 条</div>
+        <div class="l">33 赞 · 均 33 赞/条</div>
+        <div class="c">创作 0.0–0.1 万</div>
+      </div></div>
+    <div class="mxf">内容平台 634 条 · 投入 43.3–100.2 万　|　资讯稿 149 篇 · 8.2–16.4 万</div>
+  </div><div class="mxb">
+    <div class="mxh"><b>LAIFE</b><span>130 个号 · 1139 条 · 官号账号 10 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">62 号 · 66 条</div>
+        <div class="l">4.0 万 赞 · 均 612 赞/条</div>
+        <div class="c">创作 3.1–7.7 万<br>投流 6.1–12.1 万</div>
+      </div><div class="mp">
+        <div class="k">抖音</div>
+        <div class="n">67 号 · 958 条</div>
+        <div class="l">17.3 万 赞 · 均 181 赞/条</div>
+        <div class="c">创作 28.2–61.1 万<br>投流 8.7–26.0 万</div>
+      </div><div class="mp media">
+        <div class="k">百度资讯</div>
+        <div class="n">无账号 · 104 篇</div>
+        <div class="c">创作 6.2–12.5 万</div>
+      </div><div class="mp media">
+        <div class="k">新闻源</div>
+        <div class="n">无账号 · 10 篇</div>
+        <div class="c">创作 0.4–0.9 万</div>
+      </div><div class="mp">
+        <div class="k">视频号</div>
+        <div class="n">1 号 · 1 条</div>
+        <div class="l">9 赞 · 均 9 赞/条</div>
+        <div class="c">创作 0.0–0.1 万</div>
+      </div></div>
+    <div class="mxf">内容平台 1025 条 · 投入 46.0–106.9 万　|　资讯稿 114 篇 · 6.6–13.4 万</div>
+  </div><div class="mxb">
+    <div class="mxh"><b>W+端粒塔</b><span>39 个号 · 234 条 · 官号账号 2 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">24 号 · 64 条</div>
+        <div class="l">6,466 赞 · 均 101 赞/条</div>
+        <div class="c">创作 1.9–5.1 万<br>投流 1.0–1.9 万</div>
+      </div><div class="mp">
+        <div class="k">抖音</div>
+        <div class="n">14 号 · 72 条</div>
+        <div class="l">8,648 赞 · 均 120 赞/条</div>
+        <div class="c">创作 2.5–6.3 万<br>投流 0.4–1.3 万</div>
+      </div><div class="mp media">
+        <div class="k">百度资讯</div>
+        <div class="n">无账号 · 90 篇</div>
+        <div class="c">创作 5.4–10.8 万</div>
+      </div><div class="mp media">
+        <div class="k">新闻源</div>
+        <div class="n">无账号 · 7 篇</div>
+        <div class="c">创作 0.3–0.6 万</div>
+      </div><div class="mp">
+        <div class="k">视频号</div>
+        <div class="n">1 号 · 1 条</div>
+        <div class="l">1 赞 · 均 1 赞/条</div>
+        <div class="c">创作 0.0–0.1 万</div>
+      </div></div>
+    <div class="mxf">内容平台 137 条 · 投入 5.8–14.7 万　|　资讯稿 97 篇 · 5.7–11.4 万</div>
+  </div><div class="mxb">
+    <div class="mxh"><b>COSMOBOUNTY</b><span>23 个号 · 39 条 · 官号账号 0 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">23 号 · 39 条</div>
+        <div class="l">7,078 赞 · 均 181 赞/条</div>
+        <div class="c">创作 1.2–3.1 万<br>投流 1.1–2.1 万</div>
+      </div></div>
+    <div class="mxf">内容平台 39 条 · 投入 2.2–5.2 万　|　没有做资讯稿投放</div>
+  </div><div class="mxb">
+    <div class="mxh"><b>GRANVER</b><span>106 个号 · 273 条 · 官号账号 2 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">48 号 · 54 条</div>
+        <div class="l">5,141 赞 · 均 95 赞/条</div>
+        <div class="c">创作 1.6–4.3 万<br>投流 0.8–1.5 万</div>
+      </div><div class="mp">
+        <div class="k">抖音</div>
+        <div class="n">57 号 · 126 条</div>
+        <div class="l">1,436 赞 · 均 11 赞/条</div>
+        <div class="c">创作 4.9–14.4 万<br>投流 0.1–0.2 万</div>
+      </div><div class="mp media">
+        <div class="k">百度资讯</div>
+        <div class="n">无账号 · 81 篇</div>
+        <div class="c">创作 4.9–9.7 万</div>
+      </div><div class="mp media">
+        <div class="k">今日头条</div>
+        <div class="n">无账号 · 3 篇</div>
+        <div class="c">创作 0.1–0.1 万</div>
+      </div><div class="mp media">
+        <div class="k">新闻源</div>
+        <div class="n">无账号 · 8 篇</div>
+        <div class="c">创作 0.3–0.7 万</div>
+      </div><div class="mp">
+        <div class="k">视频号</div>
+        <div class="n">1 号 · 1 条</div>
+        <div class="l">暂无互动数据</div>
+        <div class="c">创作 0.0–0.1 万</div>
+      </div></div>
+    <div class="mxf">内容平台 181 条 · 投入 7.4–20.5 万　|　资讯稿 92 篇 · 5.3–10.6 万</div>
+  </div><div class="mxb">
+    <div class="mxh"><b>塞乐瑞</b><span>20 个号 · 149 条 · 官号账号 0 个</span></div>
+    <div class="mxp"><div class="mp">
+        <div class="k">小红书</div>
+        <div class="n">10 号 · 29 条</div>
+        <div class="l">120 赞 · 均 4 赞/条</div>
+        <div class="c">创作 0.9–2.3 万</div>
+      </div><div class="mp">
+        <div class="k">抖音</div>
+        <div class="n">10 号 · 27 条</div>
+        <div class="l">368 赞 · 均 14 赞/条</div>
+        <div class="c">创作 1.1–3.2 万<br>投流 0.0–0.1 万</div>
+      </div><div class="mp media">
+        <div class="k">百度资讯</div>
+        <div class="n">无账号 · 86 篇</div>
+        <div class="c">创作 5.2–10.3 万</div>
+      </div><div class="mp media">
+        <div class="k">新闻源</div>
+        <div class="n">无账号 · 7 篇</div>
+        <div class="c">创作 0.3–0.6 万</div>
+      </div></div>
+    <div class="mxf">内容平台 56 条 · 投入 2.0–5.7 万　|　资讯稿 93 篇 · 5.4–10.9 万</div>
+  </div></div>
+
+  <h3>同样的钱，换回来多少赞</h3>
+  <p>成本拆成两块。创作是发一条内容要付的钱，投流是把内容推给人看要付的钱。我们看不到对方的投放后台，投流这块按行业单次互动成本倒推，把自然流量也折算成钱，只看相对效率，不代表他们真的花了这么多。</p>
+
+  <div class="brow cost">
+  <div class="bname">MitoQ</div>
+  <div class="btrack"><div class="bfill" style="width:98.0%;background:#0f766e"></div></div>
+  <div class="bval">3,333<span class="bu">赞/万元 · 每赞 3.0 元</span></div>
+</div><div class="brow cost">
+  <div class="bname">LAIFE</div>
+  <div class="btrack"><div class="bfill" style="width:82.1%;background:#0f766e"></div></div>
+  <div class="bval">2,792<span class="bu">赞/万元 · 每赞 3.58 元</span></div>
+</div><div class="brow cost">
+  <div class="bname">W+端粒塔</div>
+  <div class="btrack"><div class="bfill" style="width:43.4%;background:#0f766e"></div></div>
+  <div class="bval">1,475<span class="bu">赞/万元 · 每赞 6.78 元</span></div>
+</div><div class="brow cost" style="background:#fff7ed;border-color:#fed7aa">
+  <div class="bname">COSMOBOUNTY <span class="own">本牌</span></div>
+  <div class="btrack"><div class="bfill" style="width:55.7%;background:#c2410c"></div></div>
+  <div class="bval">1,894<span class="bu">赞/万元 · 每赞 5.28 元</span></div>
+</div><div class="brow cost">
+  <div class="bname">GRANVER</div>
+  <div class="btrack"><div class="bfill" style="width:13.9%;background:#0f766e"></div></div>
+  <div class="bval">471<span class="bu">赞/万元 · 每赞 21.23 元</span></div>
+</div><div class="brow cost">
+  <div class="bname">塞乐瑞</div>
+  <div class="btrack"><div class="bfill" style="width:3.8%;background:#0f766e"></div></div>
+  <div class="bval">128<span class="bu">赞/万元 · 每赞 78.25 元</span></div>
+</div>
+
+  <p class="sub" style="margin-top:10px">条形只算小红书、抖音、视频号这三个有互动数据的平台。百度资讯、今日头条和新闻源没有点赞字段，把它们混进来算「每赞成本」会让结论失真，所以单独列在上面每张卡的灰格里。</p>
+
+  <div class="note">
+    差距不在预算大小，在花法。塞乐瑞 149 条内容里有 93 条是百度资讯稿，按篇买版面，内容平台上 56 条只换回 488 个赞；GRANVER 也有 92 篇资讯稿，内容平台 181 条拿到 6,577 个赞。这两家把一半的钱压在了买位置上。<br>
+    MitoQ 和 LAIFE 反过来，八成以上花在内容平台。MitoQ 每万元换 3,333 个赞，六个里最高；LAIFE 2,792；我们 1,894，排第三。钱没有白花，问题在总量太小。
+  </div>
+
+  <div class="alert">有一点要说明：塞乐瑞的资讯稿不能算白花。它买的是搜索页上的位置，这个回报用赞量不出来。要衡量它，得看百度搜索结果里品牌词的出现率，那套数据我们还没接。</div>
+</div>
+
+<div class="card">
+  <h2><span class="n">04</span>内容主题：六家各在讲什么</h2>
+  <p>把六家的达人内容按主题打标，用的是同一张关键词表，所以横向能比。一条内容可能同时命中几个主题，所以一行加起来会超过 100%。</p>
+  <table class="heat">
+    <thead><tr><th></th><th>卵巢/女性</th><th>护肝</th><th>熬夜/睡眠</th><th>NAD/细胞能量</th><th>抗衰/逆龄</th><th>男性/补肾</th><th>榜单/SEO</th><th>精力/免疫</th><th>价格</th></tr></thead>
+    <tbody><tr><th class="hname">MitoQ</th><td class="hcell" style="background:#f1f5f9;color:#475569">3</td><td class="hcell" style="background:#3b82f6;color:#fff">49</td><td class="hcell" style="background:#93c5fd;color:#0f172a">36</td><td class="hcell" style="background:#3b82f6;color:#fff">46</td><td class="hcell" style="background:#dbeafe;color:#0f172a">20</td><td class="hcell" style="background:#f1f5f9;color:#475569">2</td><td class="hcell" style="background:#93c5fd;color:#0f172a">32</td><td class="hcell" style="background:#93c5fd;color:#0f172a">25</td><td class="hcell" style="background:#93c5fd;color:#0f172a">27</td></tr><tr><th class="hname">LAIFE</th><td class="hcell" style="background:#dbeafe;color:#0f172a">13</td><td class="hcell" style="background:#dbeafe;color:#0f172a">16</td><td class="hcell" style="background:#dbeafe;color:#0f172a">22</td><td class="hcell" style="background:#93c5fd;color:#0f172a">27</td><td class="hcell" style="background:#93c5fd;color:#0f172a">29</td><td class="hcell" style="background:#f1f5f9;color:#475569">4</td><td class="hcell" style="background:#dbeafe;color:#0f172a">23</td><td class="hcell" style="background:#dbeafe;color:#0f172a">21</td><td class="hcell" style="background:#dbeafe;color:#0f172a">17</td></tr><tr><th class="hname">W+端粒塔</th><td class="hcell" style="background:#f1f5f9;color:#475569">2</td><td class="hcell" style="background:#f1f5f9;color:#475569">2</td><td class="hcell" style="background:#dbeafe;color:#0f172a">18</td><td class="hcell" style="background:#1d4ed8;color:#fff">75</td><td class="hcell" style="background:#3b82f6;color:#fff">60</td><td class="hcell" style="background:#f1f5f9;color:#475569">8</td><td class="hcell" style="background:#93c5fd;color:#0f172a">37</td><td class="hcell" style="background:#dbeafe;color:#0f172a">21</td><td class="hcell" style="background:#93c5fd;color:#0f172a">25</td></tr><tr class="ownrow"><th class="hname">COSMOBOUNTY</th><td class="hcell" style="background:transparent;color:#b6bcc6">—</td><td class="hcell" style="background:transparent;color:#b6bcc6">—</td><td class="hcell" style="background:#3b82f6;color:#fff">64</td><td class="hcell" style="background:#3b82f6;color:#fff">46</td><td class="hcell" style="background:#3b82f6;color:#fff">62</td><td class="hcell" style="background:transparent;color:#b6bcc6">—</td><td class="hcell" style="background:#f1f5f9;color:#475569">8</td><td class="hcell" style="background:#3b82f6;color:#fff">64</td><td class="hcell" style="background:#dbeafe;color:#0f172a">15</td></tr><tr><th class="hname">GRANVER</th><td class="hcell" style="background:#dbeafe;color:#0f172a">10</td><td class="hcell" style="background:#dbeafe;color:#0f172a">18</td><td class="hcell" style="background:#93c5fd;color:#0f172a">36</td><td class="hcell" style="background:#93c5fd;color:#0f172a">32</td><td class="hcell" style="background:#93c5fd;color:#0f172a">32</td><td class="hcell" style="background:#93c5fd;color:#0f172a">27</td><td class="hcell" style="background:#3b82f6;color:#fff">48</td><td class="hcell" style="background:#93c5fd;color:#0f172a">29</td><td class="hcell" style="background:#dbeafe;color:#0f172a">19</td></tr><tr><th class="hname">塞乐瑞</th><td class="hcell" style="background:#f1f5f9;color:#475569">1</td><td class="hcell" style="background:#f1f5f9;color:#475569">1</td><td class="hcell" style="background:#dbeafe;color:#0f172a">23</td><td class="hcell" style="background:#dbeafe;color:#0f172a">23</td><td class="hcell" style="background:#3b82f6;color:#fff">62</td><td class="hcell" style="background:#dbeafe;color:#0f172a">21</td><td class="hcell" style="background:#f1f5f9;color:#475569">9</td><td class="hcell" style="background:#93c5fd;color:#0f172a">27</td><td class="hcell" style="background:#93c5fd;color:#0f172a">26</td></tr></tbody>
+  </table>
+  <p class="sub" style="margin-top:10px">数值是该品牌达人内容里提到这个主题的比例。橙色描边是我方。</p>
+
+  <h3>哪几个位置已经有人坐下了</h3>
+  <table>
+    <thead><tr><th>位置</th><th>占据者</th><th>浓度</th><th>还能不能抢</th></tr></thead>
+    <tbody>
+      <tr><td>护肝</td><td>MitoQ</td><td class="num">49%</td><td>不建议硬碰。它连「智商税」这种质疑都敢写进标题正面回应（那条 6,349 赞），说明这个位置它是有准备的。</td></tr>
+      <tr><td>NAD / 细胞能量</td><td>W+端粒塔</td><td class="num">75%</td><td>不建议。不过它的赞有 49% 来自一条视频，中间层是空的，做「NAD 到底有没有用」这类科普还有截流空间。</td></tr>
+      <tr><td>卵巢 / 女性</td><td>LAIFE</td><td class="num">13%（绝对量最大）</td><td>可以切细分。它主要靠「养雌、AMH、断崖式衰老」这套焦虑叙事，缺「温和、长期」的角度。</td></tr>
+      <tr style="background:#fff7ed"><td><b>熬夜 / 睡眠 + 精力</b></td><td><b>我方</b></td><td class="num">64% / 64%</td><td><b>现在是我们的，而且没人来抢。</b>跟「分时、昼夜节律」天然咬合，这不是偶然。</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2><span class="n">05</span>五家的内容是怎么做的</h2>
+
+  <div class="bcard">
+    <div class="top"><span class="nm">LAIFE 乐梵</span><span class="pos">达人声量第一</span><span class="pos">卵巢标签</span></div>
+    <p class="one">255 条达人内容拿到 20.7 万个赞，均赞 1,465，这个效率六家里没有对手。投放分成两块：小红书做女性生活方式种草，抖音 67 个号铺货，其中 10 个是官号。官号那边 884 条内容只换来 6,888 个赞，均赞 8，光是「红宝瓶3.0胶囊」一个号就发了 516 条直播预告，总共 688 个赞。</p>
+    <div class="weak">风险在选题池。内容高度依赖卵巢焦虑这套说法，断崖式衰老、卵巢早衰、养雌反复出现，平台一旦收紧功效词，能讲的东西会少一大半。官号这边停投就彻底没声音，也没有自然流量兜底。</div>
+  </div>
+
+  <div class="bcard">
+    <div class="top"><span class="nm">MitoQ</span><span class="pos">官号达人双轮</span><span class="pos">护肝 49%</span></div>
+    <p class="one">两条线都有力。达人 13.9 万赞，官号 99,830 个赞，官号均赞 190 在六家里是异类。这些赞几乎全部来自「海外旗舰店」这一个号：206 条品牌叙事，均赞 478。「品牌直播间」那 297 条切片反而是浪费的，一条 4 个赞。护肝这个主题做到了 49%，这个品类现在基本它说了算。</p>
+    <div class="weak">反过来说，护肝太强也压住了别的。它达人内容里抗衰只占 20%，我们这边是 62%。要跟它比抗衰，它其实排不上号。</div>
+  </div>
+
+  <div class="bcard">
+    <div class="top"><span class="nm">W+端粒塔</span><span class="pos">只打 NAD</span><span class="pos">投放最密</span></div>
+    <p class="one">75% 的内容都在讲 NMN/NAD，别的基本不碰。近 90 天发了 143 条，占它全部内容的 61%，是六家里节奏最密的。爆款靠「生理年龄仅 17 岁」这种能拿数字对比的钩子。</p>
+    <div class="weak">问题也在这里。接近一半的赞来自一条视频，中间层几乎没有内容，官号 44 条只拿到 5 个赞。这种结构停投就归零。另外它大量借明星形象做「状态对比」的暗示，版权和虚假关联两头的风险都不低。</div>
+  </div>
+
+  <div class="bcard">
+    <div class="top"><span class="nm">GRANVER</span><span class="pos">搜索位最广</span><span class="pos">声量最弱</span></div>
+    <p class="one">它的内容是一套榜单模板批量铺出来的。48% 的达人内容是「2026 十大品牌」「复购最好的补肾品牌是哪个」这类标题，发在中华网、生物谷、妙手网这些资讯站上。买的是搜索结果的位置，不是用户刷手机的时间。产品线四条各自为战：吉利肝、吉清肺、吉力威（男性线，799 到 1199 元每月）、吉悦巢（卵巢）。</p>
+    <div class="weak">259 条内容只有 6,517 个赞，均赞 39，点进去基本没人看。这个位置守起来不难：同样几个关键词，做带真实体验、有互动的内容，就能在同一个搜索结果页里压过它。</div>
+  </div>
+
+  <div class="bcard">
+    <div class="top"><span class="nm">塞乐瑞 赛乐瑞</span><span class="pos">超高价</span><span class="pos">社媒真空</span></div>
+    <p class="one">基本上不做社媒。149 条内容一共 488 个赞，其中 56 条抓到互动，均赞 9。抖音上没有官方号，27 条全是代理商铺货。对外声音主要来自百度资讯的财经稿，占它内容的 58%，讲的是「3 万一瓶供不应求」这一类。</p>
+    <div class="weak">内容平台上它没有任何防守。一篇「5000 块和 500 块的抗衰差在哪」的横评就能吃掉它的搜索位。百度 AI 摘要也已经给它定过性，说它成分信息少、溢价来自营销。</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="n">06</span>爆款只有五种结构</h2>
+  <p>把六家的 Top 内容放在一起看，能跑到万赞的写法其实只有五种。</p>
+  <div class="tpl">
+    <div class="tcard">
+      <div class="h">女性身体指标 + 情绪价值 <span class="hit">28,774 赞</span></div>
+      <div class="q">「普通女生作弊变美的方法，就是养雌」</div>
+      <div class="w">用 AMH 这种能查证的医学指标立信任，再用「作弊」「藏不住」把人设代入进去。LAIFE 最大的一波量就是这个结构。</div>
+    </div>
+    <div class="tcard">
+      <div class="h">男性场景 + 免责式表达 <span class="hit">24,211 赞</span></div>
+      <div class="q">「男人的快乐，本该毫无顾忌」</div>
+      <div class="w">不明说功效，讲「日常身体照料」，把暗示藏在生活方式里。MitoQ 的奶蓟草靠这条破了圈。</div>
+    </div>
+    <div class="tcard">
+      <div class="h">主动接「智商税」质疑 <span class="hit">6,349 赞</span></div>
+      <div class="q">「护肝片贵几百块就是智商税?别急着下结论」</div>
+      <div class="w">把攻击词直接写进标题，再用科普接住。比躲着质疑的内容可信得多，MitoQ 这一步走得最聪明。</div>
+    </div>
+    <div class="tcard">
+      <div class="h">可量化的检测结果 <span class="hit">7,464 赞</span></div>
+      <div class="q">「生理年龄仅 17 岁，最新抗衰冠军出炉」</div>
+      <div class="w">给用户一个能对比的数字。问「我的生理年龄是多少」，比说「能抗衰」有用十倍。</div>
+    </div>
+    <div class="tcard">
+      <div class="h">周期反馈，有始有终 <span class="hit">17,984 赞</span></div>
+      <div class="q">「时隔半年 AMH 逆转反馈来来啦」</div>
+      <div class="w">半年后回来交作业。这种长周期反馈在抗衰品类里最硬，也最难编。</div>
+    </div>
+    <div class="tcard" style="background:#fff7ed;border-color:#fed7aa">
+      <div class="h">我方已有的底子</div>
+      <div class="q">「留学生高精力 Wellness Routine」「35+ 稳住状态的底层逻辑」</div>
+      <div class="w">这两个都是第一、第五种结构的变体，已经跑出 700 多赞。能力是有的，缺的是把同一套叙事重复一百遍的量。</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2><span class="n">07</span>结论：还空着的位置只有一个</h2>
+  <p>五家的内容都挤在两个维度里。一个是成分，NAD、线粒体、干细胞；一个是器官，肝、卵巢、肺、男性。没有一家在「什么时候吃」上做内容。</p>
+  <p>而「什么时候吃」恰恰是用户真实的困惑。一堆瓶瓶罐罐怎么吃、能不能一起吃、早上吃还是晚上吃，这些问题在评论区和搜索词里反复出现，但没有品牌正面回答。这是拿服用方式做差异，不是拿成分做差异，目前这个位置完全空着。</p>
+  <div class="note">
+    这个位置暂时守得住，原因有三个。它是品类创新，不需要跟 MitoQ 比水飞蓟含量；「早 C 晚 A」已经把分时这个概念教育过一轮，用户理解成本很低；我们自己的内容在熬夜、睡眠、精力上已经占到 64%，六家里唯一明显领先。现在要做的是把它坐实。
+  </div>
+  <div class="alert">但空着不等于占住了。眼下只有 39 条内容在撑这个位置，如果不持续产出，别人换个说法就能拿走。</div>
+</div>
+
+<div class="card">
+  <h2><span class="n">08</span>接下来做什么</h2>
+  <table>
+    <thead><tr><th style="width:26%">动作</th><th>具体做什么</th><th style="width:22%">为什么现在做</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>补供给</b><br><span class="sub">39 → 100 条/月</span></td>
+        <td>不做官号堆量，LAIFE 884 条官号均赞 8 已经试过了，没用。只做达人，按第一、第五种结构批量产出，让每个达人写一篇「30 天分时记录」，有开头有结尾。</td>
+        <td>39 条内容均赞 181 排第三，每万元换 1,894 个赞，比 GRANVER、W+端粒塔、塞乐瑞 都高出一截。效率这块不用怀疑，缺的只是量。</td>
+      </tr>
+      <tr>
+        <td><b>截 GRANVER 的搜索位</b><br><span class="sub">榜单词</span></td>
+        <td>「护肝品牌怎么选」「补肾品牌排行榜」「抗衰品牌十大」这些词它已经占了，用同样的词做带真实体验和互动的内容。</td>
+        <td>它均赞 39，点进去没人看。同一个搜索页里，做得比它好看就是赢。</td>
+      </tr>
+      <tr>
+        <td><b>打塞乐瑞的对比</b><br><span class="sub">价格锚点</span></td>
+        <td>做「5000 块和 500 块的抗衰差在哪」这类横评，把成分透明度和临床数据摆出来比。</td>
+        <td>它均赞 9，抖音没有官号，百度 AI 摘要已经说它溢价来自营销。六个对手里它最没有防守。</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="note">不建议做的事：MitoQ 的护肝（49%）和 W+端粒塔 的 NAD（75%）都不用正面抢。这两个位置争夺成本高，我们也没有成分上的优势。资源集中在分时和节律这一个方向上。</div>
+</div>
+
+<div class="card">
+  <h2><span class="n">09</span>口径与边界</h2>
+  <table>
+    <thead><tr><th style="width:24%">项目</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>样本</td><td>校验通过（<code>verified=1</code>）内容 2,933 条，本报告的声量图只取其中六品牌的达人内容。</td></tr>
+      <tr><td>平台</td><td>小红书、抖音、百度、今日头条、新闻源。抖音包含 2026-10-26 新增的官号矩阵全量，1,467 条。</td></tr>
+      <tr><td>官号 / 达人</td><td>官号指账号实名归属品牌、<code>tags=official</code> 的内容，按「账号归属即品牌归属」单列；其余全部算达人。两者不混算。</td></tr>
+      <tr><td>互动数据</td><td>取平台公开的赞、藏、评、转字段，抓取时点的快照。没有互动字段的内容不参与均赞计算。</td></tr>
+      <tr><td>互动覆盖率</td><td>MitoQ 42% / LAIFE 55% / W+端粒塔 49% / GRANVER 64% / 塞乐瑞 38% / 自有 100%。没覆盖到的多是抓取时页面没渲染出互动数，<b>不等于 0 赞</b>，所以总赞和均赞都是下限。</td></tr>
+      <tr><td>主题打标</td><td>同一张关键词表对六家统一匹配，可以重复跑。占比等于命中条数除以该品牌达人内容数，一条内容可命中多个主题。</td></tr>
+      <tr><td>未校验数据</td><td>723 条（含本次下架 9 条）留在库里但完全隔离，不出现在任何对外出口，也不在这份报告里。</td></tr>
+      <tr><td>投入成本<br><span class="sub">（估算，非实际支出）</span></td><td>创作成本按「平台 × 账号层级」的公开报价中位数累加：小红书素人 300–800 元、腰部 1,500–3,500 元、头部 6,000–12,000 元；抖音素人 400–1,200 元、腰部 2,000–5,000 元、头部 8,000–18,000 元；官号按内部制作 200–400 元/条；资讯稿 600–1,200 元/篇。账号层级用该账号在本库内的单条均赞代理（我们没有粉丝数）。<br>投流按行业单次互动成本倒推：小红书 1.5–3.0 元/赞、抖音 0.5–1.5 元/赞、视频号 0.8–1.8 元/赞。<b>只用来比较各家的投放效率，不是他们真实的账户流水。</b></td></tr>
+    </tbody>
+  </table>
+  <p class="sub" style="margin-top:12px">已知缺口：<code>sentiment</code> 字段全库为空，这份报告没有做正负面判断，所有口碑结论都来自内容原文的人工阅读。部分抖音和小红书内容的互动数是抓取时快照，会随后续增长略有偏差。</p>
+</div>
+
+<div class="card">
+  <h2><span class="n">附录</span>原文链接，可展开核对</h2>
+  <p class="sub" style="margin-bottom:12px">下面是各品牌达人内容按赞数排的 Top 10，全部为校验通过的原文，可以直接点开核对。完整 2,933 条在「逆龄观察」的原始数据页按品牌和平台筛选。</p>
+  <details>
+<summary><b>MitoQ</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">24,211</td><td>douyin</td><td>男人的快乐，本该毫无顾忌 烟火尽兴，自在轻松无负担。不刻意约束喜好，做好日常身体照料，才是成年人长久的松弛与自愈。#MitoQ奶蓟草#男人的快乐 #烧烤 #</td><td><a href="https://www.douyin.com/video/7662939588734843369" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">10,422</td><td>xhs</td><td>人生建议：为了健康和漂亮，一定要早睡</td><td><a href="https://www.xiaohongshu.com/explore/6ab3a40d000000001203b705?xsec_token=ABNRv35eQ3OxKC14k0jbjMWQTrNDXWRXazpX_ZPJlsKBM=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">10,133</td><td>douyin</td><td>35+台湾女艺人私藏变美好物分享 #MitoQ #MitoQ奶蓟草胶囊  #保养</td><td><a href="https://www.douyin.com/video/7634365828960874058" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">6,703</td><td>xhs</td><td>🌟我们大学生：孜孜不倦熬夜，勤勤恳恳养生</td><td><a href="https://www.xiaohongshu.com/explore/684827700000000020028c37?xsec_token=ABg5NUFMaZcnZ3bXP5rMBEyYAZnutLRNmMb-JA_xauVWs=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">6,349</td><td>douyin</td><td>护肝片贵几百块就是智商税?别急着下结论#健康科普  #养生就是养健康  #MitoQ奶蓟草</td><td><a href="https://www.douyin.com/video/7676431490170834226" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">5,816</td><td>douyin</td><td>谁来了都得当牛马！ #脑洞大开#内容过于真实#mitoq奶蓟草胶囊#MitoQ</td><td><a href="https://www.douyin.com/video/7629246964877811446" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">5,127</td><td>douyin</td><td>约着朋友一起喝咖啡吃海鲜自助餐小酌的一天～#生活vlog #生活分享 #喝咖啡 #好物分享#MitoQ奶蓟草</td><td><a href="https://www.douyin.com/video/7678921635177815268" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">4,353</td><td>xhs</td><td>瘦子居然也可能有脂肪肝？4招帮你轻松逆转</td><td><a href="https://www.xiaohongshu.com/explore/6533aed3000000001e028fa5?xsec_token=ABVcZaoMqtPkxrClYu37vUFW7fzMvjNXxKXbMU8FUJ5a4=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">3,190</td><td>xhs</td><td>练臀卡住不一定是训练问题，可能是恢复掉队</td><td><a href="https://www.xiaohongshu.com/explore/69a950d5000000002303b8fe?xsec_token=ABRR9DE6GNqMxVOgc4CE0wiwHrF-g30vLHIJ90pS2ln_A=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">3,184</td><td>xhs</td><td>别被压力困住🔥甩开压力的5件事，亲测有效</td><td><a href="https://www.xiaohongshu.com/explore/642be9d00000000013012530?xsec_token=ABkiUsTSKxB_7w6kIlmiQS4XV1YtfF63Rv303Sj6P5Q-o=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+<details>
+<summary><b>LAIFE</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">28,774</td><td>douyin</td><td>普通女生作弊变美的方法，就是养雌#LAIFE乐梵红宝瓶#变美#保养#女性保养</td><td><a href="https://www.douyin.com/video/7452537277533703458" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">26,580</td><td>douyin</td><td>30+女生忽略保养会怎样？ #laife红宝瓶 #laife乐梵红宝瓶</td><td><a href="https://www.douyin.com/video/7535654783715118355" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">18,187</td><td>douyin</td><td>养小巢一年，由内而外的好状态真的藏不住！#LAIFE红宝瓶 #LAIFE乐梵  #女性保养 #健康  #养生</td><td><a href="https://www.douyin.com/video/7667148032802049323" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">17,984</td><td>douyin</td><td>时隔半年ahm逆转反馈来来啦！真的没必要焦虑#amh#卵巢早衰#科普#LAIFE乐梵红宝瓶</td><td><a href="https://www.douyin.com/video/7511935305969274172" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">16,002</td><td>douyin</td><td>强大的女人需要支撑！#LAIFE红气瓶#LAIFE乐梵</td><td><a href="https://www.douyin.com/video/7670512362164045684" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">11,574</td><td>douyin</td><td>不要去听他们说“女性该怎样”，多问问自己“我想怎样” #女性力量 #LAIFE红宝瓶 #LAIFE乐梵 #她时间她定义</td><td><a href="https://www.douyin.com/video/7550618256919268644" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">8,765</td><td>douyin</td><td>熬夜星人也能尝到情绪稳定的快乐！#LAIFE乐梵红宝瓶#女性成长</td><td><a href="https://www.douyin.com/video/7469684314125421862" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">6,409</td><td>douyin</td><td>52岁退休两年｜掌握主动权，自在生活#退休生活#享受当下#LAIFE乐梵#LAIFE红宝瓶</td><td><a href="https://www.douyin.com/video/7512305085066628361" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">4,648</td><td>douyin</td><td>跑长途经常疲惫、熬夜之后状态差，作为常年开车的人，我也开始重视自身精力管理✨ #自驾旅行 #LAIFE乐悦泰 #LAIFE乐梵 #NMN #精力管理</td><td><a href="https://www.douyin.com/video/7673438572707589608" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">4,516</td><td>xhs</td><td>40岁5点起床发疯｜不会老的女人一天做了什么</td><td><a href="https://www.xiaohongshu.com/explore/684a9c74000000000f03107a?xsec_token=AB__kMoJgHs9J7JIA1JeebHaJMBR010bggcggm9LXDm10=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+<details>
+<summary><b>W+端粒塔</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">7,464</td><td>douyin</td><td>生理年龄仅17岁，最新抗衰冠军出炉！ #W端粒塔 #健康小知识科普 #抗衰老 #抗衰逆龄</td><td><a href="https://www.douyin.com/video/7687138510621717210" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">1,630</td><td>xhs</td><td>全球审美降级？顶级AI建模脸才拿亚军？</td><td><a href="https://www.xiaohongshu.com/explore/6abcb51c0000000018016d33?xsec_token=ABaMDpOwLbFQY_AH08rfWcsoStn7Ha-FyfJnOvVQqGx_8=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">975</td><td>douyin</td><td>nmn十大品牌排行榜 nmn品牌排行榜。#nmn排行榜 #nmn十大品牌排行榜 #nmn品牌 #端粒塔 #排行榜前十</td><td><a href="https://www.douyin.com/video/7146543641350130985" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">517</td><td>xhs</td><td>你敢信？中国北方男性身高已经超过美国！</td><td><a href="https://www.xiaohongshu.com/explore/6abf481100000000010090c0?xsec_token=ABu3L7dY_o0iM1GoRiJDPESbx4hNRWmkp8jcOokp7FYBM=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">512</td><td>xhs</td><td>47岁吴建豪冻龄秘籍，47岁像27岁！</td><td><a href="https://www.xiaohongshu.com/explore/6ac1fa4f000000001c01ed82?xsec_token=ABJeDgF-qiGhM-Oxby3OgECq29Ito0pc7NzMo2fbs2xDA=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">350</td><td>xhs</td><td>49岁郭品超的保质期也太长了！</td><td><a href="https://www.xiaohongshu.com/explore/6ac496cd0000000001008779?xsec_token=AB9oXm41T8Qr3yRaynUoBieCXp1WVlFi3O6P8i2aZ5Bz0=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">307</td><td>xhs</td><td>生理年龄仅17岁，最新抗衰冠军出炉！</td><td><a href="https://www.xiaohongshu.com/explore/6aae36c0000000002601f3ca?xsec_token=ABKecd_-eWA34cYFZcqNiFZsMZHzQ12i2rCy-haFaBcgs=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">296</td><td>xhs</td><td>蔡依林真的够了！你是真的不会老吗？</td><td><a href="https://www.xiaohongshu.com/explore/6ab774b9000000000200da8d?xsec_token=ABPpNg-kAdq3hVa2tlyXY8OQOIbil5FG-6CBpvgPiuB0w=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">265</td><td>xhs</td><td>这就是熟男的魅力吗！49岁言承旭状态封神</td><td><a href="https://www.xiaohongshu.com/explore/6acdf2c5000000001c02f796?xsec_token=ABDSe_lXZcmXCy9YziiDL-gir6YsVpAvK-E1Ib7xrA7jM=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">247</td><td>xhs</td><td>张雪峰每月坚持跑步打卡，为什么还是扛不住</td><td><a href="https://www.xiaohongshu.com/explore/6ad1f98d000000001c02dc8a?xsec_token=ABsMXAJ72sxSkK5FH7sbTaoWyKhBCExTlRzUfyUPRo2cQ=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+<details>
+<summary><b>GRANVER</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">1,124</td><td>douyin</td><td>马斯马斯克为何推翻早年观点，全力看好抗衰？#吉瑞维 #抗衰老 #长寿 #健康</td><td><a href="https://www.douyin.com/video/7660731571854494976" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">813</td><td>xhs</td><td>这老一岁脸老十岁❓精致女性不可以不知道它</td><td><a href="https://www.xiaohongshu.com/explore/685cf9ea000000001c037b50?xsec_token=ABDaeXJKM7vjQyZ2RygKjCwlxNmaeLYmskBDLBk7ynsF0=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">414</td><td>xhs</td><td>内调高端局，辅酶Q10+护肝的组合真的很顶</td><td><a href="https://www.xiaohongshu.com/explore/682e82ca0000000020029e10?xsec_token=ABfuKgikrDGiKUv3HCnQ8nXHrVpB9-jwQ6SgxDhT36I1Q=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">349</td><td>xhs</td><td>不做熬夜“小黄人”！中年姐姐的养肝小心得🌙</td><td><a href="https://www.xiaohongshu.com/explore/6a20e33d000000002202b563?xsec_token=ABOMU3coLTDe-ZgcmqiffkwXyPVqo_M5b4agrq9enNG5k=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">275</td><td>xhs</td><td>35宝妈无医美｜吃到了内调养肝带来保养红利</td><td><a href="https://www.xiaohongshu.com/explore/6729d8d6000000001b02d464?xsec_token=ABMmJ1BiRbrkYt8KjjngBT1m8yOWmWrjM74EvUhqxMbiE=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">235</td><td>xhs</td><td>产后恢复别努力错方向！卵巢保养才是关键！</td><td><a href="https://www.xiaohongshu.com/explore/683027a4000000002202f2f9?xsec_token=ABdwzkR7s2bpQZ5HJvnY2tQBm6wcIpwIehXdfGVuYbzck=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">181</td><td>xhs</td><td>30+女生必看，内服带你弯道超车</td><td><a href="https://www.xiaohongshu.com/explore/67fb7e58000000000e0045df?xsec_token=ABHBqTxzmGmaB3oU3PUWJp_C7HpxWrmpFYUymDxtCkJG8=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">164</td><td>xhs</td><td>从加班到升职姐，就靠这个睡眠神器</td><td><a href="https://www.xiaohongshu.com/explore/691d4950000000000d03b010?xsec_token=ABcYVgK_FRvd9iTqfy-kBCZEaXZWhIy8BlEL7Vv7bEMSo=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">154</td><td>xhs</td><td>久违的轻松！姨妈终于听话了！🍹</td><td><a href="https://www.xiaohongshu.com/explore/691ac7e7000000000700f8bc?xsec_token=ABs9fYMje8krfeJpfNqaf_Qvji5HARsPTIKJsPwt3VA9Q=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">135</td><td>xhs</td><td>高能量打工人都在偷偷吃的续命神器</td><td><a href="https://www.xiaohongshu.com/explore/6a04227f0000000007013040?xsec_token=ABRhtacHNbxJRo8xmWVKviMYbU9rlUWEtHUOfCd97jIcI=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+<details>
+<summary><b>塞乐瑞</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">131</td><td>douyin</td><td>日产赛乐瑞，高端保健品，高价背后藏着哪些秘密？ 作为高端保健品的日产品牌赛乐瑞，是人类的福音，还是消费陷阱？#赛乐瑞 #保健品 #养生 #富裕家庭 #秘密 </td><td><a href="https://www.douyin.com/video/7350932231436700955" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">58</td><td>douyin</td><td>#创作灵感 赛乐瑞</td><td><a href="https://www.douyin.com/video/7371819498124446976" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">36</td><td>douyin</td><td>Cellerator赛乐瑞莱复隆 STEMAX复始源力干细胞胶囊日本原装进口#图文星图计划#好物推荐分享 #健康调理</td><td><a href="https://www.douyin.com/video/7615183696316933105" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">28</td><td>douyin</td><td>活力再现，男性雄风重燃！赛乐瑞Cellerator精倍莱与您共赴人生之巅#精倍莱 #赛乐瑞精倍莱 #CELLERATOR精倍莱 #cellerator #赛</td><td><a href="https://www.douyin.com/video/7307186572334583090" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">25</td><td>douyin</td><td>男性生育力下降成难题！赛乐瑞精倍莱专为男性研发，提供全维呵护#精倍莱 #赛乐瑞精倍莱 #CELLERATOR精倍莱 #cellerator #赛乐瑞MAX</td><td><a href="https://www.douyin.com/video/7289370233691819321" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">21</td><td>douyin</td><td>赛乐瑞真能像介绍的这么神奇吗，刚到货，期待体验效果</td><td><a href="https://www.douyin.com/video/7178456968271564047" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">19</td><td>xhs</td><td>细胞抗衰，从赛乐瑞PRO开始</td><td><a href="https://www.xiaohongshu.com/explore/637c30c2000000000e038146?xsec_token=ABs0DD6woV77MtHEDAbG0u7Fp51M7aEEtC7MAyaLlO4lY=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">17</td><td>xhs</td><td>赛赢时光，乐享新生|赛乐瑞正式入驻</td><td><a href="https://www.xiaohongshu.com/explore/6375a32b0000000022038ff3?xsec_token=ABvBl37Rtyxk46S_agM_386-bmgS43z6tj4ZW6R6FhEzU=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">15</td><td>douyin</td><td>赛乐瑞Super-K真的有用？科研配方，为健康护航#抗衰老# #赛乐瑞#赛乐瑞super-k#</td><td><a href="https://www.douyin.com/video/7225881413311106336" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">13</td><td>douyin</td><td>精倍莱MEN’S PREMIUM：男士殿堂级高奢品，六维靶向根源抗衰#精倍莱 #赛乐瑞精倍莱 #CELLERATOR精倍莱 #cellerator #赛乐瑞</td><td><a href="https://www.douyin.com/video/7355393118411279631" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+<details>
+<summary><b>COSMOBOUNTY</b> · Top 10 达人内容<span class="sumb">（按赞数）</span></summary>
+<table class="apx"><thead><tr><th>#</th><th>赞</th><th>平台</th><th>标题</th><th>链接</th></tr></thead><tbody><tr><td class="num">1</td><td class="num">706</td><td>xhs</td><td>留学生高精力Wellness Routine大公开</td><td><a href="https://www.xiaohongshu.com/explore/6ac8c77c0000000018011d05?xsec_token=ABAReBy9gxxqSkl3Oe8u30ORcma8DmVdh1JMflxAfSlNI=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">2</td><td class="num">703</td><td>xhs</td><td>回国后还在坚持的biohacking</td><td><a href="https://www.xiaohongshu.com/explore/6aca0d780000000018015d9f?xsec_token=AB-2KW7hI3q174B76sgPMpDH_szzGs_lFg7QzlmkM15Fk=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">3</td><td class="num">559</td><td>xhs</td><td>下午断电深夜清醒｜30+的高阶内调是顺应节律</td><td><a href="https://www.xiaohongshu.com/explore/6abb5b83000000001501592b?xsec_token=ABs86i4ZTqd0xRGz2nVWlLxqY21AwUdGo-_qn8aJHIwpc=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">4</td><td class="num">547</td><td>xhs</td><td>35+稳住状态的底层逻辑：白天充能，晚上修复</td><td><a href="https://www.xiaohongshu.com/explore/6acf40aa00000000150068e6?xsec_token=ABu1IDv2EVBeJRgjpvAA4aQeKalDKgxOVbwwLHryG8X4s=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">5</td><td class="num">505</td><td>xhs</td><td>乱吃了三年补剂，最后停在&quot;分时&quot;这件事上</td><td><a href="https://www.xiaohongshu.com/explore/6ad0ed3a0000000018028d3f?xsec_token=ABXCD22I1d8ckoAYjXuWZDLRvECdnC_xD5_mDNHepidNU=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">6</td><td class="num">443</td><td>xhs</td><td>35+职场女性｜别让社会时差悄悄消耗你的状态</td><td><a href="https://www.xiaohongshu.com/explore/6abd15550000000014003056?xsec_token=ABEgpstHcUFuqucRR7zu3CtMVQE8qsQN_l5FJtc49RGOU=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">7</td><td class="num">372</td><td>xhs</td><td>睡 8 小时还是累？问题可能不在睡觉💤</td><td><a href="https://www.xiaohongshu.com/explore/6abcfdc9000000000a0258e9?xsec_token=ABaMDpOwLbFQY_AH08rfWcsjLknjDP_mdQpo8O1I6Rc3I=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">8</td><td class="num">367</td><td>xhs</td><td>30+宝妈K衰🌙原来K衰要跟着细胞作息走</td><td><a href="https://www.xiaohongshu.com/explore/6abb4f350000000018004829?xsec_token=ABs86i4ZTqd0xRGz2nVWlLxtTA9T-77FAJT4Ml_53oFZk=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">9</td><td class="num">346</td><td>xhs</td><td>奔四又如何，我的状态已经赢了</td><td><a href="https://www.xiaohongshu.com/explore/6ad863d100000000310382bb?xsec_token=AB-8kisjjr8DzMCN-jSKkXJbiRyh6IojdkiMmn_XmBatM=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr><tr><td class="num">10</td><td class="num">343</td><td>xhs</td><td>睡够8小时还累？31岁打工人的精力“时差”困局</td><td><a href="https://www.xiaohongshu.com/explore/6aca16d0000000000200c441?xsec_token=AB-2KW7hI3q174B76sgPMpDEBqIZB4z5Bb_voXneiKUV4=&xsec_source=pc_search" target="_blank" rel="noopener">原文 ↗</a></td></tr></tbody></table>
+</details>
+</div>
+
+<footer>
+  CosmoBounty 竞品分析 v1 · 2026-10-26 · 数据源 db/cosmobounty.db（verified=1）<br>
+  六品牌同一口径、同一套关键词、同一时间窗。不偏帮任何一方，包括自有品牌。
+</footer>
+</div>
+
+</body>
+</html>

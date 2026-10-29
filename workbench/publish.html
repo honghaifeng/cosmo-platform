@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>发布管理 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .flow{display:flex;align-items:stretch;gap:0;border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--card)}
+  .flow .n{flex:1;padding:14px 15px;border-right:1px solid var(--rule);position:relative}
+  .flow .n:last-child{border-right:none}
+  .flow .n .i{font-family:var(--mono);font-size:10.5px;color:var(--ink-4)}
+  .flow .n .t{font-size:13px;font-weight:600;margin-top:4px}
+  .flow .n .d{font-size:11.5px;color:var(--ink-3);margin-top:5px;line-height:1.55}
+  .flow .n.on{background:var(--seal-bg)}
+  .pubrow{display:grid;grid-template-columns:1fr 96px 88px 76px 62px;gap:12px;padding:11px 15px;border-bottom:1px solid var(--rule);align-items:center;font-size:12.5px}
+  .pubrow:hover{background:#eef1f6}
+  .pubrow:last-child{border-bottom:none}
+  .pubrow .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pubrow .au{font-size:11px;color:var(--ink-3);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body">
+
+      <div class="page-hd">
+        <div class="grow">
+          <div class="eyebrow">作业 · 发布</div>
+          <h1>先出发布包，别急着接 API</h1>
+          <p class="lead" style="margin-top:9px">
+            阶段一不自动直发：生成发布包（标题 / 正文 / 话题 / 图片路径 / 自查清单），人工粘贴到平台。
+            这不是能力不足，是刻意的——批量直发会触发风控，而且发出去的内容一旦有问题，撤回的成本远高于人工发的麻烦。
+          </p>
+        </div>
+        <div><select id="bsel" style="font:inherit;font-size:12.5px;padding:5px 10px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card)"></select></div>
+      </div>
+
+      <div class="flow" style="margin-bottom:20px">
+        <div class="n on"><div class="i">01</div><div class="t">创作</div><div class="d">选题 → 提示词 → 合规检查</div></div>
+        <div class="n"><div class="i">02</div><div class="t">审核</div><div class="d">人工过一遍事实与红线</div></div>
+        <div class="n on"><div class="i">03</div><div class="t">发布包</div><div class="d">打包成可直接粘贴的文件</div></div>
+        <div class="n"><div class="i">04</div><div class="t">人工发布</div><div class="d">贴到平台，记时间与链接</div></div>
+        <div class="n"><div class="i">05</div><div class="t">回采</div><div class="d">次日自动采回，进互动时间序列</div></div>
+        <div class="n"><div class="i">06</div><div class="t">复盘</div><div class="d">和自己、和对手的同类内容比</div></div>
+      </div>
+
+      <div class="g23" style="margin-bottom:20px">
+        <div class="sheet">
+          <div class="hd"><h2>发布队列</h2><div class="spacer"></div><span class="tag" id="cnt"></span></div>
+          <div class="bd flush" id="queue"></div>
+          <div class="bd" style="border-top:1px solid var(--rule);padding:11px 15px">
+            <span class="tiny">「下载发布包」会生成 Markdown，含正文、话题建议、发布前自查清单、发布后要回填的数据位。</span>
+          </div>
+        </div>
+
+        <div class="sheet">
+          <div class="hd"><h2>为什么不直发</h2></div>
+          <div class="bd" style="display:flex;flex-direction:column;gap:11px">
+            <div class="note seal"><b>风控。</b>批量自动发布会触发平台保护，账号一被打标，后面连正常采集都受影响。</div>
+            <div class="note"><b>留痕。</b>人工发的每条都有时间、账号、链接，出了问题能说清是谁在什么时候发的什么。</div>
+            <div class="note"><b>闭环还没建好。</b>自动发布要配上「发布后自动回采 + 数据回流」，否则发出去就断了。这个闭环建好再谈直发。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <div class="hd"><h2>已发布归档</h2><div class="spacer"></div><span class="tag ok">本月 5 条</span></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th>内容</th><th>平台</th><th>账号</th><th class="num">24h 赞</th><th class="num">7 天赞</th><th>链接</th></tr></thead>
+          <tbody id="archive"></tbody>
+        </table></div>
+        <div class="bd" style="border-top:1px solid var(--rule);padding:11px 15px">
+          <span class="tiny">24h / 7 天两列现在是空的——因为我们还没有互动数时间序列。
+          发布后次日由采集任务回采一次、第 7 天再采一次，这两列才能填上。这也是「30 天点赞破千」这个爆文口径的前提。</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+const KEY = new URLSearchParams(location.search).get("brand") || "COSMOBOUNTY";
+renderRail("publish", KEY);
+topbar(`<b>作业</b> <span class="sep">/</span> 发布管理 <span class="sep">/</span> <b>${esc((BRANDS.find(b=>b.key===KEY)||{}).cn||KEY)}</b>`, "阶段一：发布包 + 人工");
+
+const sel = document.getElementById("bsel");
+sel.innerHTML = BRANDS.map(b=>`<option value="${b.key}" ${KEY===b.key?"selected":""}>${esc(b.cn)}</option>`).join("");
+sel.addEventListener("change",e=>{ location.href=`publish.html?brand=${encodeURIComponent(e.target.value)}`; });
+
+const Q = {
+  COSMOBOUNTY:[
+    ["黑白分时·为什么要把日用和夜用分开","小红书","小红书-科诗博缇","待发"],
+    ["夜修瓶场景种草：加班到 11 点之后","小红书","小红书-科诗博缇","待发"],
+    ["成分对比：MitoQ 奶蓟草 vs 我们的配方","小红书","小红书-科诗博缇","待审"],
+  ],
+  LAIFE:[["红宝瓶 4.0 上市预热","抖音","LAIFE乐梵4.0反重力"],["乐轻肝人群对号","小红书","乐梵官方"]],
+  MitoQ:[["奶蓟草护肝三大误区","小红书","MitoQ官方"],["心血管线科普","小红书","MitoQ官方"]],
+  GRANVER:[["吉清肺成分拆解","小红书","GRANVER官方"]],
+  "塞乐瑞":[["干细胞概念科普（先立概念）","小红书","待定"]],
+  "W+端粒塔":[["NMN 25000 剂量说明","小红书","待定"]],
+};
+const rows = Q[KEY] || [];
+document.getElementById("cnt").textContent = `${rows.length} 条`;
+document.getElementById("queue").innerHTML = rows.map(([t,p,a,s],i)=>`
+  <div class="pubrow">
+    <div style="min-width:0"><div class="tt">${esc(t)}</div><div class="au">${esc(a)}</div></div>
+    <div class="tiny">${esc((PLAT_META[p]||{}).name||p)}</div>
+    <div><span class="tag ${s==="待发"?"ok":"warn"}">${s}</span></div>
+    <div class="tiny" style="color:var(--ink-3)">—</div>
+    <div style="text-align:right"><button class="btn" style="padding:3px 8px;font-size:11px" data-dl="${i}">发布包</button></div>
+  </div>`).join("") || `<div style="padding:18px" class="tiny">该品牌暂无待发内容</div>`;
+
+document.querySelectorAll("[data-dl]").forEach(b=>b.onclick=()=>{
+  const [t,p,a] = rows[+b.dataset.dl];
+  const brand = (BRANDS.find(x=>x.key===KEY)||{}).cn || KEY;
+  const md = `# 发布包 · ${brand}\n\n- 标题：${t}\n- 平台：${(PLAT_META[p]||{}).name||p}\n- 账号：${a}\n- 生成时间：${new Date().toLocaleString("zh-CN")}\n\n## 正文\n\n（从创作中心复制进来）\n\n## 发布前自查\n\n- [ ] 已过 6 类红线检查\n- [ ] 成分/含量与产品页一致\n- [ ] 配图用官方实拍，未 AI 重绘\n- [ ] 未贬低同行\n\n## 发布后回填\n\n- 实际发布时间：\n- 链接：\n- 24h 赞/藏/评：\n- 7 天 赞/藏/评：\n`;
+  const blob = new Blob([md],{type:"text/markdown;charset=utf-8"});
+  const a2 = document.createElement("a");
+  a2.href = URL.createObjectURL(blob);
+  a2.download = `发布包_${brand}_${t.slice(0,12)}.md`;
+  a2.click(); setTimeout(()=>URL.revokeObjectURL(a2.href),3000);
+});
+
+document.getElementById("archive").innerHTML = [
+  ["黑白分时·白天到底在补什么","小红书","小红书-科诗博缇"],
+  ["熬夜党的一天：早上 9 点和晚上 11 点该吃什么","小红书","小红书-科诗博缇"],
+  ["为什么抗衰要分时——一个很朴素的道理","小红书","小红书-科诗博缇"],
+  ["日活瓶和夜修瓶，能不能只吃一个","小红书","小红书-科诗博缇"],
+  ["分时抗衰的三个常见误解","小红书","小红书-科诗博缇"],
+].map(([t,p,a])=>`<tr><td class="tiny">${esc(t)}</td><td>${esc((PLAT_META[p]||{}).name||p)}</td>
+  <td class="tiny">${esc(a)}</td><td class="num muted">—</td><td class="num muted">—</td>
+  <td><span class="tag void">待回采</span></td></tr>`).join("");
+</script>
+</body>
+</html>

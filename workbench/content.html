@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>内容详情 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .cw{display:grid;grid-template-columns:minmax(0,1fr) 306px;gap:20px;align-items:start}
+  @media(max-width:1120px){.cw{grid-template-columns:1fr}}
+
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:3px}
+  .card .chd{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid var(--rule);
+    background:var(--paper-2)}
+  .card .chd h2{font-size:13px;font-weight:600;letter-spacing:.01em}
+  .card .chd .spacer{flex:1}
+  .card .cbd{padding:18px 20px}
+
+  /* 标题区 */
+  .dhead{padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:18px}
+  .dhead .ptags{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .dhead h1{font-family:var(--serif);font-size:25px;line-height:1.35;font-weight:600;letter-spacing:.01em;
+    max-width:30em;word-break:break-word}
+  .dhead .meta{margin-top:11px;display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
+  .dhead .meta b{color:var(--ink-2);font-weight:500}
+
+  /* 原文 */
+  .fulltext{font-size:14.8px;line-height:1.95;white-space:pre-wrap;word-break:break-word;color:var(--ink-2);
+    max-width:66ch}
+  .fulltext.empty{color:var(--ink-4);font-style:normal}
+
+  /* 媒体 */
+  .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
+  .gal a{display:block;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--paper-2);
+    aspect-ratio:3/4}
+  .gal img{width:100%;height:100%;object-fit:cover;display:block}
+  .vid{width:100%;max-height:520px;background:#000;border-radius:2px;display:block}
+  .medi-note{font-size:11.5px;color:var(--ink-3);line-height:1.75;margin-top:10px;
+    padding-top:9px;border-top:1px dotted var(--rule-2)}
+  .medi-note b{color:var(--warn);font-weight:600}
+
+  /* 评论 */
+  .cm{border-bottom:1px solid var(--rule);padding:10px 0}
+  .cm:last-child{border-bottom:none}
+  .cm .t{font-size:13px;line-height:1.72;color:var(--ink-2);word-break:break-word}
+  .cm .f{display:flex;gap:12px;margin-top:5px;font-size:11px;color:var(--ink-4);
+    font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .cm .f .hi{color:var(--seal)}
+
+  /* 右栏证据 */
+  .ev{width:100%;border-collapse:collapse;font-size:12.5px}
+  .ev th{text-align:left;font-weight:500;color:var(--ink-3);padding:7px 0;width:76px;
+    vertical-align:top;white-space:nowrap}
+  .ev td{padding:7px 0;color:var(--ink-2);word-break:break-word;
+    font-family:var(--mono);font-size:12px}
+  .ev tr+tr th,.ev tr+tr td{border-top:1px dotted var(--rule)}
+
+  .acts{display:flex;flex-direction:column;gap:8px}
+  .acts .btn{justify-content:center;text-align:center}
+  .acts .btn.solid{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .acts .btn.solid:hover{background:#000}
+
+  /* 同作者列表 */
+  .mrow{display:grid;grid-template-columns:40px 1fr 56px 74px;gap:10px;align-items:center;
+    padding:8px 16px;border-bottom:1px solid var(--rule);font-size:12.5px}
+  .mrow:last-child{border-bottom:none}
+  .mrow:hover{background:#eef1f6}
+  .mrow .mth{width:40px;height:40px;border:1px solid var(--rule);border-radius:2px;overflow:hidden;
+    background:var(--paper-2);display:flex;align-items:center;justify-content:center;
+    font-size:9px;color:var(--ink-4);text-align:center;line-height:1.2}
+  .mrow .mth img{width:100%;height:100%;object-fit:cover;display:block}
+  .mrow .mt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2)}
+  .mrow .ml{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+  .mrow .md{font-family:var(--mono);font-size:11px;color:var(--ink-4);text-align:right}
+
+  .pager{display:flex;gap:8px;margin-top:14px}
+  .pager a{flex:1;padding:10px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);
+    font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pager a:hover{border-color:var(--rule-2);background:var(--paper-2)}
+  .pager a span{display:block;font-size:10.5px;color:var(--ink-4);margin-bottom:2px}
+  .pager a.off{opacity:.4;pointer-events:none}
+
+  /* 水平定位小卡 */
+  .rank{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .rank .rk{font-size:10.5px;color:var(--ink-4);margin-bottom:3px}
+  .rank .rv{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--ink);line-height:1.15;
+    font-variant-numeric:tabular-nums}
+  .rank .rv span{font-size:11px;color:var(--ink-4);font-weight:400}
+  .rank .rx{font-size:10.5px;color:var(--ink-4);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body" id="root"></div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+/* 只加载当前品牌的明细文件（详情 + 清单），避免拉全部品牌 5MB；加载完再渲染 */
+(function () {
+  var b = new URLSearchParams(location.search).get("brand") || "MitoQ";
+  var s = slugOf(b);
+  var files = ["/api/wb/detail.js?brand=" + s, "/api/wb/list.js?brand=" + s];
+  var left = files.length;
+  function done() { if (--left <= 0) window.__bootContent && window.__bootContent(); }
+  files.forEach(function (f) {
+    var el = document.createElement("script");
+    el.src = f;
+    el.onload = done;
+    el.onerror = done;
+    document.head.appendChild(el);
+  });
+})();
+</script>
+<script>
+const Q = new URLSearchParams(location.search);
+const BRAND = Q.get("brand") || "MitoQ";
+const ID = String(Q.get("id") || "");
+
+/* 回列表时带上来源处的筛选条件（时间/平台/互动/账号），别让人点回来发现筛选被清空 */
+const BACK_QS = (function () {
+  const store = {
+    get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch (e) {} }
+  };
+  try {
+    const u = new URL(document.referrer);
+    if (/brand\.html$/.test(u.pathname) && u.search) {
+      store.set("wb_lib_back", u.search);
+      return u.search;
+    }
+  } catch (e) {}
+  const cached = store.get("wb_lib_back");
+  return cached || ("?brand=" + encodeURIComponent(BRAND) + "&tab=library");
+})();
+const LIB_HREF = "brand.html" + BACK_QS;
+const isCat = BRAND === "__category";
+const CN = isCat ? "赛道参照系" : brandCn(BRAND);
+
+var DETAILS = {}, LIST = [], d = null;
+
+function nl2br(s) { return esc(s || "").replace(/\n{2,}/g, "\n\n"); }
+
+function bootContent() {
+  if (window.__contentBooted) return;
+  window.__contentBooted = true;
+  DETAILS = brandDetail(BRAND) || {};
+  LIST = brandList(BRAND) || [];
+  d = DETAILS[ID] || null;
+
+renderRail("library", BRAND);
+topbar(
+  `<a href="index.html">总盘</a> <span class="muted">›</span>
+   ${isCat ? `<a href="brand.html?brand=__category">${CN}</a>` :
+     `<a href="brand.html?brand=${encodeURIComponent(BRAND)}">${esc(CN)}</a>`}
+   <span class="muted">›</span>
+   <a href="${LIB_HREF}">内容库</a>
+   <span class="muted">›</span> <span class="muted">#${esc(ID)}</span>`,
+  d && d.off ? "官号发布" : "达人内容"
+);
+
+function notFound() {
+  document.getElementById("root").innerHTML = `
+    <div class="sheet" style="margin-top:20px">
+      <div class="hd"><h2>找不到这条内容</h2></div>
+      <div class="bd">
+        <p class="tiny" style="line-height:1.9">编号 <code>${esc(ID)}</code> 不在 ${esc(CN)} 的已验讫内容里。
+        可能原因：① 该内容未通过校验（未过 verified 门的内容不对外展示）；② 链接参数有误。</p>
+        <p style="margin-top:14px"><a class="btn" href="${LIB_HREF}">回到内容库</a></p>
+      </div>
+    </div>`;
+}
+
+if (!d) {
+  notFound();
+} else {
+  const m = d.m || {};
+  const loc = d.loc || [];
+  const vids = loc.filter(x => x[1] === "v");
+  const imgs = loc.filter(x => x[1] === "i");
+  const cover = imgs.find(x => /\/cover\//.test(x[0])) || null;
+  const galImgs = imgs.filter(x => !/\/cover\//.test(x[0]));
+  const pm = PLAT_META[d.p] || { name: d.pc || d.p, kind: "" };
+  const hasLocal = loc.length > 0;
+  const cdnImgs = (d.cdn || []).filter(u => !/\.m4s|video/i.test(u));
+  const cdnVid = (d.cdn || []).filter(u => /\.m4s|video/i.test(u));
+
+  /* 上下条：按赞降序在清单里定位 */
+  const order = [...LIST].sort((a, b) => b[4] - a[4]);
+  const at = order.findIndex(x => String(x[0]) === ID);
+  const prev = at > 0 ? order[at - 1] : null;
+  const next = at >= 0 && at < order.length - 1 ? order[at + 1] : null;
+
+  /* 这条内容在本品牌里的位置：排名、均赞倍数、同平台同量级的参照 */
+  function rankBlock() {
+    const n = LIST.length;
+    if (!n || at < 0) return "";
+    const likes = (LIST.find(x => String(x[0]) === ID) || [])[4] || 0;
+    const avg = n ? Math.round(LIST.reduce((s, x) => s + (x[4] || 0), 0) / n) : 0;
+    const better = LIST.filter(x => (x[4] || 0) < likes).length;
+    const pctl = Math.round(better / n * 100);
+    const samePlat = LIST.filter(x => x[2] === d.p);
+    const platAvg = samePlat.length ? Math.round(samePlat.reduce((s, x) => s + (x[4] || 0), 0) / samePlat.length) : 0;
+    const ratio = avg ? (likes / avg).toFixed(1) : "—";
+    const sameAcc = LIST.filter(x => x[3] === d.a);
+    const accAvg = sameAcc.length ? Math.round(sameAcc.reduce((s, x) => s + (x[4] || 0), 0) / sameAcc.length) : 0;
+    return `<div class="card" style="margin-top:14px">
+      <div class="chd"><h2>这条是什么水平</h2><div class="spacer"></div>
+        <span class="tag">第 ${at + 1} / ${n}</span></div>
+      <div class="cbd" style="padding:14px 16px">
+        <div class="rank">
+          <div><div class="rk">本品牌排名</div><div class="rv">#${at + 1}<span> / ${n}</span></div>
+            <div class="rx">按点赞降序</div></div>
+          <div><div class="rk">超过同品牌内容</div><div class="rv">${pctl}<span>%</span></div>
+            <div class="rx">${better} 条比它低</div></div>
+          <div><div class="rk">相对本品牌均赞</div><div class="rv">${ratio}<span>×</span></div>
+            <div class="rx">均赞 ${avg}</div></div>
+        </div>
+        <table class="ev" style="margin-top:12px">
+          <tr><th>同平台均赞</th><td>${platAvg} <span class="muted">（${esc(pm.name)} ${samePlat.length} 条）</span></td></tr>
+          <tr><th>同账号均赞</th><td>${accAvg} <span class="muted">（${esc(d.a) || "—"} ${sameAcc.length} 条）</span></td></tr>
+          <tr><th>是否爆文</th><td>${likes >= 1000 ? "是（≥1000 赞）" : "否"}</td></tr>
+        </table>
+      </div></div>`;
+  }
+
+  /* 同作者其他内容：看一个人到底怎么发（比看一条更能判断打法） */
+  function sameAuthorBlock() {
+    if (!d.a) return "";
+    const all = LIST.filter(x => x[3] === d.a && String(x[0]) !== ID);
+    if (!all.length) return "";
+    const rows = all.slice(0, 8).map(x => {
+      const [id, t, p, a, l, dt, o, mk, , cov] = x;
+      const ph = cov ? `<img src="${mediaPath(cov)}" alt="" loading="lazy">`
+                     : (mk === 2 ? "视频" : (mk === 1 ? "图片" : "—"));
+      return `<a class="mrow" href="${contentHref(BRAND, id)}">
+        <span class="mth">${ph}</span>
+        <span class="mt">${o ? '<span class="tag" style="font-size:9.5px;margin-right:5px">官号</span>' : ""}${esc(t)}</span>
+        <span class="ml">${fmt(l)}</span>
+        <span class="md">${esc(dt)}</span>
+      </a>`;
+    }).join("");
+    return `<div class="card" style="margin-top:16px">
+      <div class="chd"><h2>同一账号的其他内容</h2><div class="spacer"></div>
+        <span class="tag">该账号在本库共 ${all.length + 1} 条</span></div>
+      <div class="cbd" style="padding:0">${rows}</div></div>`;
+  }
+
+  const mediaBlock = () => {
+    if (!hasLocal && !cdnImgs.length && !cdnVid.length) {
+      return `<div class="card"><div class="chd"><h2>素材</h2><div class="spacer"></div>
+        <span class="tag void">无</span></div>
+        <div class="cbd"><div class="empty-state" style="padding:6px 0">
+          <div class="tiny">这条内容没有可用的图片或视频素材（采集时未取到直链，或媒体文件未归档）。<br>
+          原文链接仍在右侧，可直接打开原页面查看。</div></div></div></div>`;
+    }
+    let h = `<div class="card"><div class="chd"><h2>素材</h2><div class="spacer"></div>
+      <span class="tag">${hasLocal ? "本地归档" : "原始直链"}</span></div><div class="cbd">`;
+
+    if (vids.length) {
+      h += `<video class="vid" controls preload="metadata"
+        ${cover ? `poster="${mediaPath(cover[0])}"` : ""}
+        src="${mediaPath(vids[0][0])}"></video>`;
+      if (vids.length > 1) {
+        h += `<div class="tiny" style="margin-top:8px">另有 ${vids.length - 1} 个视频文件同属这条内容</div>`;
+      }
+    } else if (cdnVid.length) {
+      h += `<video class="vid" controls preload="metadata" src="${esc(cdnVid[0])}"></video>
+        <div class="medi-note"><b>注意：</b>这是采集时抓到的原始直链，抖音/小红书的视频地址通常 24 小时内失效，
+        播放失败属正常现象——需要本地归档版本请重跑该条的内容下载。</div>`;
+    }
+
+    if (galImgs.length) {
+      h += `<div class="gal" style="${vids.length || cdnVid.length ? "margin-top:14px" : ""}">
+        ${galImgs.map(x => `<a href="${mediaPath(x[0])}" target="_blank" rel="noopener">
+          <img src="${mediaPath(x[0])}" alt="内容配图" loading="lazy"></a>`).join("")}</div>`;
+    } else if (!hasLocal && cdnImgs.length) {
+      h += `<div class="gal">${cdnImgs.slice(0, 8).map(u =>
+        `<a href="${esc(u)}" target="_blank" rel="noopener"><img src="${esc(u)}" alt="内容配图" loading="lazy"></a>`).join("")}</div>
+        <div class="medi-note"><b>注意：</b>以上是原始 CDN 直链（小红书图片约 24 小时过期），显示不出来说明已失效。</div>`;
+    }
+
+    if (hasLocal) {
+      h += `<div class="medi-note">本地已归档 ${vids.length} 个视频、${imgs.length} 张图片，
+        可离线还原这条内容（路径 <code>knowledge/media/${esc((loc[0] || [""])[0].split("/")[0])}/</code>）。</div>`;
+    }
+    return h + `</div></div>`;
+  };
+
+  const commentBlock = () => {
+    const cm = d.cm || [];
+    if (!cm.length) {
+      return `<div class="card" style="margin-top:16px"><div class="chd"><h2>评论区</h2><div class="spacer"></div>
+        <span class="tag void">未采集</span></div>
+        <div class="cbd"><div class="tiny">这条内容的评论未采集入库（评论为逐条打开笔记页抓取，覆盖不全）。
+        全库现有 1,918 条评论，评论分析（情感/爆文话术提炼）尚未上线。</div></div></div>`;
+    }
+    return `<div class="card" style="margin-top:16px"><div class="chd"><h2>评论区</h2><div class="spacer"></div>
+      <span class="tag">${d.cmn > cm.length ? `显示 ${cm.length} / ${d.cmn} 条` : `${cm.length} 条`}</span></div>
+      <div class="cbd" style="padding-top:6px;padding-bottom:8px">
+        ${cm.map((c, i) => `<div class="cm">
+          <div class="t">${esc(c[0])}</div>
+          <div class="f"><span>#${i + 1}</span><span class="${c[1] >= 10 ? "hi" : ""}">${fmt(c[1])} 赞</span>
+            <span>${esc(c[2]) || ""}</span></div>
+        </div>`).join("")}
+      </div></div>`;
+  };
+
+  document.getElementById("root").innerHTML = `
+    <div class="dhead">
+      <div class="ptags">
+        <span class="tag ${d.off ? "" : "void"}">${d.off ? "官号发布" : "达人内容"}</span>
+        <span class="tag">${esc(pm.name)}</span>
+        <span class="tag ${pm.kind === "媒体" ? "void" : ""}">${esc(pm.kind || "")}</span>
+        ${d.typ ? `<span class="tag void">${esc(d.typ)}</span>` : ""}
+        <span class="stamp" style="margin-left:2px">已验讫</span>
+      </div>
+      <h1>${esc(d.t) || "（无标题）"}</h1>
+      <div class="meta">
+        <span>作者 <b>${esc(d.a) || "—"}</b></span>
+        <span>发布 <b>${esc(d.d) || "—"}</b></span>
+        <span>采集 <b>${esc(d.ct) || "—"}</b></span>
+        <span>编号 <b>${esc(ID)}</b></span>
+      </div>
+    </div>
+
+    <div class="cw">
+      <div>
+        <div class="card">
+          <div class="chd"><h2>原文</h2><div class="spacer"></div>
+            <span class="tag void">${(d.body || "").length} 字</span></div>
+          <div class="cbd">
+            ${d.body && d.body.trim()
+              ? `<div class="fulltext">${esc(d.body)}</div>`
+              : `<div class="fulltext empty">这条内容没有采集到正文（只有标题与素材）。原文链接见右栏。</div>`}
+            ${(d.tags || []).length ? `<div style="margin-top:16px;padding-top:12px;border-top:1px dotted var(--rule-2);
+              display:flex;gap:7px;flex-wrap:wrap">${d.tags.slice(0, 14).map(t =>
+              `<span class="tag void" style="font-size:11px">${esc(t)}</span>`).join("")}</div>` : ""}
+          </div>
+        </div>
+
+        <div style="margin-top:16px">${mediaBlock()}</div>
+        <div style="margin-top:16px">${commentBlock()}</div>
+        ${sameAuthorBlock()}
+
+        <div class="pager">
+          ${prev ? `<a href="${contentHref(BRAND, prev[0])}"><span>← 上一条（按赞序）</span>${esc(prev[1])}</a>`
+                 : `<a class="off"><span>← 上一条</span>已是第一条</a>`}
+          ${next ? `<a href="${contentHref(BRAND, next[0])}" style="text-align:right"><span>下一条 →</span>${esc(next[1])}</a>`
+                 : `<a class="off" style="text-align:right"><span>下一条 →</span>已是最后一条</a>`}
+        </div>
+      </div>
+
+      <div>
+        ${rankBlock()}
+
+        <div class="card">
+          <div class="chd"><h2>互动数据</h2><div class="spacer"></div><span class="tiny">采集时快照</span></div>
+          <div class="cbd" style="padding:14px 16px">
+            <div class="kpis" style="grid-template-columns:1fr 1fr;gap:12px;margin:0">
+              <div class="kpi"><div class="k">点赞</div><div class="v">${fmt(m.likes)}</div></div>
+              <div class="kpi"><div class="k">收藏</div><div class="v">${fmt(m.collects)}</div></div>
+              <div class="kpi"><div class="k">评论</div><div class="v">${fmt(m.comments)}</div></div>
+              <div class="kpi"><div class="k">分享</div><div class="v">${fmt(m.shares)}</div></div>
+            </div>
+            <div class="tiny" style="margin-top:11px;line-height:1.7">
+              ${m.likes >= 1000 ? "已达「爆文」门槛（≥1000 赞）。" : "未达爆文门槛（1000 赞）。"}
+              注意：这是最后一次采集时的值，不是发布后 30/90 天的值（历史快照未开始攒）。
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="chd"><h2>归属证据</h2><div class="spacer"></div>
+            <span class="tag" style="background:var(--ok-bg);color:var(--ok);border-color:#bedcc9">通过</span></div>
+          <div class="cbd" style="padding:8px 16px 14px">
+            <table class="ev">
+              <tr><th>品牌归属</th><td>${esc(isCat ? "不归属任何品牌（赛道参照）" : d.b)}</td></tr>
+              <tr><th>判定方式</th><td>${d.off ? "账号实名归属（官号发布）" : "正文品牌证据"}</td></tr>
+              <tr><th>平台</th><td>${esc(pm.name)}</td></tr>
+              <tr><th>账号</th><td>${esc(d.a) || "—"}</td></tr>
+              <tr><th>作者 ID</th><td>${esc(d.aid) || "—"}</td></tr>
+              <tr><th>内容编号</th><td>${esc(ID)}</td></tr>
+              <tr><th>校验状态</th><td>verified = 1</td></tr>
+              <tr><th>校验依据</th><td>${esc(d.vn) || "规则校验通过"}</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="chd"><h2>操作</h2></div>
+          <div class="cbd acts" style="padding:12px 16px 16px">
+            ${d.u ? `<a class="btn solid" href="${esc(d.u)}" target="_blank" rel="noopener">打开原文页面</a>`
+                   : `<span class="btn" style="opacity:.45;cursor:not-allowed;text-align:center">无原文链接</span>`}
+            <a class="btn" href="create.html?brand=${encodeURIComponent(BRAND)}&ref=${encodeURIComponent((d.t || "").slice(0, 40))}">
+              借用这条的选题结构</a>
+            <a class="btn" href="${LIB_HREF}">回到内容库（保留筛选）</a>
+            <button class="btn" type="button" id="copybtn">复制正文</button>
+          </div>
+        </div>
+
+        <div class="tiny" style="margin-top:12px;line-height:1.8;color:var(--ink-4)">
+          口径：只展示 verified=1 的内容。这条若来自搜索流，品牌归属靠正文品牌证据判定；
+          若来自官号，归属靠账号实名（不看正文是否提品牌）。
+        </div>
+      </div>
+    </div>`;
+
+  const cb = document.getElementById("copybtn");
+  if (cb) cb.addEventListener("click", () => {
+    const txt = (d.t || "") + "\n\n" + (d.body || "");
+    if (navigator.clipboard) navigator.clipboard.writeText(txt);
+    cb.textContent = "已复制";
+    setTimeout(() => { cb.textContent = "复制正文"; }, 1400);
+  });
+}   /* else 结束 */
+}   /* bootContent 结束 */
+
+/* 明细脚本是动态加载的：已就绪就渲染，否则等 onload；两者都没触发时轮询兜底 */
+window.__bootContent = bootContent;
+(function waitData(t0) {
+  t0 = t0 || Date.now();
+  if ((brandDetail(BRAND) && brandList(BRAND)) || Date.now() - t0 > 6000) { bootContent(); return; }
+  setTimeout(() => waitData(t0), 50);
+})();
+</script>
+</body>
+</html>

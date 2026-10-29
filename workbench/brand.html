@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>品牌工作台 · 逆龄工作台</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  .bhead{display:flex;align-items:flex-start;gap:22px;padding-bottom:16px;border-bottom:2px solid var(--ink)}
+  .bhead .nm{font-family:var(--serif);font-size:29px;line-height:1.15;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .bhead .nm i{width:13px;height:13px;border-radius:2px;flex:0 0 13px}
+  .bhead .nm em{font-style:normal;font-size:12.5px;font-family:var(--sans);color:var(--ink-3);font-weight:400;letter-spacing:0}
+  .bhead .judge{margin-top:9px;font-size:13.5px;color:var(--ink-2);line-height:1.7;max-width:66ch}
+  .bhead .side{flex:0 0 200px;text-align:right;font-size:12px;color:var(--ink-3);line-height:1.95}
+  .bhead .side b{font-family:var(--mono);color:var(--ink);font-weight:500;font-size:14px}
+
+  /* 平台矩阵 */
+  .mtx{width:100%;border-collapse:collapse;font-size:12.5px}
+  .mtx th{font-size:11px;font-weight:600;color:var(--ink-3);padding:8px 10px;border-bottom:1px solid var(--rule-2);text-align:right;white-space:nowrap;background:var(--paper-2)}
+  .mtx th:first-child,.mtx th:nth-child(2){text-align:left}
+  .mtx td{padding:9px 10px;border-bottom:1px solid var(--rule);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .mtx td:first-child,.mtx td:nth-child(2){text-align:left;font-family:var(--sans)}
+  .mtx tbody tr:hover{background:#eef1f6}
+  .mtx .none{color:var(--ink-4)}
+
+  /* 产品卡 */
+  .prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .prod{border:1px solid var(--rule);border-radius:3px;background:var(--card);overflow:hidden;display:flex;flex-direction:column}
+  .prod .ph{padding:13px 15px 11px;border-bottom:1px solid var(--rule)}
+  .prod .ph .t{font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .prod .ph .m{font-size:11.5px;color:var(--ink-3);margin-top:4px}
+  .prod .snd{padding:10px 15px;border-bottom:1px solid var(--rule);display:flex;gap:18px;background:var(--paper-2)}
+  .prod .snd div{font-size:10.5px;color:var(--ink-4)}
+  .prod .snd b{display:block;font-family:var(--mono);font-size:15px;color:var(--ink);font-weight:500;margin-top:1px}
+  .prod .specs{padding:11px 15px;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;font-size:11.5px}
+  .prod .specs .k{color:var(--ink-4);font-size:10.5px}
+  .prod .specs .v{color:var(--void);border-bottom:1px dashed var(--rule-2);padding-bottom:2px}
+  .blogo{height:30px;vertical-align:-8px;margin-right:8px;object-fit:contain;background:#fff;border:1px solid var(--rule);padding:2px 5px;border-radius:2px}
+  .prod .pimg{height:150px;background:#fff;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--rule)}
+  .prod .pimg img{width:100%;height:100%;object-fit:contain;display:block}
+  .prod .pimg span{font-size:11px;color:var(--ink-4)}
+  .prod .pft{margin-top:auto;padding:9px 15px;border-top:1px solid var(--rule);display:flex;align-items:center;gap:10px}
+  .prod .pft a{font-size:11.5px;border-bottom:1px solid var(--rule-2)}
+
+  /* 内容列表 */
+  .clist{display:flex;flex-direction:column}
+  .citem{display:grid;grid-template-columns:44px 1fr 60px 54px 58px 92px;gap:10px;padding:8px 14px;border-bottom:1px solid var(--rule);align-items:center;font-size:12.5px}
+  .citem .cth{width:44px;height:44px;border:1px solid var(--rule);border-radius:2px;overflow:hidden;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--ink-4);line-height:1.2;text-align:center}
+  .citem .cth img{width:100%;height:100%;object-fit:cover;display:block}
+  .citem .tt a{border-bottom:1px solid transparent}
+  .citem .tt a:hover{border-bottom-color:var(--ink-3)}
+  .citem:hover{background:#eef1f6}
+  .citem:last-child{border-bottom:none}
+  .citem .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .citem .au{font-size:11px;color:var(--ink-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .citem .lk{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+  .filters{display:flex;gap:9px;flex-wrap:wrap;align-items:center;padding:11px 16px;border-bottom:1px solid var(--rule);background:var(--paper-2)}
+  .filters select,.filters button{font:inherit;font-size:12px;padding:4px 9px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card);color:var(--ink-2);cursor:pointer}
+  .filters label{font-size:11.5px;color:var(--ink-3)}
+  .filters input[type=search]{font:inherit;font-size:12px;padding:4px 9px;border:1px solid var(--rule-2);border-radius:2px;background:var(--card);color:var(--ink-2)}
+  /* 筛选结果摘要：一眼知道这批内容是什么构成 */
+  .libsum{display:flex;gap:16px;flex-wrap:wrap;align-items:center;padding:9px 16px;border-bottom:1px solid var(--rule);
+    font-size:12px;color:var(--ink-3);background:var(--card)}
+  .libsum b{color:var(--ink);font-weight:600;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .libsum span+span{padding-left:16px;border-left:1px solid var(--rule)}
+
+  /* 策略 */
+  .strat{display:flex;flex-direction:column}
+  .srow{display:grid;grid-template-columns:130px 1fr;gap:16px;padding:14px 0;border-bottom:1px solid var(--rule)}
+  .srow:last-child{border-bottom:none}
+  .srow .lb{font-size:12px;color:var(--ink-3)}
+  .srow .lb b{display:block;font-size:13px;color:var(--ink);font-weight:600;margin-bottom:3px}
+  .srow .ct{font-size:13px;line-height:1.72;color:var(--ink-2)}
+  .srow .ct .strong{color:var(--ink);font-weight:600}
+  .srow .ct ul{margin:5px 0 0 16px}
+  .srow .ct li{margin-bottom:3px}
+
+  /* 作业 */
+  .ops{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  @media(max-width:1080px){.ops{grid-template-columns:1fr}}
+  .opcard{border:1px solid var(--rule);border-radius:3px;background:var(--card)}
+  .opcard .h{padding:11px 15px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:9px}
+  .opcard .h h3{font-size:13px}
+  .opcard .h .spacer{flex:1}
+  .opcard .b{padding:13px 15px}
+  .opline{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--rule);font-size:12.5px}
+  .opline:last-child{border-bottom:none}
+  .opline .v{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .effbar{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+  .effbar>div{background:var(--card);padding:13px 15px}
+  .effbar .t{font-size:11.5px;color:var(--ink-3)}
+  .effbar .n{font-family:var(--mono);font-size:20px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .effbar .d{font-size:11px;color:var(--ink-4);margin-top:2px}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="rail"></nav>
+  <main class="main">
+    <div class="topbar"></div>
+    <div class="body" id="app"></div>
+  </main>
+</div>
+<script src="/api/wb/data.js"></script>
+<script src="/api/wb/contents.js"></script>
+<script src="/api/wb/plat.js"></script>
+<script src="/api/wb/people.js"></script>
+<script src="products.js?v=20261028c"></script>
+<script src="/api/wb/media-cdn.js"></script>
+<script src="shared.js?v=20261028c"></script>
+<script>
+/* 内容清单按品牌单独加载：不阻塞首屏，加载完再渲染（也避免 document.write 在部分环境下的顺序问题） */
+(function () {
+  var b = new URLSearchParams(location.search).get("brand") || "MitoQ";
+  var el = document.createElement("script");
+  el.src = "/api/wb/list.js?brand=" + slugOf(b);
+  el.onload = function () { window.__bootBrand && window.__bootBrand(); };
+  el.onerror = function () { window.__bootBrand && window.__bootBrand(); };
+  document.head.appendChild(el);
+})();
+</script>
+<script>
+const Q = new URLSearchParams(location.search);
+const KEY = Q.get("brand") || "MitoQ";
+const TAB = Q.get("tab") || "overview";
+const IS_CAT = KEY === "__category";
+
+const TABS = [
+  ["overview","概览"], ["products","产品"], ["channels","渠道与账号"], ["library","内容库"],
+  ["performance","数据表现"], ["strategy","营销策略"], ["cost","成本与效果"], ["ops","生产作业"]
+];
+
+/* 产品线：产品名来自 config/brands.json 的 products，条数由 db 现算（data.js.prodline）
+   下面这份只做「目录缺失时」的兜底，数字一律不写死 */
+function prodline(brand) {
+  const b = (typeof DATA !== "undefined" && DATA.brands && DATA.brands[brand]) || null;
+  if (b && b.prodline && b.prodline.length) return b.prodline;
+  return PRODLINE_FALLBACK[brand] || [];
+}
+const PRODLINE_FALLBACK = { __category: [] };
+
+/* 判断文案不写数字：数字一律来自 data.js，写完就过时（踩过——数据库更新后文案还写着旧数）。
+   这里只说结论，具体数字看右侧与下面各张表。 */
+const JUDGE_NOTE = {
+  MitoQ: "六家里最均衡的一家：官号与达人都在真实产出，达人侧单条峰值最高。要学的是它的选题与达人筛选，不是铺量。",
+  LAIFE: "单爆品 + 官号矩阵铺量。一个产品扛起大半内容，官号把产品词铺满平台；但官号本身几乎没有互动，声量靠达人撑。",
+  GRANVER: "产品线摊得太开：多条产品线同时推，官号基本空转，内容量铺了却换不回互动——看起来覆盖广，实际每条线都没打透。",
+  "塞乐瑞": "投入了却没回声：达人数不少、互动全库最低，没有官号阵地，用户记住的是「干细胞」这个品类词，不是塞乐瑞。",
+  "W+端粒塔": "小体量试水：官号零互动，靠 NMN 品类词寄生达人内容。内容量的月度起伏主要是采集窗口造成的，不代表真发力。",
+  COSMOBOUNTY: "质量不差、量太少、没阵地：达人单条互动已接近对手水平，但没有官号、内容量只有对手的零头——不是内容不行，是根本没在做。",
+};
+function judgeText(brand) {
+  const note = JUDGE_NOTE[brand] || "";
+  const b = (typeof DATA !== "undefined" && DATA.brands && DATA.brands[brand]) || null;
+  if (!b) return note;
+  const e = b.eff, gap = b.viral1k ? Math.round(b.verified / b.viral1k) : 0;
+  return note + (gap ? ` 已验讫 ${fmt(b.verified)} 条里，平均每 ${gap} 条出一条 ≥1000 赞的爆文。` : "");
+}
+function catJudge() {
+  const c = DATA.category;
+  const sumB = Object.values(DATA.brands).reduce((s, x) => s + x.likes_sum, 0);
+  return `不是品牌，是赛道。${fmt(c.total)} 条泛品类场景内容拿到 ${fmt(c.likes_sum)} 赞，是六品牌总和（${fmt(sumB)}）的 ${sumB ? (c.likes_sum / sumB).toFixed(1) : "—"} 倍。用户搜的是「抗衰怎么办」「护肝吃什么」，不是品牌名。`;
+}
+
+const B = BRANDS.find(b => b.key === KEY) || BRANDS[0];
+const D = IS_CAT ? null : DATA.brands[KEY];
+const E = EFF[KEY] || { off_n:0, off_avg:0, off_viral:0, kol_n:0, kol_avg:0, kol_viral:0 };
+const PENDING_N = D ? (D.total - D.verified) : 0;
+
+renderRail(TAB === "overview" ? "brand" : null, IS_CAT ? null : KEY);
+topbar(`<b>品牌</b> <span class="sep">/</span> <a href="brand.html?brand=${encodeURIComponent(KEY)}" style="border-bottom:1px dotted var(--ink-4)">${esc(IS_CAT?"品类大盘":B.cn)}</a> <span class="sep">/</span> ${TABS.find(t=>t[0]===TAB)?.[1]||"概览"}`,
+  IS_CAT ? "参照系 · 不进横评" : "已验讫口径");
+
+/* ================= 头部 ================= */
+function head() {
+  if (IS_CAT) return `<div class="bhead">
+    <div style="flex:1"><div class="nm">品类大盘<em>赛道参照系</em></div>
+    <div class="judge">${catJudge()}</div></div>
+    <div class="side">内容 <b>${fmt(DATA.category.total)}</b><br>累计赞 <b>${fmt(DATA.category.likes_sum)}</b><br>均赞 <b>${fmt(DATA.category.likes_avg)}</b></div></div>`;
+  const lg = (typeof BRAND_LOGOS!=="undefined") && BRAND_LOGOS[KEY];
+  return `<div class="bhead">
+    <div style="flex:1">
+      <div class="nm">${lg?`<img class="blogo" src="${mediaPath(lg)}" alt="${esc(B.cn)} logo">`:`<i style="background:${B.color}"></i>`}${esc(B.cn)}<em>${esc(B.name!==B.cn?B.name:"")} · ${esc(B.note)}</em></div>
+      <div class="judge">${judgeText(KEY)}</div>
+    </div>
+    <div class="side">
+      内容 <b>${fmt(D.total)}</b> · 验讫 <b>${fmt(D.verified)}</b><br>
+      官号 <b>${D.official_acc}</b> 个 · 达人 <b>${D.creators}</b> 位<br>
+      累计赞 <b>${fmt(D.likes_sum)}</b> · 均 <b>${D.likes_avg}</b>
+    </div></div>`;
+}
+
+/* ================= ① 概览 ================= */
+function tabOverview() {
+  if (IS_CAT) return catOverview();
+  const pk = Object.entries(D.prod_kw), pMax = Math.max(...pk.map(x=>x[1]),1);
+  const plats = Object.entries(D.platform).sort((a,b)=>b[1]-a[1]), plMax = Math.max(...plats.map(x=>x[1]),1);
+  const L0 = brandList(KEY) || [];
+  const recentRows = [...L0].sort((a,b)=>(b[5]>a[5]?1:-1)).slice(0,6).map(contentRow).join("");
+  const topRows = [...L0].sort((a,b)=>b[4]-a[4]).slice(0,6).map(contentRow).join("");
+  return `<div class="stack">
+    <div class="kpis">
+      <div class="kpi"><div class="k">产品档案</div><div class="v">${(typeof PRODUCTS!=="undefined"&&(PRODUCTS[KEY]||[]).length)||prodline(KEY).length}</div><div class="x">官网/店铺目录 · 规格成分价格带来源</div></div>
+      <div class="kpi"><div class="k">内容（验讫）</div><div class="v">${fmt(D.verified)}</div><div class="x">总采集 ${fmt(D.total)}</div></div>
+      <div class="kpi"><div class="k">官号 / 达人</div><div class="v sm">${D.official_acc} / ${D.creators}</div><div class="x">账号数</div></div>
+      <div class="kpi"><div class="k">累计赞</div><div class="v">${fmt(D.likes_sum)}</div><div class="x">均 ${D.likes_avg} / 条</div></div>
+      <div class="kpi"><div class="k">爆文（≥1000）</div><div class="v">${D.viral1k}</div><div class="x">≥1万 ${D.viral10k} 条</div></div>
+    </div>
+
+    <div class="g2">
+      <div class="sheet">
+        <div class="hd"><h2>产品声量占比</h2><div class="spacer"></div><span class="tag warn">内容侧推断</span></div>
+        <div class="bd"><div class="bars">${pk.map(([k,v])=>barRow(k,v,pMax,B.color)).join("")}</div>
+          <div class="tiny" style="margin-top:12px">按标题词频统计，不是官方产品目录。<a href="?brand=${encodeURIComponent(KEY)}&tab=products" style="border-bottom:1px dotted var(--ink-4)">看产品与缺口 →</a></div>
+        </div>
+      </div>
+      <div class="sheet">
+        <div class="hd"><h2>平台分布</h2><div class="spacer"></div><span class="tag">条数</span></div>
+        <div class="bd"><div class="bars">${plats.map(([p,v])=>{
+          const m = PLAT_META[p]||{name:p};
+          return barRow(m.name, v, plMax, m.kind==="媒体"?"var(--ink-4)":B.color);
+        }).join("")}</div>
+          <div class="tiny" style="margin-top:12px">灰色 = 媒体收录类，无互动机制，不计入效果比较。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sheet">
+      <div class="hd"><h2>官号 vs 达人：谁在真正带来声量</h2><div class="spacer"></div><span class="tag seal">${E.verdict}</span></div>
+      <div class="bd flush"><table class="mtx">
+        <thead><tr><th>类型</th><th>条数</th><th>均赞</th><th>爆文</th><th style="text-align:left;padding-left:16px">占该品牌赞量</th></tr></thead>
+        <tbody>
+          ${rowEff("官号自运营", E.off_n, E.off_avg, E.off_viral, E.off_n*E.off_avg)}
+          ${rowEff("达人分发", E.kol_n, E.kol_avg, E.kol_viral, E.kol_n*E.kol_avg)}
+        </tbody></table></div>
+    </div>
+
+    <div class="g2">
+      <div class="sheet">
+        <div class="hd"><h2>最近发布</h2><div class="spacer"></div>
+          <a class="btn" href="?brand=${encodeURIComponent(KEY)}&tab=library">全部 ${fmt((brandList(KEY)||[]).length)} 条</a></div>
+        <div class="bd flush">${recentRows || `<div style="padding:16px" class="tiny">暂无</div>`}</div>
+      </div>
+      <div class="sheet">
+        <div class="hd"><h2>最高赞</h2><div class="spacer"></div><span class="tag">单条峰值 ${fmt(D.likes_max)}</span></div>
+        <div class="bd flush">${topRows || `<div style="padding:16px" class="tiny">暂无</div>`}</div>
+      </div>
+    </div>
+
+    <div class="note seal"><b>对我们的含义：</b>${
+      KEY==="COSMOBOUNTY" ? "我们的内容单条质量已经接近对手（均赞 181），差距全在「量」和「阵地」——没有官号，没有稳定发布节奏，达人只有 28 位。要追的不是质量，是先建立官号阵地、把月产能拉到 30 条以上。"
+      : KEY==="GRANVER" ? "GRANVER 是最像我们的对手：产品线多、官号空转、靠达人硬铺。它的失败恰好证明——铺量不解决归属，用户看完记不住是哪个产品。"
+      : `${B.cn} 的声量几乎全部来自达人，这意味着它的内容能力是可复制的（找到同样的达人就行）。它真正的壁垒在${KEY==="LAIFE"?"官号矩阵的搜索占位密度——把上千条官号内容铺在所有相关关键词上":"品牌词的自然搜索承接"}，这是我们要补的功课。`
+    }</div>
+  </div>`;
+}
+function rowEff(label,n,avg,viral,total){
+  const share = D && D.likes_sum ? Math.round(total/D.likes_sum*100) : 0;
+  return `<tr><td>${label}</td><td>${n?fmt(n):"—"}</td><td>${n?avg:"—"}</td><td>${n?viral:"—"}</td>
+    <td style="text-align:left;padding-left:16px;font-family:var(--sans)">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div class="bar-track" style="flex:1;max-width:180px"><div class="bar-fill" style="width:${share}%;background:${share>50?"var(--seal)":"var(--rule-2)"}"></div></div>
+        <span style="font-family:var(--mono);font-size:12px">${share}%</span>
+      </div></td></tr>`;
+}
+function catOverview(){
+  const c = DATA.category;
+  return `<div class="stack">
+    <div class="kpis">
+      <div class="kpi"><div class="k">泛品类内容</div><div class="v">${c.total}</div><div class="x">非品牌归属，不进横评</div></div>
+      <div class="kpi"><div class="k">累计赞</div><div class="v">${fmt(c.likes_sum)}</div><div class="x">均 ${c.likes_avg} / 条</div></div>
+      <div class="kpi"><div class="k">爆文（≥1000）</div><div class="v">${c.viral1k}</div><div class="x">占 ${pct(c.viral1k,c.total)}</div></div>
+      <div class="kpi"><div class="k">对比六品牌</div><div class="v">1.4×</div><div class="x">声量是六品牌总和的倍数</div></div>
+    </div>
+    <div class="note">这 ${fmt((brandList("__category")||[]).length)} 条命中品类/场景词但正文未提任何品牌，按口径归入「蹭词位」，不参与品牌横评。但它们代表<b>赛道真实流量</b>——这里是品牌要抢的战场。点标题可看原文与评论区。</div>
+    <div class="sheet"><div class="hd"><h2>赛道 Top 内容</h2><div class="spacer"></div>
+      <a class="btn" href="brand.html?brand=__category&tab=library">看全部 ${fmt((brandList("__category")||[]).length)} 条</a></div>
+      <div class="bd flush">${(brandList("__category")||[]).slice(0,15).map(contentRow).join("") || `<div style="padding:18px" class="tiny">暂无</div>`}</div></div>
+  </div>`;
+}
+
+/* ================= ② 产品 ================= */
+const EV_TAG = {
+  official: ["官方产品页", "seal"], media: ["公开报道", "warn"],
+  doc: ["品牌方资料", "ok"], content: ["内容库实拍", "void"],
+};
+function prodImgSrc(p) {
+  const rel = (p.img || "").replace(/^knowledge\/media\//, "");
+  return rel ? mediaPath(rel) : "";
+}
+function prodCard(p) {
+  const [evLb, evCls] = EV_TAG[p.evidence] || ["待核", "void"];
+  const img = prodImgSrc(p);
+  const price = p.price ? `¥${fmt(p.price)}`
+    : (p.price_usd ? `$${p.price_usd}（美国站官方价）` : "待补");
+  const specRows = [
+    ["规格 / 含量", p.spec], ["核心成分", p.ingredients], ["服用方式", p.dosage],
+    ["官方零售价", price + (p.price_note ? `（${p.price_note}）` : "")],
+  ];
+  return `<div class="prod">
+    <div class="pimg">${img ? `<img src="${img}" loading="lazy" alt="${esc(p.name)}">`
+      : `<span>暂无产品图</span>`}</div>
+    <div class="ph">
+      <div class="t"><span>${esc(p.name)}</span><span class="tag">${esc(p.category || "—")}</span></div>
+      ${p.name_en ? `<div class="m">${esc(p.name_en)}</div>` : ""}
+      ${p.desc ? `<div class="m" style="margin-top:4px">${esc(p.desc).slice(0, 90)}</div>` : ""}
+    </div>
+    <div class="specs">
+      ${specRows.map(([k, v]) => `<div style="${k === "核心成分" ? "grid-column:1/-1" : ""}">
+        <div class="k">${k}</div><div class="v">${esc(v || "待补")}</div></div>`).join("")}
+    </div>
+    <div class="pft">
+      <span class="tag ${evCls}">${evLb}</span>
+      ${p.source && /^https?:/.test(p.source) ? `<a href="${p.source}" target="_blank" rel="noopener">来源 ↗</a>`
+        : (p.source ? `<span class="tiny" title="${esc(p.source)}">${esc(p.source).slice(0, 40)}</span>` : "")}
+    </div>
+  </div>`;
+}
+function tabProducts() {
+  if (IS_CAT) return `<div class="note">品类大盘没有产品维度。产品是品牌下的第二层，请从左侧进入具体品牌。</div>`;
+  const ps = (typeof PRODUCTS !== "undefined" && PRODUCTS[KEY]) || [];
+  const lines = prodline(KEY), vsum = D.verified || 1;
+  const cat = { official: 0, media: 0, doc: 0, content: 0 };
+  ps.forEach(p => { cat[p.evidence] = (cat[p.evidence] || 0) + 1; });
+  return `<div class="stack">
+    ${ps.length ? `
+    <div class="note"><b>产品档案 ${ps.length} 条</b> —— 来自官网产品页 / 官方店铺 / 品牌方资料 / 公开报道，每条都标了证据等级和来源；
+      拿不准的字段宁写「待补」不猜。价格是人民币，活动价与日常价在括号里写清。</div>
+    <div class="prods">${ps.map(prodCard).join("")}</div>
+    ` : `<div class="note warn">该品牌还没有产品档案 —— 官网/电商产品页待采，下面的产品线是内容侧词频反推的。</div>`}
+
+    <div class="sheet">
+      <div class="hd"><h2>内容声量（词频反推）</h2><div class="spacer"></div><span class="tag">内容条数 · 已验讫</span></div>
+      <div class="bd"><div class="bars">
+        ${lines.map(([nm, n, , , note, c]) => barRow(`${nm}${note ? ` · ${note}` : ""}`, n, Math.max(...lines.map(l => l[1]), 1), B.color)).join("")}
+      </div>
+      <div class="tiny" style="margin-top:10px;color:var(--ink-3)">这一段是「内容里被提到多少」，和上面按 SKU 登记的官方目录口径不同——词频会把同系列产品合并、也会把蹭词算进来，只用来感受声量结构。</div></div>
+    </div>
+
+    <div class="sheet">
+      <div class="hd"><h2>产品档案字段与来源</h2><div class="spacer"></div><span class="tag ok">已建目录 · 持续补齐</span></div>
+      <div class="bd flush"><table class="tbl">
+        <thead><tr><th style="width:130px">字段</th><th>用途</th><th style="width:150px">当前覆盖</th></tr></thead>
+        <tbody>
+          <tr><td class="strong">产品名 / 系列</td><td>建立产品树，把内容和产品对上</td><td><span class="tag ok">${ps.length} 条</span></td></tr>
+          <tr><td class="strong">规格 / 含量</td><td>横评可比项：单粒含量、粒数、可用天数</td><td><span class="tag ${ps.filter(p=>p.spec).length?'ok':'void'}">${ps.filter(p=>p.spec).length} 条有</span></td></tr>
+          <tr><td class="strong">核心成分与剂量</td><td>横评最硬的一项</td><td><span class="tag ${ps.filter(p=>p.ingredients).length?'ok':'void'}">${ps.filter(p=>p.ingredients).length} 条有</span></td></tr>
+          <tr><td class="strong">官方零售价</td><td>价格带定位、性价比对比</td><td><span class="tag ${ps.filter(p=>p.price||p.price_usd).length?'ok':'warn'}">${ps.filter(p=>p.price||p.price_usd).length} 条有 · 缺的标待补</span></td></tr>
+          <tr><td class="strong">官方主图</td><td>创作时的强约束素材</td><td><span class="tag ${ps.filter(p=>p.img).length?'ok':'warn'}">${ps.filter(p=>p.img).length} 条有</span></td></tr>
+          <tr><td class="strong">内容声量</td><td>这个产品在市场上响不响</td><td><span class="tag ok">来自本系统</span></td></tr>
+        </tbody></table></div>
+    </div>
+  </div>`;
+}
+
+/* ================= ③ 渠道与账号 ================= */
+function tabChannels() {
+  const pk = PLAT_DATA[KEY] || {};
+  const rows = Object.keys(PLAT_META).filter(p=>pk[p]).map(p=>({p, o:pk[p].off, k:pk[p].kol}));
+  const offs = (OFFICIAL[KEY]||[]);
+  const cres = (CREATORS[KEY]||[]).filter(x=>x.a && x.a!=="?");
+  const unnamed = (CREATORS[KEY]||[]).find(x=>x.a==="?");
+  return `<div class="stack">
+    <div class="sheet">
+      <div class="hd"><h2>平台 × 账号类型</h2><div class="spacer"></div><span class="tag">条数 / 均赞 / 爆文</span></div>
+      <div class="bd flush"><table class="mtx">
+        <thead><tr><th>平台</th><th>类型</th><th>官号 条</th><th>官号 均赞</th><th>官号 爆文</th><th>达人 条</th><th>达人 均赞</th><th>达人 爆文</th></tr></thead>
+        <tbody>${rows.map(r=>{
+          const m = PLAT_META[r.p], o=r.o||[0,0,0], k=r.k||[0,0,0];
+          const lk = (v, off) => v
+            ? `<a href="?brand=${encodeURIComponent(KEY)}&tab=library&p=${r.p}&t=${off?"o":"k"}&s=top" title="看这些内容" style="border-bottom:1px dotted var(--ink-4)">${v}</a>`
+            : "—";
+          return `<tr><td>${esc(m.name)}</td>
+            <td><span class="tag ${m.kind==='媒体'?'void':''}">${m.kind}</span></td>
+            <td class="${o[0]?'':'none'}">${lk(o[0],1)}</td><td class="${o[0]?'':'none'}">${o[0]?o[1]:"—"}</td><td class="${o[0]?'':'none'}">${o[0]?o[2]:"—"}</td>
+            <td class="${k[0]?'':'none'}">${lk(k[0],0)}</td><td class="${k[0]?'':'none'}">${k[0]?k[1]:"—"}</td><td class="${k[0]?'':'none'}">${k[0]?k[2]:"—"}</td></tr>`;
+        }).join("")}</tbody></table></div>
+      <div class="bd" style="padding:11px 16px;border-top:1px solid var(--rule)">
+        <span class="tiny">媒体类平台（百度/头条/新闻源）没有点赞机制，0 赞不代表无效——它们的作用是搜索结果占位，衡量指标应是收录量与排名，当前未接入。</span>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="sheet">
+        <div class="hd"><h2>官号（有内容的）</h2><div class="spacer"></div><span class="tag">${offs.length} 个</span></div>
+        <div class="bd flush">${offs.length?`<table class="tbl">
+          <thead><tr><th>账号</th><th class="num">作品</th><th class="num">均赞</th><th class="num">最高</th><th></th></tr></thead>
+          <tbody>${offs.map(a=>`<tr>
+            <td class="tiny"><a href="?brand=${encodeURIComponent(KEY)}&tab=library&acc=${encodeURIComponent(a.a)}" title="看这个账号的全部内容">${esc(a.a)}</a></td>
+            <td class="num">${fmt(a.n)}</td><td class="num">${a.avg}</td><td class="num">${fmt(a.max)}</td>
+            <td class="num"><a class="tiny" href="?brand=${encodeURIComponent(KEY)}&tab=library&acc=${encodeURIComponent(a.a)}" style="border-bottom:1px dotted var(--ink-4);white-space:nowrap">看内容</a></td>
+          </tr>`).join("")}</tbody>
+        </table>`:`<div style="padding:18px 16px"><span class="tag void">无官号</span>
+          <div class="tiny" style="margin-top:7px">该品牌在抖音未发现认证官号；小红书/视频号官号亦未采集。声量全部来自达人与搜索流。</div></div>`}</div>
+      </div>
+
+      <div class="sheet">
+        <div class="hd"><h2>达人（按内容数）</h2><div class="spacer"></div><span class="tag">${D.creators} 位</span></div>
+        <div class="bd flush"><table class="tbl">
+          <thead><tr><th>账号</th><th class="num">条数</th><th class="num">均赞</th><th class="num">最高</th><th>主阵地</th></tr></thead>
+          <tbody>${cres.slice(0,12).map(a=>`<tr>
+            <td class="tiny"><a href="?brand=${encodeURIComponent(KEY)}&tab=library&acc=${encodeURIComponent(a.a)}" title="看这个账号的全部内容">${esc(a.a)}</a></td>
+            <td class="num">${a.n}</td><td class="num">${a.avg}</td><td class="num">${fmt(a.max)}</td>
+            <td class="tiny">${esc((PLAT_META[a.p]||{name:a.p}).name)}</td></tr>`).join("")}
+          </tbody></table>
+          ${unnamed?`<div style="padding:10px 16px;border-top:1px solid var(--rule)"><span class="tiny">
+            另有 ${unnamed.n} 条媒体收录内容无署名作者（百度/头条抓取的正文页），不参与达人统计。</span></div>`:""}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================= ④ 内容库 ================= */
+/* 内容行格式（list-<slug>.js）：[id, 标题, 平台, 作者, 赞, 日期, 官号0/1, 媒介(0无/1图/2视频), url, 封面] */
+const MEDIA_MARK = { 0:'<span class="muted">无素材</span>', 1:'图', 2:'视频' };
+
+/* —— 筛选状态：全部放到 URL 里，刷新/后退/分享都不丢 —— */
+const LIB_PAGE = 60;
+const LIB_KEYS = ["p","t","m","d","lk","acc","s","q"];
+let libState = { p:"", t:"", m:"", d:"", lk:"", acc:"", s:"top", q:"" };
+let libShown = LIB_PAGE;
+
+(function initLibState() {
+  const q = new URLSearchParams(location.search);
+  LIB_KEYS.forEach(k => { const v = q.get(k); if (v) libState[k] = v; });
+  if (["top", "recent", "old", "title"].indexOf(libState.s) < 0) libState.s = "top";
+})();
+
+/* 数据截止日：取该品牌清单里最大的发布日期，用来算「近 N 天」 */
+function libRefDate() {
+  let mx = "";
+  (brandList(KEY) || []).forEach(x => { if (x[5] && x[5] > mx) mx = x[5]; });
+  return mx || (typeof DATA !== "undefined" && DATA.generated) || "";
+}
+function libDays(dateStr, ref) {
+  if (!dateStr) return 1e9;
+  const a = Date.parse(dateStr + "T00:00:00Z"), b = Date.parse(ref + "T00:00:00Z");
+  if (isNaN(a) || isNaN(b)) return 1e9;
+  return (b - a) / 86400000;
+}
+function libYears(L) {
+  const ys = {};
+  L.forEach(x => { const y = (x[5] || "").slice(0, 4); if (y) ys[y] = (ys[y] || 0) + 1; });
+  return Object.keys(ys).sort().reverse().map(y => [y, y + " 年（" + ys[y] + " 条）"]);
+}
+function libAccounts(L) {
+  const m = {};
+  L.forEach(x => { if (x[3]) m[x[3]] = (m[x[3]] || 0) + 1; });
+  return Object.entries(m).sort((a, b) => b[1] - a[1]);
+}
+function libOpts(pairs, cur) {
+  return pairs.map(([v, lb]) => `<option value="${esc(v)}"${String(cur) === String(v) ? " selected" : ""}>${esc(lb)}</option>`).join("");
+}
+
+/* 一行筛选条件 → 过滤函数（顺序：时间 → 平台 → 账号类型 → 互动 → 素材 → 作者 → 关键词） */
+function libFiltered() {
+  const ref = libRefDate();
+  let list = [...(brandList(KEY) || [])];
+  /* 时间条件：纯数字 = 近 N 天；y2026 = 该年份；2026-10 = 该月（数据表现页点月份下钻用） */
+  if (libState.d) {
+    if (libState.d.indexOf("-") > 0) {
+      const ym = libState.d.slice(0, 7);
+      list = list.filter(x => (x[5] || "").slice(0, 7) === ym);
+    } else if (libState.d[0] === "y") {
+      const y = libState.d.slice(1);
+      list = list.filter(x => (x[5] || "").slice(0, 4) === y);
+    } else {
+      const n = parseInt(libState.d, 10);
+      if (n > 0) list = list.filter(x => libDays(x[5], ref) <= n);
+    }
+  }
+  if (libState.p) list = list.filter(x => x[2] === libState.p);
+  if (libState.t === "o") list = list.filter(x => x[6] === 1);
+  if (libState.t === "k") list = list.filter(x => x[6] !== 1);
+  if (libState.lk) {
+    const g = x => x[4] || 0;
+    const rules = {
+      w: x => g(x) >= 10000,
+      k: x => g(x) >= 1000 && g(x) < 10000,
+      h: x => g(x) >= 100 && g(x) < 1000,
+      u: x => g(x) < 100,
+      z: x => g(x) === 0
+    };
+    if (rules[libState.lk]) list = list.filter(rules[libState.lk]);
+  }
+  if (libState.m === "v") list = list.filter(x => x[7] === 2);
+  if (libState.m === "i") list = list.filter(x => x[7] === 1);
+  if (libState.m === "c") list = list.filter(x => !!x[9]);
+  if (libState.m === "off") list = list.filter(x => !!x[9] || x[7] === 2);
+  if (libState.m === "n") list = list.filter(x => x[7] === 0 && !x[9]);
+  if (libState.acc) list = list.filter(x => x[3] === libState.acc);
+  const q = (libState.q || "").trim().toLowerCase();
+  if (q) list = list.filter(x => ((x[1] || "") + " " + (x[3] || "")).toLowerCase().includes(q));
+
+  if (libState.s === "recent") list.sort((a, b) => (b[5] || "").localeCompare(a[5] || ""));
+  else if (libState.s === "old") list.sort((a, b) => (a[5] || "").localeCompare(b[5] || ""));
+  else if (libState.s === "title") list.sort((a, b) => (a[1] || "").localeCompare(b[1] || "", "zh"));
+  else list.sort((a, b) => (b[4] || 0) - (a[4] || 0));
+  return list;
+}
+
+function libSyncUrl() {
+  const q = new URLSearchParams(location.search);
+  q.set("tab", "library");
+  LIB_KEYS.forEach(k => { if (libState[k]) q.set(k, libState[k]); else q.delete(k); });
+  /* file:// 打开时浏览器会拒绝 replaceState，这里不该把整页渲染带崩 */
+  try { history.replaceState(null, "", location.pathname + "?" + q.toString()); } catch (e) {}
+}
+
+function libSummary(list) {
+  const n = list.length;
+  const sum = list.reduce((s, x) => s + (x[4] || 0), 0);
+  const avg = n ? Math.round(sum / n) : 0;
+  const viral = list.filter(x => (x[4] || 0) >= 1000).length;
+  const off = list.filter(x => x[6] === 1).length;
+  return { n, sum, avg, viral, off };
+}
+
+function contentRow(c) {
+  const [id, t, p, a, l, d, o, mk, , cov] = c;
+  const pm = PLAT_META[p] || { name: p };
+  const ph = cov
+    ? `<img src="${mediaPath(cov)}" alt="" loading="lazy">`
+    : (mk === 2 ? "视频<br>无封面" : (mk === 1 ? "图片<br>未归档" : "无<br>素材"));
+  return `<div class="citem clink">
+    <div class="cth">${ph}</div>
+    <div style="min-width:0">
+      <div class="tt"><a href="${contentHref(KEY, id)}">${o?'<span class="tag" style="margin-right:6px;font-size:10px">官号</span>':''}${esc(t)}</a></div>
+      <div class="au">${esc(a) || "—"} · ${esc(d) || "—"}</div>
+    </div>
+    <div class="tiny">${esc(pm.name)}</div>
+    <div class="tiny" style="text-align:center">${MEDIA_MARK[mk]||"—"}</div>
+    <div class="lk">${fmt(l)}<span class="tiny"> 赞</span></div>
+    <div style="text-align:right;white-space:nowrap">
+      <a class="tiny" href="${contentHref(KEY, id)}" style="border-bottom:1px dotted var(--ink-4)">打开</a>
+      <a class="tiny" href="create.html?brand=${encodeURIComponent(KEY)}&ref=${encodeURIComponent((t||'').slice(0,24))}" style="margin-left:9px;border-bottom:1px dotted var(--ink-4)">借用</a>
+    </div>
+  </div>`;
+}
+
+function tabLibrary() {
+  const L = brandList(KEY);
+  const n = L ? L.length : (D ? D.verified : 0);
+  if (!L) {
+    return `<div class="stack"><div class="note">该维度没有内容清单（品类大盘的内容不归属任何品牌）。</div></div>`;
+  }
+  const accs = libAccounts(L);
+  /* 年份用 y2026 前缀，和「近 N 天」的纯数字区分开；在 libFiltered 里归一成 libState.yr */
+  const dOpts = [["", "全部时间"], ["7", "近 7 天"], ["30", "近 30 天"], ["90", "近 90 天"]]
+    .concat(libYears(L).map(([y, lb]) => ["y" + y, "仅 " + lb]));
+  /* 从数据表现页的月份柱下钻过来时，补一个当前月份的选项，避免下拉显示错位 */
+  if (/^\d{4}-\d{2}$/.test(libState.d)) dOpts.push([libState.d, libState.d + "（该月）"]);
+  return `<div class="stack">
+    <div class="note">${KEY==="__category"?"赛道参照系（泛品类内容，不归属任何品牌）": "这个品牌已验讫的"} <b>${fmt(n)}</b> 条内容全部可查：点标题或「打开」进单条详情
+      —— 原文全文、图片/视频（本地归档可直接播放）、互动指标、归属证据、评论区、同一账号的其他内容都在那一页。
+      筛选条件会写进地址栏，链接可以直接发给别人看同一批内容。</div>
+    <div class="sheet">
+      <div class="hd"><h2>内容清单</h2><div class="spacer"></div><span class="tag">共 ${fmt(n)} 条 · 已验讫</span></div>
+      <div class="filters">
+        <label>时间</label>
+        <select id="f-d">${libOpts(dOpts, libState.d)}</select>
+        <label>平台</label>
+        <select id="f-p">${libOpts([["", "全部"]].concat(Object.keys(PLAT_META).map(p => [p, PLAT_META[p].name])), libState.p)}</select>
+        <label>账号</label>
+        <select id="f-t">${libOpts([["", "全部"], ["o", "仅官号"], ["k", "仅达人"]], libState.t)}</select>
+        <label>互动</label>
+        <select id="f-lk">${libOpts([["", "全部"], ["w", "≥ 1 万赞"], ["k", "1000–9999 赞"], ["h", "100–999 赞"], ["u", "< 100 赞"], ["z", "0 赞"]], libState.lk)}</select>
+        <label>素材</label>
+        <select id="f-m">${libOpts([["", "全部"], ["off", "可离线还原"], ["v", "含视频"], ["c", "有封面"], ["i", "仅图片"], ["n", "无素材"]], libState.m)}</select>
+        <label>具体账号</label>
+        <select id="f-acc" style="max-width:190px">${libOpts([["", "不限"]].concat(accs.slice(0, 60).map(([a, c]) => [a, a + "（" + c + "）"])), libState.acc)}</select>
+        <label>排序</label>
+        <select id="f-s">${libOpts([["top", "按赞降序"], ["recent", "发布时间 新→旧"], ["old", "发布时间 旧→新"], ["title", "按标题"]], libState.s)}</select>
+        <label>搜索</label>
+        <input id="f-q" type="search" value="${esc(libState.q)}" placeholder="标题 / 账号关键词" style="min-width:140px">
+        <button type="button" id="f-reset">重置</button>
+      </div>
+      <div class="libsum" id="f-sum"></div>
+      <div class="bd flush" id="clist"></div>
+      <div style="padding:14px;text-align:center;border-top:1px solid var(--rule)">
+        <button class="btn" id="f-more" type="button">加载更多</button>
+        <span class="tiny" id="f-cnt" style="margin-left:10px"></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* 分页 + 筛选：状态在 libState，URL 同步在 libSyncUrl，过滤逻辑在 libFiltered */
+function mountLibrary() {
+  if (!brandList(KEY)) return;
+  const $ = id => document.getElementById(id);
+  const els = { p: $("f-p"), t: $("f-t"), m: $("f-m"), d: $("f-d"), lk: $("f-lk"),
+                acc: $("f-acc"), s: $("f-s"), q: $("f-q") };
+  const more = $("f-more");
+  if (!els.p) return;
+
+  function draw() {
+    const list = libFiltered();
+    const slice = list.slice(0, libShown);
+    const st = libSummary(list);
+    $("clist").innerHTML = slice.length
+      ? slice.map(contentRow).join("")
+      : `<div style="padding:26px 16px" class="tiny">这一组筛选条件下没有内容。把「时间 / 互动 / 素材」放宽一些再试。</div>`;
+    $("f-sum").innerHTML = `
+      <span><b>${fmt(st.n)}</b> 条</span>
+      <span>累计赞 <b>${fmt(st.sum)}</b></span>
+      <span>均赞 <b>${st.avg}</b></span>
+      <span>其中爆文 <b>${st.viral}</b> 条</span>
+      <span>官号 <b>${st.off}</b> / 达人 <b>${st.n - st.off}</b></span>`;
+    $("f-cnt").textContent = st.n > slice.length ? `已显示 ${slice.length} / ${st.n}` : "";
+    more.style.display = st.n > libShown ? "" : "none";
+    libSyncUrl();
+  }
+  function reset() {
+    libState = { p:"", t:"", m:"", d:"", lk:"", acc:"", s:"top", q:"" };
+    Object.keys(els).forEach(k => { if (els[k]) els[k].value = k === "s" ? "top" : ""; });
+    libShown = LIB_PAGE;
+    draw();
+  }
+  Object.keys(els).forEach(k => {
+    const el = els[k];
+    if (!el) return;
+    const ev = k === "q" ? "input" : "change";
+    el.addEventListener(ev, () => {
+      libState[k] = el.value;
+      libShown = LIB_PAGE;
+      draw();
+    });
+  });
+  more.addEventListener("click", () => { libShown += LIB_PAGE * 2; draw(); });
+  const rb = $("f-reset");
+  if (rb) rb.addEventListener("click", reset);
+  draw();
+}
+
+/* ================= ⑤ 数据表现 ================= */
+function tabPerf() {
+  const bk = D.buckets, bkOrder=[["<100","<100 赞"],["100-1k","100–1k"],["1k-1w","1k–1w"],["≥1w","≥1万"]];
+  const bkMax = Math.max(...Object.values(bk),1);
+  /* 月度只看最近 18 个月：库里最早的发布能到 2023 年，全画出来横轴会碎成一片 */
+  const moAll = Object.entries(D.months).sort((a, b) => a[0].localeCompare(b[0]));
+  const mo = moAll.slice(-18), moMax = Math.max(...mo.map(x=>x[1]),1);
+  const pk = PLAT_DATA[KEY]||{};
+  const platEff = Object.entries(pk).map(([p,v])=>{
+    const o=v.off||[0,0,0], k=v.kol||[0,0,0];
+    const n=o[0]+k[0], likes=o[0]*o[1]+k[0]*k[1];
+    return [p,n,n?Math.round(likes/n):0];
+  }).filter(x=>x[1]>0).sort((a,b)=>b[2]-a[2]);
+  const peMax = Math.max(...platEff.map(x=>x[2]),1);
+  return `<div class="stack">
+    <div class="kpis">
+      <div class="kpi"><div class="k">总赞</div><div class="v">${fmt(D.likes_sum)}</div><div class="x">已验讫 ${fmt(D.verified)} 条</div></div>
+      <div class="kpi"><div class="k">均赞</div><div class="v">${D.likes_avg}</div><div class="x">中位数待补（需逐条）</div></div>
+      <div class="kpi"><div class="k">爆文率</div><div class="v">${pct(D.viral1k,D.verified)}</div><div class="x">≥1000 赞占比</div></div>
+      <div class="kpi"><div class="k">单条峰值</div><div class="v">${fmt(D.likes_max)}</div><div class="x">全库最高</div></div>
+    </div>
+    <div class="g2">
+      <div class="sheet"><div class="hd"><h2>点赞分档</h2><div class="spacer"></div><span class="tag">条数 · 可点开</span></div>
+        <div class="bd"><div class="bars">${bkOrder.map(([k,lb])=>{
+          const lkMap = { "<100":"lo", "100-1k":"h", "1k-1w":"k", "≥1w":"w" };
+          const href = `?brand=${encodeURIComponent(KEY)}&tab=library&lk=${lkMap[k]}&s=top`;
+          return barRow(lb,bk[k],bkMax,k==="≥1w"?"var(--seal)":(k==="1k-1w"?"var(--b-LAIFE)":"var(--rule-2)"),"",href);
+        }).join("")}</div>
+          <div class="tiny" style="margin-top:10px">点任意一档 → 内容库只留这一档的具体内容。</div></div></div>
+      <div class="sheet"><div class="hd"><h2>平台效率（均赞）</h2><div class="spacer"></div><span class="tag">仅社媒可比</span></div>
+        <div class="bd"><div class="bars">${platEff.map(([p,n,avg])=>{
+          const href = `?brand=${encodeURIComponent(KEY)}&tab=library&p=${p}&s=top`;
+          return barRow((PLAT_META[p]||{name:p}).name,avg,peMax,(PLAT_META[p]||{}).kind==="媒体"?"var(--ink-4)":B.color," 赞",href);
+        }).join("")}</div></div></div>
+    </div>
+    <div class="sheet"><div class="hd"><h2>月度发布量</h2><div class="spacer"></div><span class="tag warn">受采集窗口影响</span></div>
+      <div class="bd"><div class="bars">${mo.map(([m,n])=>{
+        const href = `?brand=${encodeURIComponent(KEY)}&tab=library&s=recent&d=${m.slice(0,4)}-${m.slice(5,7)}`;
+        return barRow(m,n,moMax,B.color,"",href);
+      }).join("")}</div>
+        <div class="tiny" style="margin-top:12px">这是<b>我们采到的量</b>，不是品牌真实发布量。10 月偏高是因为抖音官号矩阵在 10-26 集中采集，
+        不能据此判断「某品牌 10 月发力」。要做真正的节奏分析，需要按日采集 + 互动数快照。</div></div></div>
+
+    <div class="sheet"><div class="hd"><h2>点赞 Top 20：具体是哪几条</h2><div class="spacer"></div>
+      <a class="btn" href="?brand=${encodeURIComponent(KEY)}&tab=library">看全部 ${fmt((brandList(KEY)||[]).length)} 条</a></div>
+      <div class="bd flush">${(brandList(KEY)||[]).slice(0,20).map(contentRow).join("") || `<div style="padding:16px" class="tiny">暂无</div>`}</div></div>
+  </div>`;
+}
+
+/* ================= ⑥ 营销策略 ================= */
+function tabStrategy() {
+  const totalV = D.verified || 1;
+  const offShare = Math.round(E.off_n/(E.off_n+E.kol_n||1)*100);
+  const topProd = prodline(KEY)[0];
+  const topShare = topProd ? Math.round(topProd[1]/totalV*100) : 0;
+  const mediaN = Object.entries(D.platform).filter(([p])=>(PLAT_META[p]||{}).kind==="媒体").reduce((s,x)=>s+x[1],0);
+  const socialN = Object.entries(D.platform).filter(([p])=>(PLAT_META[p]||{}).kind==="社媒").reduce((s,x)=>s+x[1],0);
+  return `<div class="stack">
+    <div class="note">打法是从行为反推的，不是品牌自己说的。每条判断都附了可核的数字。</div>
+    <div class="sheet"><div class="bd"><div class="strat">
+      <div class="srow"><div class="lb"><b>阵地结构</b>官号 vs 达人</div><div class="ct">
+        官号 ${E.off_n} 条（${offShare}%）、达人 ${E.kol_n} 条（${100-offShare}%）。
+        <span class="strong">官号均赞 ${E.off_avg||0}，达人均赞 ${E.kol_avg||0}</span>。
+        ${E.kol_avg > E.off_avg*3 ? "官号互动效率远低于达人——官号的作用不是做互动，是<b>占关键词位</b>：把产品名+功效词在平台内铺满，用户搜什么都能搜到自家内容。"
+          : E.off_n===0 ? "完全没有官号阵地，声量 100% 依赖外部达人，一次达人不合作就断声。"
+          : "官号仍有一定互动产出，属于双轨并行。"}
+      </div></div>
+      <div class="srow"><div class="lb"><b>单品集中度</b>押一个还是铺一片</div><div class="ct">
+        ${topProd?`第一大产品线 <span class="strong">${esc(topProd[0])}</span>，占已验讫内容 ${topShare}%。`:"无产品线数据。"}
+        ${topShare>=50 ? "典型单爆品打法：所有内容压在一个产品上，用一款打穿人群。认知锐利、投放可复用；风险是产品被替代或出问题时全盘归零。"
+          : topShare>=25 ? "主力款 + 若干副线，常见的组合打法。"
+          : "产品线高度分散，每条线都在推、每条线的量都不够形成认知。这是「产品矩阵」最常见的失败形态——看起来覆盖广，实际每条线都没打透。"}
+      </div></div>
+      <div class="srow"><div class="lb"><b>平台配比</b>社媒 vs 媒体</div><div class="ct">
+        社媒 ${socialN} 条（小红书 ${D.platform.xhs||0} / 抖音 ${D.platform.douyin||0} / 视频号 ${D.platform.shipinhao||0}），
+        媒体收录 ${mediaN} 条（百度 ${D.platform.baidu||0} / 头条 ${D.platform.toutiao||0} / 新闻源 ${D.platform.web||0}）。
+        <ul>
+          <li>${(D.platform.xhs||0)>(D.platform.douyin||0) ? "小红书是主战场，抖音是补充。" : "抖音内容量已超小红书"+(D.official_n>100?"，但主要来自官号铺量而非达人投放。":"。")}</li>
+          <li>${mediaN>50 ? `媒体侧铺了 ${mediaN} 条收录内容，在做<b>搜索结果占位</b>——用户搜品牌名时首页被自家内容填满。这块没有互动指标，但影响转化。` : "媒体侧铺量很少，搜索占位意识弱。"}</li>
+        </ul>
+      </div></div>
+      <div class="srow"><div class="lb"><b>爆文产出效率</b>多少条出一条</div><div class="ct">
+        ${D.viral1k?`每 <span class="strong">${Math.round(D.verified/D.viral1k)} 条</span>内容出一条 ≥1000 赞的爆文（共 ${D.viral1k} 条）。`:"已验讫内容里<b>没有一条过 1000 赞</b>——问题不在渠道，在内容本身没有被转发的理由。"}
+        ${KEY==="MitoQ"?"全库效率最高，说明选题和达人筛选跑通了，是可复用的模板。"
+          :KEY==="LAIFE"?"效率偏低但绝对量最大——用规模换声量，单条不追求爆，追求覆盖密度。"
+          :KEY==="塞乐瑞"?"从数据看这 159 条基本没进推荐流，得先解决「凭什么被推」，再谈数量。":""}
+      </div></div>
+      <div class="srow"><div class="lb"><b>品类词依赖</b>借不借赛道的势</div><div class="ct">
+        ${KEY==="W+端粒塔"?"NMN 出现 158 次、端粒 116 次，品牌名 116 次——内容本质是品类科普，用户记住的是 NMN 不是 W+。"
+          :KEY==="塞乐瑞"?"「干细胞」出现 33 次，品牌名只出现 19 次——用户记住的是概念，不是塞乐瑞。这是最危险的形态：花钱教育了品类，让别人收割。"
+          :KEY==="LAIFE"?"「红宝瓶」714 次远超品牌名——产品词比品牌词更响，这是好现象：用户记住的是具体产品。"
+          :"品牌词与品类词并存，属于正常的品牌+品类双词布局。"}
+      </div></div>
+    </div></div></div>
+  </div>`;
+}
+
+/* ================= ⑦ 成本与效果 ================= */
+function tabCost() {
+  const perViral = D.viral1k ? Math.round(D.verified/D.viral1k) : null;
+  const offPerDay = E.off_n ? (E.off_n/30).toFixed(1) : "0";
+  return `<div class="stack">
+    <div class="note seal"><b>先把话说清楚：成本这一栏，我们现在算不出钱。</b>
+      没有投放后台、没有达人报价、没有电商 GMV，任何 ROI 数字都是编的。
+      能算的只有「内容投入量」和「内容效率」——这两项已经能给决策用，但它们是代理指标，不是成本。</div>
+
+    <div class="sheet">
+      <div class="hd"><h2>成本项数据状态</h2><div class="spacer"></div><span class="tag void">5 / 6 项缺失</span></div>
+      <div class="bd" style="padding:4px 16px"><div class="gaps">
+        <div class="gap"><div class="nm">内容生产量</div><span class="tag ok">已有</span><div class="why">已验讫 ${fmt(D.verified)} 条，可作投入规模的代理</div></div>
+        <div class="gap"><div class="nm">官号运营人力</div><span class="tag warn">可代理</span><div class="why">${D.official_acc} 个账号，月均 ${offPerDay} 条/天 → 可估人天，但需知道团队编制</div></div>
+        <div class="gap"><div class="nm">达人合作费用</div><span class="tag void">缺失</span><div class="why">需星图/蒲公英后台报价，或合作合同台账</div></div>
+        <div class="gap"><div class="nm">信息流投放</div><span class="tag void">缺失</span><div class="why">需投放后台消耗数据</div></div>
+        <div class="gap"><div class="nm">电商 GMV</div><span class="tag void">缺失</span><div class="why">需店铺后台；没有它就无法算真实 ROI</div></div>
+        <div class="gap"><div class="nm">内容制作成本</div><span class="tag void">缺失</span><div class="why">需内部财务口径（拍摄/剪辑/设计人天）</div></div>
+      </div></div>
+    </div>
+
+    <h2>能算的部分：内容效率</h2>
+    <div class="effbar">
+      <div><div class="t">单条均赞</div><div class="n">${D.likes_avg}</div><div class="d">每投入 1 条内容换来的赞</div></div>
+      <div><div class="t">每条爆文所需内容</div><div class="n">${perViral||"—"}</div><div class="d">${perViral?"数字越小，选题命中率越高":"尚无爆文"}</div></div>
+      <div><div class="t">达人单产 : 官号单产</div><div class="n">${E.kol_avg||0} : ${E.off_avg||0}</div><div class="d">同一笔预算该给谁</div></div>
+      <div><div class="t">内容利用率</div><div class="n">${pct(D.verified,D.total)}</div><div class="d">采集到的内容里能对外用的比例</div></div>
+    </div>
+
+    <div class="sheet"><div class="hd"><h2>把成本补齐后，这张表会怎么变</h2></div>
+      <div class="bd flush"><table class="tbl">
+        <thead><tr><th>补齐的数据</th><th>能回答的问题</th><th>决策价值</th></tr></thead>
+        <tbody>
+          <tr><td class="strong">达人报价 + GMV</td><td>单个达人的投产比、哪类达人性价比最高</td><td>达人筛选从「看粉丝数」变成「看历史 ROI」</td></tr>
+          <tr><td class="strong">投放消耗</td><td>自然流量 vs 付费流量的比例，谁的爆文是真爆</td><td>避免把「投出来的量」当成「内容能力」</td></tr>
+          <tr><td class="strong">官号人力编制</td><td>每条官号内容的实际人力成本</td><td>判断官号铺量是否值得（LAIFE 官号互动极低，人力很可能远超收益）</td></tr>
+          <tr><td class="strong">我方制作成本</td><td>我方单条成本 vs 对手单条成本</td><td>同样的预算能打多少量，能不能耗过对手</td></tr>
+        </tbody></table></div>
+    </div>
+
+    <div class="note"><b>最短补齐路径：</b>① 电商后台导 GMV（日/月）——最小成本、最大信息量；
+      ② 达人合作台账（谁、多少钱、发几条、带多少互动）——Excel 就够；③ 投放后台消耗月报。
+      三项齐了，这个页面就能从「效率表」升级成「投产比表」。</div>
+  </div>`;
+}
+
+/* ================= ⑧ 生产作业 ================= */
+function tabOps() {
+  const ct = contents[KEY] || {recent:[]};
+  const recent = ct.recent.slice(0, 5);
+  return `<div class="stack">
+    <div class="note">这一页把「品牌」和「作业」接起来：这个品牌要采什么、有多少待审、在做什么内容、
+      什么时候发。点卡片右上角进入对应作业中心，品牌会自动带过去。</div>
+
+    <div class="ops">
+      <div class="opcard">
+        <div class="h"><h3>采集：这个品牌各平台的现状</h3><div class="spacer"></div>
+          <a class="btn" href="collect.html?brand=${encodeURIComponent(KEY)}">进采集中心</a></div>
+        <div class="b">
+          ${Object.entries(D.platform).sort((a,b)=>b[1]-a[1]).map(([p,n])=>{
+            const m = PLAT_META[p]||{name:p};
+            return `<div class="opline"><span>${esc(m.name)} <span class="tag ${m.kind==='媒体'?'void':''}" style="font-size:10px">${m.kind}</span></span>
+              <span class="v">${fmt(n)} 条</span></div>`;
+          }).join("")}
+          <div class="opline" style="border-top:1px solid var(--rule-2);margin-top:4px;padding-top:9px">
+            <span class="muted">上次采集</span><span class="v">2026-10-26</span></div>
+          <div class="opline"><span class="muted">采集缺口</span><span class="v">官网产品页 · 商城价格</span></div>
+        </div>
+      </div>
+
+      <div class="opcard">
+        <div class="h"><h3>审核：这个品牌待核的内容</h3><div class="spacer"></div>
+          <a class="btn" href="review.html?brand=${encodeURIComponent(KEY)}">进审核队列</a></div>
+        <div class="b">
+          <div class="opline"><span>待核内容</span><span class="v" style="font-size:15px;font-weight:600">${fmt(PENDING_N)}</span></div>
+          <div class="opline"><span class="muted">已验讫</span><span class="v">${fmt(D.verified)}</span></div>
+          <div class="opline"><span class="muted">验讫率</span><span class="v">${pct(D.verified,D.total)}</span></div>
+          <div class="opline"><span class="muted">主要待核原因</span><span class="v" style="font-family:var(--sans);font-size:11.5px">品牌词未双重命中</span></div>
+          <div class="note" style="margin-top:10px">待核内容不进任何对外页面，也不参与横评——它们只在审核队列里可见。</div>
+        </div>
+      </div>
+
+      <div class="opcard">
+        <div class="h"><h3>创作：为这个品牌做什么内容</h3><div class="spacer"></div>
+          <a class="btn" href="create.html?brand=${encodeURIComponent(KEY)}">进创作中心</a></div>
+        <div class="b">
+          <div class="opline"><span>进行中任务</span><span class="v">3</span></div>
+          <div class="opline"><span class="muted">可复用爆文结构</span><span class="v">${D.viral1k} 条</span></div>
+          <div class="opline"><span class="muted">可用素材</span><span class="v">${D.official_n>100?"本地视频 1,307 个":"素材库共用"}</span></div>
+          <div style="margin-top:10px">
+            <div class="tiny" style="margin-bottom:6px">最近发布的内容（可作为选题参考）</div>
+            ${recent.map(r=>`<div style="font-size:11.5px;color:var(--ink-3);padding:4px 0;border-bottom:1px solid var(--rule);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.t)}</div>`).join("")}
+          </div>
+        </div>
+      </div>
+
+      <div class="opcard">
+        <div class="h"><h3>发布：排期与归档</h3><div class="spacer"></div>
+          <a class="btn" href="publish.html?brand=${encodeURIComponent(KEY)}">进发布管理</a></div>
+        <div class="b">
+          <div class="opline"><span>待发布</span><span class="v">2</span></div>
+          <div class="opline"><span class="muted">本月已发</span><span class="v">5</span></div>
+          <div class="opline"><span class="muted">发布方式</span><span class="v" style="font-family:var(--sans);font-size:11.5px">发布包（人工）</span></div>
+          <div class="note" style="margin-top:10px">阶段一不接 API 直发：生成发布包（标题/正文/话题/图片路径）人工粘贴，
+            避免账号风险，也便于逐条留痕。</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ================= 渲染 ================= */
+const RENDER = { overview:tabOverview, products:tabProducts, channels:tabChannels, library:tabLibrary,
+                 performance:tabPerf, strategy:tabStrategy, cost:tabCost, ops:tabOps };
+const AVAIL = IS_CAT ? ["overview","library"] : TABS.map(t=>t[0]);
+
+function bootBrand() {
+  document.getElementById("app").innerHTML = `
+    ${head()}
+    <div class="tabs">
+      ${TABS.map(([id,lb])=>{
+        const q = new URLSearchParams(location.search); q.set("tab", id);
+        const ok = AVAIL.includes(id);
+        return `<a href="${ok?"?"+q.toString():"#"}" class="${TAB===id?'on':''}" style="${ok?"":"opacity:.3;cursor:not-allowed"}">${lb}</a>`;
+      }).join("")}
+    </div>
+    ${(RENDER[TAB] && AVAIL.includes(TAB)) ? RENDER[TAB]() : tabOverview()}
+  `;
+  if (TAB === "library") mountLibrary();
+}
+window.__bootBrand = bootBrand;
+/* 清单脚本已就绪（命中缓存）就直接渲染，否则等它 onload 回调 */
+if (brandList(KEY)) bootBrand();
+</script>
+</body>
+</html>

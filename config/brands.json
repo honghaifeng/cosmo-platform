@@ -1,0 +1,467 @@
+{
+  "brands": [
+    {
+      "name": "MitoQ",
+      "aliases": [
+        "MitoQ",
+        "mitoq"
+      ],
+      "keywords": [
+        "MitoQ",
+        "MitoQ 怎么样",
+        "MitoQ 测评",
+        "MitoQ 智商税",
+        "经典胶囊 pure",
+        "奶蓟草胶囊",
+        "姜黄素Pro",
+        "舒心Pro",
+        "衡糖胶囊"
+      ],
+      "channels_accounts": [
+        {
+          "account": "MitoQ",
+          "auth": "企业认证",
+          "status": "官方号（已核实）",
+          "source": "weixin.qq.com/sph/AhVpQuhEN4"
+        }
+      ],
+      "products": [
+        "经典胶囊 pure",
+        "奶蓟草胶囊",
+        "姜黄素Pro",
+        "舒心Pro",
+        "衡糖胶囊",
+        "明眸胶囊",
+        "锐智胶囊",
+        "骨赋能胶囊",
+        "解压胶囊",
+        "净肝胶囊",
+        "高纯鱼油"
+      ],
+      "official_channels": {
+        "website": "https://www.mitoqcn.com",
+        "shipinhao": [
+          {
+            "account": "MitoQ",
+            "auth": "企业认证"
+          }
+        ],
+        "ecommerce": [
+          "天猫国际",
+          "京东国际"
+        ],
+        "wechat_gzh": null,
+        "xhs": null,
+        "douyin_accounts": [
+          {
+            "account": "MitoQ海外旗舰店",
+            "sec_uid": "MS4wLjABAAAAO-nC4iVccqpymzk0yHRsaX0GlkJblm-HVF7PhebmwQ3ocJJ1BDrKSFccyqm05OFj"
+          },
+          {
+            "account": "MitoQ品牌直播间",
+            "sec_uid": "MS4wLjABAAAARfpOxYnxkX1R8ssp0OoMrARJuAgvDcJE74XnzjXpB1nH_hPXqhUGsSJ4KeBxQWnz"
+          },
+          {
+            "account": "MitoQ(HLCSL777)",
+            "sec_uid": "MS4wLjABAAAA9YmCcKRBEUcw0DKRgddwvPD4VzSQlxoeZAfrcA5c5aYPpMUwIjlJWqOx50XZsvZc"
+          },
+          {
+            "account": "MitoQ小助手-小Q",
+            "sec_uid": "MS4wLjABAAAAeLS9vNem64wV9qMHqP3S5NtH7LhiseM83niSkr53I2HsAnjSwRpMr-VSwaFtTIRi"
+          },
+          {
+            "account": "MitoQ营养品海外旗舰店",
+            "sec_uid": "MS4wLjABAAAAppdxPmjRi4PcoSokhRGKwXe5jFfGynBvvvkbkKV1B65SZlkT4yBdnJPTaYiQLEee"
+          },
+          {
+            "account": "MitoQ小助手1",
+            "sec_uid": "MS4wLjABAAAARF1-1D7_BVaWR9uaVIieCOoRa1wZyaJBjyH3bSbT25zfzxfhTVo0_WxcUXDsr3SJ"
+          },
+          {
+            "account": "MitoQ小助手2",
+            "sec_uid": "MS4wLjABAAAA8UUhhrdjN4t49kqDJC_VqckN_41EPqVrb0krhYNZAVhqF13SYJXYzhOo9p3Rq1_w"
+          },
+          {
+            "account": "MitoQ小助理",
+            "sec_uid": "MS4wLjABAAAAfpTTQC52Jy514hgqlTOFTW4iw6UCAhdMnW9IrtM2NXIpG1m34Pp3Ojwbn_geCIDR"
+          },
+          {
+            "account": "MitoQ小助手-Mike",
+            "sec_uid": "MS4wLjABAAAA868BNAm8ZrEFCi9M2BxBz_TlWhMNGkCelgOI_8-kHYNMha_nTJ7RwmOJUPHctoQD"
+          }
+        ],
+        "douyin": "矩阵号 9 个（2026-10-26 核实，含认证旗舰店）"
+      },
+      "knowledge_path": "knowledge/competitors/MitoQ.md"
+    },
+    {
+      "name": "GRANVER",
+      "aliases": [
+        "GRANVER",
+        "granver",
+        "吉力威",
+        "吉瑞维",
+        "吉清肺",
+        "吉利肝",
+        "Granver"
+      ],
+      "keywords": [
+        "GRANVER",
+        "GRANVER 吉力威",
+        "GRANVER 测评",
+        "吉利肝",
+        "吉清肺",
+        "吉力威"
+      ],
+      "channels_accounts": [
+        {
+          "account": "满益奶",
+          "auth": "未认证",
+          "status": "达人/KOC 种草号（非官方）",
+          "source": "weixin.qq.com/sph/AwotcE6Tdl"
+        }
+      ],
+      "products": [
+        "吉利肝",
+        "吉清肺",
+        "吉力威"
+      ],
+      "official_channels": {
+        "website": "https://www.granverus.com",
+        "shipinhao": [
+          {
+            "account": "满益奶",
+            "auth": "未认证(达人种草号)"
+          }
+        ],
+        "ecommerce": [
+          "淘宝"
+        ],
+        "wechat_gzh": null,
+        "xhs": null,
+        "douyin_accounts": [
+          {
+            "account": "Granver官方海外旗舰店",
+            "sec_uid": "MS4wLjABAAAAjzA_J58W4UL5i_pwKr4R2L2B-sBimDt3gefVFozveTdVNjJgkdkfbeolfCPUowyC"
+          },
+          {
+            "account": "GRANVER吉悦巢",
+            "sec_uid": "MS4wLjABAAAAdyKizkyaSCASN30WSW-0fltgZcfOQuuoDSGykLigeVNV6AA1hNZXsBxNHr1AW3gr"
+          },
+          {
+            "account": "GRANVER吉返盾",
+            "sec_uid": "MS4wLjABAAAA91MyFsMsH8BQtYPVbRqbZ_tX4z32RFjj-2d2eYatqfSdvmjZopBvFkbcUUWx1PS6"
+          },
+          {
+            "account": "GRANVER吉利肝",
+            "sec_uid": "MS4wLjABAAAAxi-FqYmk5Ckw8kMe2iaKIZYMdCEn_j2zcOPdFd1l-Zc"
+          },
+          {
+            "account": "GRANVER吉清肺",
+            "sec_uid": "MS4wLjABAAAA4O2Liv3HWkdPM8yBPhDpB-siPZauEfV8tg2bROedxUGt6ROg4CkoR9mvWebBFBA3"
+          }
+        ],
+        "douyin": "矩阵号 5 个（2026-10-26 核实，含认证旗舰店）"
+      },
+      "knowledge_path": "knowledge/competitors/GRANVER.md"
+    },
+    {
+      "name": "LAIFE",
+      "aliases": [
+        "LAIFE",
+        "laife",
+        "乐悦泰",
+        "乐轻肝",
+        "乐梵",
+        "LAIFE乐梵"
+      ],
+      "keywords": [
+        "LAIFE",
+        "LAIFE 乐悦泰",
+        "LAIFE 测评",
+        "LAIFE 智商税",
+        "红宝瓶",
+        "乐悦泰",
+        "乐轻肝",
+        "乐维源",
+        "乐净肺"
+      ],
+      "channels_accounts": [
+        {
+          "account": "LAIFE乐梵",
+          "auth": "企业认证",
+          "status": "官方号（已核实）",
+          "source": "weixin.qq.com/sph/AUmqIqVJAY"
+        }
+      ],
+      "products": [
+        "红宝瓶",
+        "乐悦泰",
+        "乐轻肝",
+        "乐维源",
+        "乐净肺",
+        "乐返盾",
+        "紫宝瓶",
+        "橙宝瓶",
+        "巢汐Tide",
+        "乐腺舒",
+        "肌龄锁",
+        "3S女人味胶囊",
+        "红气瓶"
+      ],
+      "official_channels": {
+        "website": null,
+        "shipinhao": [
+          {
+            "account": "LAIFE乐梵",
+            "auth": "企业认证"
+          }
+        ],
+        "ecommerce": [
+          "京东 LAIFE海外官方旗舰店",
+          "天猫",
+          "抖音旗舰店"
+        ],
+        "offline": [
+          "新加坡实体门店",
+          "迪拜长寿诊所"
+        ],
+        "wechat_gzh": null,
+        "xhs": null,
+        "douyin_accounts": [
+          {
+            "account": "LAIFE海外旗舰店",
+            "sec_uid": "MS4wLjABAAAA4UxbhUy2qZYW-Av7iaYfCryhVap9dfw2YEvYyoO4DXlJHPdm0qOjneZbNplb8EfJ"
+          },
+          {
+            "account": "LAIFE营养膳食海外旗舰店",
+            "sec_uid": "MS4wLjABAAAA4EijI60v_n4XVoDh1_Sz0wZ3oUf3afM7uBy-HTBF0M0Zw24gg_fS3WowqqzdMYsu"
+          },
+          {
+            "account": "LAIFE乐梵红宝瓶(LAIFE2766)",
+            "sec_uid": "MS4wLjABAAAAUReQr_SZu_WqF1VZZ58ScoBYFkFQ2Nff-zs9DIZER78"
+          },
+          {
+            "account": "LAIFE乐梵红宝瓶3.0胶囊",
+            "sec_uid": "MS4wLjABAAAA64IG1YAIERye4aUybEVDyvbRJZGMy-IuvmgXXEHHLkA"
+          },
+          {
+            "account": "LAIFE乐梵4.0反重力胶囊",
+            "sec_uid": "MS4wLjABAAAAsfg9ChzmL7wLPq1JPSZp-rZh5nPlwPHcJD0_Ey_WeSw1oDkrIEX3xxqJq7S6AN7a"
+          },
+          {
+            "account": "LAIFE乐梵胶囊",
+            "sec_uid": "MS4wLjABAAAAK_35M1ATVW1ntcJ3QIGYZ5Ezjr9Q0RD20ZcdDg7C-cHTMBPPVsTGZ6gLlLOUaLBk"
+          },
+          {
+            "account": "LAIFE乐梵红宝瓶(LAIFEBoston)",
+            "sec_uid": "MS4wLjABAAAAFhEmTol_xiQ8ZS5N5EV4CNS3xiZkGEkDl4tk5a5Sg2HE5jT3hNs1LOTUfyZ82RwZ"
+          },
+          {
+            "account": "LAIFE乐梵红宝瓶(LAIFE2024)",
+            "sec_uid": "MS4wLjABAAAArFiEi2_trUsFDhPOXK8AcUYIXRepeNyU8VtDY-F3ZFA2k1aaC92yz6FdXy-yTuPl"
+          },
+          {
+            "account": "LAIFE小助理",
+            "sec_uid": "MS4wLjABAAAARIHHIu2oq1FkkoYPOMfdzyD_krkpqUjGorYPXVsf7VJTV3Usu8SrLexaqpd6zD-Q"
+          },
+          {
+            "account": "LAIFE乐梵小助理",
+            "sec_uid": "MS4wLjABAAAAUeQyM8jXMoJ0SRYnWQgbDdzTFNCmNOTad8it9_M-4BNbaQmReFC25LmY9RzAS1NA"
+          },
+          {
+            "account": "LAIFE乐梵小助理2",
+            "sec_uid": "MS4wLjABAAAAHv3G-H_5eY2qNkXswgzO25ROShRLBdSRP7PDNxmKpM4"
+          },
+          {
+            "account": "Laife乐梵健康师",
+            "sec_uid": "MS4wLjABAAAA96qLaevh8pNKFzM93CfuRqjZRpAk6Xe5pG7r4CocNIaSApaiinQYy2PBOhltjm2E"
+          },
+          {
+            "account": "LAIFE乐梵中国区总裁(方)",
+            "sec_uid": "MS4wLjABAAAAVFFpmCOUgKHq1o6frjweGA8jYv4PuaaaYsu8haegbPImHSHAQrsVmo_usUZ9Ydnr"
+          }
+        ],
+        "douyin": "矩阵号 13 个（2026-10-26 核实，含认证旗舰店）"
+      },
+      "knowledge_path": "knowledge/competitors/LAIFE.md"
+    },
+    {
+      "name": "塞乐瑞",
+      "aliases": [
+        "塞乐瑞",
+        "celerui",
+        "赛乐瑞",
+        "Cellerator"
+      ],
+      "keywords": [
+        "塞乐瑞",
+        "塞乐瑞 怎么样",
+        "塞乐瑞 测评",
+        "赛乐瑞PRO",
+        "stemax",
+        "莱复隆",
+        "精倍莱",
+        "赛特茵"
+      ],
+      "channels_accounts": [],
+      "products": [
+        "赛乐瑞PRO",
+        "stemax",
+        "莱复隆",
+        "精倍莱",
+        "赛特茵",
+        "愈龄菌",
+        "勉益莱",
+        "Super-K",
+        "巢悦莱"
+      ],
+      "official_channels": {
+        "website": null,
+        "ecommerce": [
+          "京东",
+          "天猫"
+        ],
+        "shipinhao": [],
+        "wechat_gzh": null,
+        "xhs": null
+      },
+      "knowledge_path": "knowledge/competitors/塞乐瑞.md"
+    },
+    {
+      "name": "W+端粒塔",
+      "aliases": [
+        "W+端粒塔",
+        "端粒塔",
+        "W+duanlta",
+        "duanlta"
+      ],
+      "keywords": [
+        "W+端粒塔",
+        "W+duanlta",
+        "端粒塔 测评",
+        "NMN 25000"
+      ],
+      "channels_accounts": [
+        {
+          "account": "W+端粒塔官方营养师",
+          "auth": "未认证",
+          "status": "疑似官方矩阵号（名称含官方营养师）",
+          "source": "weixin.qq.com/sph/AGP7UHcUYn"
+        }
+      ],
+      "products": [
+        "NMN 25000"
+      ],
+      "official_channels": {
+        "website": null,
+        "shipinhao": [
+          {
+            "account": "W+端粒塔官方营养师",
+            "auth": "未认证(疑似官方矩阵)"
+          }
+        ],
+        "wechat_gzh": null,
+        "xhs": null,
+        "douyin_accounts": [
+          {
+            "account": "端粒塔NMN",
+            "sec_uid": "MS4wLjABAAAA1vBAANSZLKU0HwCyK-MTNBU7WjFtZXK6Ejy0XEJBzmcbmKVh0U2EX63g6UwDdbC8"
+          },
+          {
+            "account": "端粒塔",
+            "sec_uid": "MS4wLjABAAAAD0CBsmDAVcltoHI-iGSW3fetAlm2AAGjlpkt90KrljBzqoSVLhCCO6KjOVU-dPzy"
+          },
+          {
+            "account": "W+端粒塔nmm",
+            "sec_uid": "MS4wLjABAAAApwiGFSkVjPz_ukTlN2Vlx5ZKxVRN5maiMKKGTp0RQyUbcYn3Z86aWRPPVfkTrOJb"
+          }
+        ],
+        "douyin": "矩阵号 3 个（2026-10-26 核实，含认证旗舰店）"
+      },
+      "knowledge_path": "knowledge/competitors/W+端粒塔.md"
+    },
+    {
+      "name": "COSMOBOUNTY",
+      "is_own_brand": true,
+      "aliases": [
+        "COSMOBOUNTY",
+        "COSMO BOUNTY",
+        "cosmobounty",
+        "Cosmo Bounty",
+        "科诗博缇",
+        "Cosmo bounty"
+      ],
+      "products": [
+        "黑白分时胶囊",
+        "CytoVigor",
+        "CytoRenova",
+        "日活瓶",
+        "夜修瓶",
+        "BoneSync",
+        "LiverSync",
+        "CycleSync"
+      ],
+      "ingredients": [
+        "NR",
+        "麦角硫因",
+        "非瑟酮",
+        "脂质体槲皮素",
+        "PQQ",
+        "环黄芪醇",
+        "南非醉茄",
+        "亚精胺",
+        "尿石素A",
+        "羟基酪醇",
+        "双甘氨酸镁"
+      ],
+      "keywords": [
+        "COSMOBOUNTY",
+        "COSMO BOUNTY",
+        "黑白分时胶囊",
+        "分时抗衰",
+        "日活瓶",
+        "夜修瓶",
+        "麦角硫因 抗衰",
+        "NR 麦角硫因",
+        "科诗博缇",
+        "节律营养",
+        "Cosmo bounty 节律抗衰",
+        "Cosmobounty 抗衰胶囊",
+        "Cosmobounty 黑白分时胶囊"
+      ],
+      "knowledge_path": "knowledge/cosmobounty/README.md",
+      "keywords_path": "knowledge/cosmobounty/keywords.json",
+      "notes": "自有品牌。资料见 knowledge/cosmobounty/，搜索词按平台分组见 keywords.json",
+      "keyword_groups": {
+        "xhs": [
+          "Cosmo bounty",
+          "Cosmo bounty 节律抗衰",
+          "Cosmobounty 抗衰胶囊",
+          "Cosmobounty 黑白分时胶囊",
+          "日活瓶",
+          "夜修瓶"
+        ],
+        "wechat": [
+          "Cosmo bounty",
+          "黑白分时胶囊"
+        ],
+        "baidu": [
+          "COSMO BOUNTY",
+          "科诗博缇",
+          "节律营养",
+          "黑白分时胶囊"
+        ]
+      }
+    }
+  ],
+  "platforms": [
+    "baidu",
+    "toutiao",
+    "xhs",
+    "douyin",
+    "shipinhao"
+  ],
+  "notes": "关键词为品牌名+通用评价词；各品牌具体产品线词需业务确认后扩展。2026-10-22 新增 channels_accounts 字段，记录视频号账号核实结果；LAIFE 官方视频号「LAIFE乐梵」为企业认证，GRANVER 中文产品名「吉利肝」。 2026-10-23 新增 products 与 official_channels 字段（产品线来自采集库+官网核实；official_channels 中 None=待核实）。媒体素材落地 knowledge/media/<brand>/（post=内容配图, video=视频, logo/product=待人工补官方素材），清单见 knowledge/media/manifest.json。 2026-10-26 新增 douyin_accounts 字段：LAIFE 13 号/MitoQ 9 号/GRANVER 5 号/W+端粒塔 3 号矩阵登记（搜索核实+人工剔噪，剔掉乐梵瓷砖、塞乐瑞酒吧等同名噪声）；塞乐瑞、COSMOBOUNTY 抖音无官号。",
+  "media_root": "knowledge/media"
+}

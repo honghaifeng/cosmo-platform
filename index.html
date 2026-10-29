@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>逆龄观察 · 每日大健康内容情报</title>
+<style>
+  :root{--ink:#1a1d24;--sub:#5b6472;--line:#e4e7ee;--bg:#f6f7fa;--card:#fff;
+        --red:#c7402d;--amber:#b97a1a;--teal:#0e7a6e;--blue:#2b5dad;--gray:#8a93a3;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.6}
+  a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 20px;position:sticky;top:0;z-index:20}
+  .hrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  h1{font-size:16px;font-weight:700}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:#eef1f6;border-radius:20px;padding:3px 11px;font-size:11.5px;color:var(--sub)}
+  .chip b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .tabs{display:flex;gap:4px;margin-top:10px}
+  .tab{padding:6px 14px;border-radius:8px;cursor:pointer;color:var(--sub);font-size:13px}
+  .tab.on{background:#2b5dad;color:#fff}
+  main{display:flex;height:calc(100vh - 96px)}
+  aside{width:196px;flex-shrink:0;border-right:1px solid var(--line);background:var(--card);padding:14px;overflow:auto}
+  .fgroup{margin-bottom:18px}
+  .fgroup h4{font-size:11px;color:var(--gray);letter-spacing:.5px;margin-bottom:6px;font-weight:600}
+  .fitem{padding:5px 8px;border-radius:6px;cursor:pointer;color:var(--sub);display:flex;justify-content:space-between}
+  .fitem:hover{background:#f2f4f8}
+  .fitem.on{background:#e8eefb;color:var(--blue);font-weight:600}
+  .fitem span{font-size:11px;color:var(--gray)}
+  .search{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;outline:none}
+  .search:focus{border-color:var(--blue)}
+  section.list{flex:1;overflow:auto;padding:14px 18px}
+  table.raw{min-width:1600px;font-size:11.5px}
+  table.raw td{max-width:260px;white-space:normal;word-break:break-all;color:#333}
+  table.raw td.num2{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+  table.raw a{word-break:break-all}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:top}
+  th{background:#eef1f6;font-weight:600;color:var(--sub);position:sticky;top:0;z-index:2;font-size:11.5px}
+  tbody tr{cursor:pointer}tbody tr:hover{background:#f7f9fc}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ttl{max-width:520px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+  .badge{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:9px;white-space:nowrap}
+  .b-full{background:#e3f2ec;color:var(--teal)}.b-partial{background:#fdf0e3;color:var(--amber)}
+  .b-serp{background:#eceef3;color:var(--gray)}.b-missing{background:#fbe9e7;color:var(--red)}
+  .p-xhs{color:#c7402d}.p-douyin{color:#1a1d24}.p-baidu{color:#2b5dad}.p-toutiao{color:#b5452b}.p-web{color:#5b6472}
+  .mask{position:fixed;inset:0;background:rgba(20,24,32,.45);display:none;z-index:50}
+  .mask.on{display:block}
+  .drawer{position:fixed;top:0;right:0;bottom:0;width:min(1180px,96vw);background:var(--bg);z-index:60;
+          transform:translateX(102%);transition:transform .22s ease;display:flex;flex-direction:column;box-shadow:-8px 0 30px rgba(0,0,0,.12)}
+  .drawer.on{transform:none}
+  .dhead{background:var(--card);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .dhead .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .close{margin-left:auto;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;padding:0 4px}
+  .dbody{display:flex;flex:1;overflow:hidden}
+  .left{flex:1.35;overflow:auto;padding:18px 20px}
+  .right{width:400px;flex-shrink:0;border-left:1px solid var(--line);background:var(--card);overflow:auto;padding:16px 18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .card h3{font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .meta{color:var(--sub);font-size:11.5px;margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap}
+  .body-text{white-space:pre-wrap;font-size:13.5px;line-height:1.85;color:#232830}
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+  .gallery img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;background:#eef1f6}
+  .video-box{margin-top:10px}
+  .vcover{width:100%;max-height:300px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+  .cmt{border-top:1px solid var(--line);padding:7px 0;font-size:12.5px;color:#333}
+  .cmt b{color:var(--gray);font-weight:400;font-size:11px;margin-left:6px}
+  .score{display:flex;align-items:center;gap:8px;margin:6px 0}
+  .track{flex:1;height:8px;background:#eef1f6;border-radius:5px;overflow:hidden}
+  .fill{height:100%;border-radius:5px}
+  .kw{display:inline-block;background:#eef1f6;border-radius:12px;padding:2px 9px;font-size:11.5px;margin:2px 4px 2px 0;color:#3a4352}
+  .kw.hot{background:#e8eefb;color:var(--blue);font-weight:600}
+  .risk{background:#fdf3f1;border:1px solid #eccfca;border-radius:8px;padding:8px 11px;font-size:12px;color:#8c2f22;margin-bottom:6px}
+  .advice{background:#eff7f4;border:1px solid #cde5dc;border-radius:8px;padding:8px 11px;font-size:12px;margin-bottom:6px}
+  .note{color:var(--sub);font-size:11.5px;margin:3px 0 0}
+  .empty{padding:40px;text-align:center;color:var(--gray)}
+  .btn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 10px;font-size:11.5px;cursor:pointer;color:var(--sub)}
+  .btn:hover{border-color:var(--blue);color:var(--blue)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1d24;color:#fff;padding:8px 16px;border-radius:8px;font-size:12.5px;opacity:0;transition:.3s;z-index:99}
+  .toast.on{opacity:1}
+  #gate{position:fixed;inset:0;background:var(--bg);display:none;align-items:center;justify-content:center;z-index:200}
+  #gate.on{display:flex}
+  .gatebox{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 28px;width:min(420px,92vw);text-align:center}
+  .gatebox h2{font-size:16px;margin-bottom:6px}
+  .gatebox p{color:var(--sub);font-size:12.5px;margin-bottom:14px}
+  .gatebox input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px;outline:none;margin-bottom:10px}
+  .gatebox button{width:100%;padding:9px;border:0;border-radius:8px;background:#2b5dad;color:#fff;font-size:13px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="gate"><div class="gatebox">
+  <h2>逆龄观察</h2>
+  <p>每日大健康内容情报 · 浏览无需密钥；此框仅在高级接口（SQL/AI）被拒时出现</p>
+  <input id="gate-key" placeholder="粘贴密钥" autocomplete="off">
+  <button onclick="saveKey()">进入</button>
+</div></div>
+
+<header>
+  <div class="hrow">
+    <h1>逆龄观察 <span style="font-weight:400;font-size:11.5px;color:var(--gray);margin-left:6px">每日大健康内容情报</span></h1>
+    <div class="chips" id="chips"></div>
+    <button class="btn" style="margin-left:auto" onclick="loadAll()">刷新</button>
+  </div>
+  <div class="tabs">
+    <div class="tab on" data-tab="lib" onclick="switchTab('lib')">内容库</div>
+    <div class="tab" data-tab="pending" onclick="switchTab('pending')">数据完整度</div>
+    <div class="tab" data-tab="raw" onclick="switchTab('raw')">原始数据</div>
+    <div class="tab" data-tab="report" onclick="switchTab('report')">分析报告</div>
+    <div class="tab" data-tab="brand" onclick="switchTab('brand')">竞品分析</div>
+    <div class="tab" data-tab="kb" onclick="switchTab('kb')">品牌知识库</div>
+    <div class="tab" data-tab="docs" onclick="switchTab('docs')">档案库</div>
+  </div>
+</header>
+<main>
+  <aside id="side"></aside>
+  <section class="list" id="list"></section>
+</main>
+
+<div class="mask" id="mask" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="dhead">
+    <span class="badge" id="d-badge"></span>
+    <span class="t" id="d-title">—</span>
+    <a id="d-link" href="#" target="_blank" rel="noopener" style="font-size:11.5px">打开原文 ↗</a>
+    <span class="close" onclick="closeDrawer()">×</span>
+  </div>
+  <div class="dbody">
+    <div class="left" id="d-left"></div>
+    <div class="right" id="d-right"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const PNAME = {xhs:'小红书', douyin:'抖音', baidu:'百度', toutiao:'今日头条', web:'新闻源', shipinhao:'视频号'};
+let state = {tab:'lib', brand:'', platform:'', ctype:'', q:'', sort:'likes', level:''};
+let stats = null;
+let KEY = new URLSearchParams(location.search).get('k')
+        || new URLSearchParams(location.search).get('sharecode')
+        || localStorage.getItem('cb_token') || '';
+
+const esc = s => (s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+// null/undefined 显示「—」而不是 0：百度/头条这类文章源没有点赞收藏，
+// 显示 0 会被误读成「这条没人看」。真实的 0 仍然显示 0。
+const fmt = n => (n===null||n===undefined||n==='') ? '—' : Number(n).toLocaleString('en-US');
+
+function saveKey(){
+  const v = document.getElementById('gate-key').value.trim();
+  if(!v) return;
+  localStorage.setItem('cb_token', v); KEY = v;
+  document.getElementById('gate').classList.remove('on');
+  loadAll();
+}
+
+const SHARECODE = new URLSearchParams(location.search).get('sharecode') || '';
+// 完整分享链接（平台要求带 sharecode 才路由）。页面若被截断打开，用它一键回到完整地址。
+const SHARE_FULL = 'https://niling-guancha.app.workbuddy.host/?sharecode=YZVAC6FEMC';
+if(!SHARECODE && !new URLSearchParams(location.search).get('scfix')
+   && /workbuddy\.host$/.test(location.hostname)){
+  location.replace(SHARE_FULL + '&scfix=1');
+}
+
+// 站内媒体（/cdn/、/kb/、/note/）也必须带 sharecode，否则发布平台的路由会
+// 直接返回「链接不完整」403 —— 图片和视频就全是坏的。外链原样返回。
+const mediaUrl = u => {
+  if(!u) return u;
+  if(/^https?:\/\//i.test(u)) return u;
+  return u + (u.includes('?') ? '&' : '?') + 'sharecode=' + encodeURIComponent(SHARECODE);
+};
+
+const sleepMs = ms => new Promise(r=>setTimeout(r,ms));
+
+// 网关拒绝（非 JSON 响应）到底是哪种情况 —— 以前一律说「缺少 sharecode」，
+// 应用重启那几秒也会报这句，把人带偏。这里按状态码给真实原因。
+function gateHint(status){
+  if(status===404) return '发布平台没找到应用实例，常见于刚重新发布、服务正在重启的几秒内。';
+  if(status===403) return '缺少 sharecode 访问参数，或分享链接已过期。';
+  if(status===429) return '请求太频繁，被平台限流。';
+  if(status>=500) return '应用服务暂时不可用，正在自动重试。';
+  return '请求被发布平台网关拦截。';
+}
+
+async function api(path){
+  // 发布平台要求：每个请求 URL 必须带 sharecode 才路由；且代理会剥离请求头，
+  // 所以密钥（k）和 sharecode 都拼进 URL。
+  // 平台在重发布窗口内会返回 404/502 的 HTML 页，这类失败是瞬时的 ——
+  // 自动退避重试 3 次，别把一次抖动直接渲染成「页面挂了」。
+  const sep = path.includes('?') ? '&' : '?';
+  let extra = 'k=' + encodeURIComponent(KEY);
+  if(SHARECODE) extra += '&sharecode=' + encodeURIComponent(SHARECODE);
+  const url = path + sep + extra;
+  let last = null;
+  for(let i=0; i<3; i++){
+    let r;
+    try{ r = await fetch(url, {cache:'no-store'}); }
+    catch(e){ last = new Error('网络中断：'+(e.message||e)); await sleepMs(500*(i+1)); continue; }
+    if(r.status === 401){ document.getElementById('gate').classList.add('on'); throw new Error('unauthorized'); }
+    const ct = (r.headers.get('content-type')||'');
+    if(ct.includes('json')){
+      if(r.ok) return r.json();
+      const j = await r.json().catch(()=>null);
+      last = new Error('接口返回 HTTP '+r.status+(j&&j.error ? '（'+j.error+'）' : ''));
+      if(r.status < 500) throw last;   // 4xx 是参数/代码问题，重试无意义
+      await sleepMs(500*(i+1)); continue;
+    }
+    last = new Error('HTTP '+r.status+'　'+gateHint(r.status)+(i<2 ? '（已自动重试，请稍候）' : '（重试 3 次仍失败）'));
+    await sleepMs(600*(i+1));
+  }
+  throw last;
+}
+function showErr(el, e){
+  const msg = (e && e.message) || String(e);
+  el.innerHTML = '<div class="empty" style="color:#b4543f">加载失败：'+esc(msg)+
+    '<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'+
+      '<button class="btn" onclick="reload()" style="cursor:pointer">↻ 重试</button>'+
+      '<a class="btn" href="'+SHARE_FULL+'" style="text-decoration:none">用完整分享链接打开</a>'+
+    '</div>'+
+    (SHARECODE ? '' : '<div style="color:var(--gray);font-size:12px;margin-top:8px">当前地址里没有 ?sharecode= 参数</div>')+
+  '</div>';
+}
+
+async function loadStats(){
+  stats = await api('/api/stats');
+  const v = stats.data_version || {};
+  // 待补全只算「真的缺内容」的两级：仅 SERP 收录 + 仅标题。
+  // partial（30–219 字）是有正文只是偏短，视频平台正文本来就短，
+  // 把它算成「待补全」会让数字虚高、也不符合事实。
+  const pend = (stats.fulltext_levels.serp||0)+(stats.fulltext_levels.missing||0);
+  document.getElementById('chips').innerHTML = `
+    <span class="chip">数据版本 <b>${v.date || '—'}</b></span>
+    <span class="chip">内容 <b>${stats.contents}</b></span>
+    <span class="chip" title="按标题去重：剔除同文案批量投放后的独立观点数">独立观点 <b>${stats.unique_titles||stats.contents}</b></span>
+    ${stats.scene_track?`<span class="chip" title="品类/场景/痛点类笔记，独立轨道，不参与六品牌横评">场景轨道 <b>${stats.scene_track}</b></span>`:''}
+    <span class="chip">评论 <b>${fmt(stats.comments)}</b></span>
+    <span class="chip">全文 <b>${stats.fulltext_levels.full||0}</b></span>
+    <span class="chip">待补全 <b>${pend}</b></span>`;
+  renderSide();
+}
+
+function renderSide(){
+  const pf = stats.by_platform.map(p=>`<div class="fitem ${state.platform===p.platform?'on':''}" onclick="setF('platform','${p.platform}')">${PNAME[p.platform]||p.platform}<span>${p.n}</span></div>`).join('');
+  const br = stats.by_brand.map(b=>`<div class="fitem ${state.brand===b.brand?'on':''}" onclick="setF('brand','${b.brand}')">${b.brand}<span>${b.n}</span></div>`).join('');
+  const libOnly = state.tab!=='raw' && state.tab!=='report';
+  const tp = stats.by_nature.filter(t=>t.nature).map(t=>`<div class="fitem ${state.ctype===t.nature?'on':''}" onclick="setF('ctype','${t.nature}')">${t.nature}<span>${t.n}</span></div>`).join('');
+  document.getElementById('side').innerHTML = `
+    <div class="fgroup"><h4>搜索</h4><input class="search" id="q" placeholder="标题/正文关键词" value="${esc(state.q)}" oninput="onSearch(this.value)"></div>
+    <div class="fgroup"><h4>品牌</h4><div class="fitem ${!state.brand?'on':''}" onclick="setF('brand','')">全部<span>${stats.contents}</span></div>${br}</div>
+    <div class="fgroup"><h4>平台</h4><div class="fitem ${!state.platform?'on':''}" onclick="setF('platform','')">全部</div>${pf}</div>
+    ${libOnly?`<div class="fgroup"><h4>内容性质</h4><div class="fitem ${!state.ctype?'on':''}" onclick="setF('ctype','')">全部</div>${tp}</div>
+    <div class="fgroup"><h4>排序</h4>
+      <div class="fitem ${state.sort==='likes'?'on':''}" onclick="setF('sort','likes')">按点赞</div>
+      <div class="fitem ${state.sort==='seo'?'on':''}" onclick="setF('sort','seo')">按 SEO 分</div>
+      <div class="fitem ${state.sort==='geo'?'on':''}" onclick="setF('sort','geo')">按 GEO 分</div>
+      <div class="fitem ${state.sort==='time'?'on':''}" onclick="setF('sort','time')">按发布时间</div>
+    </div>`:''}`;
+}
+
+let searchTimer;
+function reload(){
+  if(state.tab==='brand') return; // 静态报告，无筛选
+  const el = document.getElementById('list');
+  const safe = p => Promise.resolve(p()).catch(e => { console.error(e); showErr(el, e); });
+  el.innerHTML = '<div class="empty">加载中…</div>';
+  if(state.tab==='raw') safe(loadRaw);
+  else if(state.tab==='report') safe(loadReport);
+  else if(state.tab==='kb') safe(loadKB);
+  else if(state.tab==='docs') safe(loadDocs);
+  else safe(loadList);
+}
+function onSearch(v){ state.q=v; clearTimeout(searchTimer); searchTimer=setTimeout(reload,300); }
+function setF(k,v){ state[k]=v; renderSide(); reload(); }
+function switchTab(t){
+  state.tab=t;
+  document.querySelectorAll('.tab').forEach(e=>e.classList.toggle('on', e.dataset.tab===t));
+  document.getElementById('side').style.display = (t==='brand'||t==='docs') ? 'none' : '';
+  if(t==='brand'){
+    document.getElementById('list').innerHTML =
+      `<iframe src="/report/brand_v2" style="width:100%;height:calc(100vh - 150px);border:0;background:#fff;border-radius:10px"></iframe>`;
+    return;
+  }
+  reload();
+}
+
+const trunc = (s,n)=>{s=(s||'');return s.length>n? s.slice(0,n)+'…':s;};
+function bar(v,max,color){ const p = max>0 ? Math.max(2, Math.round(v/max*100)) : 2;
+  return `<div style="background:var(--line);border-radius:4px;height:8px;overflow:hidden"><div style="width:${p}%;height:100%;background:${color||'var(--acc)'}"></div></div>`; }
+function h2(t,sub){ return `<h3 style="margin:18px 0 8px;font-size:14px">${t}${sub?` <span style="color:var(--gray);font-weight:400;font-size:12px">${sub}</span>`:''}</h3>`; }
+const CN = {xhs:'小红书',douyin:'抖音',baidu:'百度',toutiao:'今日头条',web:'新闻源',shipinhao:'视频号'};
+async function loadKB(){
+  const el = document.getElementById('list');
+  el.innerHTML = '<div class="empty">知识库生成中…</div>';
+  const q = state.brand ? '?'+new URLSearchParams({brand:state.brand, k:KEY, sharecode:SHARECODE}) : '?'+new URLSearchParams({k:KEY, sharecode:SHARECODE});
+  const r = await api('/api/knowledge'+q);
+  let html = `<div style="color:var(--gray);font-size:12px;margin-bottom:6px">品牌知识库：全部由实际投放内容汇总而来，包括产品词、价格、投在哪些平台、素材和效果${state.brand?` · 当前品牌：${esc(state.brand)}`:''}</div>`;
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:14px">' +
+  r.brands.map(b=>{
+    const pMax = Math.max(...b.platforms.map(p=>p.n),1);
+    return `<div style="border:1px solid var(--line);border-radius:10px;padding:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <b style="font-size:16px">${esc(b.brand)}</b>
+      <span style="color:var(--gray);font-size:12px">${b.n} 条投放 · 总赞 ${fmt(b.likes)} · 均赞 ${fmt(b.avg_likes)}</span>
+    </div>
+    <div style="margin:6px 0;color:var(--sub);font-size:12px">SEO 均分 <b>${b.avg_seo??'—'}</b> · GEO 均分 <b>${b.avg_geo??'—'}</b> · 藏 ${fmt(b.collects)} · 评 ${fmt(b.comments)} · 转 ${fmt(b.shares)}</div>
+
+    ${b.official&&b.koc?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px">
+      <span style="background:#eef3ff;border:1px solid #d5e2f7;border-radius:10px;padding:2px 9px;font-size:11.5px">官号 <b>${b.official.n}</b> 条 · 赞 ${fmt(b.official.likes)} · 均 ${fmt(b.official.avg_likes)}</span>
+      <span style="background:#f2f7f2;border:1px solid #d8e8d8;border-radius:10px;padding:2px 9px;font-size:11.5px">达人 <b>${b.koc.n}</b> 条 · 赞 ${fmt(b.koc.likes)} · 均 ${fmt(b.koc.avg_likes)}</span>
+      <span style="background:var(--line);border-radius:10px;padding:2px 9px;font-size:11.5px">近 90 天 <b>${fmt(b.recent90)}</b> 条</span>
+      <span style="color:var(--gray);font-size:11px;line-height:20px">均赞＝总赞/有互动条数（本牌 ${b.with_metrics}/${b.n} 条有互动）</span>
+    </div>`:''}
+
+    ${b.themes&&b.themes.length?`${h2('内容主题','各主题的占比，六家同一套关键词')}
+    <div style="margin:2px 0 4px">${b.themes.map(t=>`<span style="display:inline-block;background:${t.pct>=40?'#fdeee8':t.pct>=20?'#fdf6e8':'var(--line)'};border-radius:10px;padding:2px 9px;margin:2px;font-size:11.5px">${esc(t.k)} <b>${t.pct}%</b></span>`).join('')}</div>`:''}
+
+    ${b.own && b.profile ? `<div style="background:#f0f5ff;border:1px solid #d5e2f7;border-radius:8px;padding:10px 12px;margin:8px 0">
+      <div style="font-size:12px;color:#2b5dad;font-weight:600;margin-bottom:4px">产品档案（来自公开产品/品牌资料，非投放数据）</div>
+      <div style="font-size:12.5px;line-height:1.7">${esc(b.profile.positioning)}<br>
+      <span style="color:var(--sub)">概念：${esc(b.profile.concept)}</span><br>
+      <span style="color:var(--sub)">人群：${esc(b.profile.audience)}</span>${b.profile.price_public?`<br><span style="color:var(--sub)">对外价：${esc(b.profile.price_public)}</span>`:''}</div>
+      <div style="margin-top:8px;font-size:12px">
+        ${b.profile.products.map(p=>`<div style="border-top:1px dashed #d5e2f7;padding:6px 0">
+          <b>${esc(p.name)}</b> <span style="color:var(--gray)">${esc(p.full||'')} · ${esc(p.spec||'')}</span><br>
+          <span style="color:var(--sub)">${esc(p.positioning||'')}${p.usage&&p.usage!=='—'?` ｜ 用法：${esc(p.usage)}`:''}</span>
+          ${p.ingredients&&p.ingredients.length?`<div style="margin-top:3px">${p.ingredients.map(i=>`<span style="display:inline-block;background:#fff;border:1px solid #d5e2f7;border-radius:10px;padding:1px 8px;margin:1px;font-size:11px">${esc(i)}</span>`).join('')}</div>`:''}
+        </div>`).join('')}
+      </div>
+      <div style="margin-top:8px;font-size:11.5px">
+        ${(b.profile.evidence||[]).map(e=>`<div style="color:var(--sub);padding:1px 0"><b style="color:#2b5dad;font-weight:600">${esc(e.type)}</b> ${esc(e.text)}</div>`).join('')}
+      </div>
+      <div style="margin-top:6px;font-size:11.5px;color:#b4543f">合规：${b.profile.compliance.map(esc).join('；')}</div>
+      ${(b.profile.do_not_write||[]).length?`<div style="margin-top:5px;font-size:11.5px;color:#b4543f">不可写：${b.profile.do_not_write.slice(0,16).map(esc).join(' / ')}${b.profile.do_not_write.length>16?` 等共 ${b.profile.do_not_write.length} 项`:''}</div>`:''}
+      ${(b.profile.pending||[]).length?`<details style="margin-top:6px;font-size:11.5px"><summary style="cursor:pointer;color:#b4543f">待客户答复 ${b.profile.pending.length} 项，确认前不进内容</summary><ol style="margin:4px 0 0 18px;padding:0;line-height:1.85;color:var(--sub)">${b.profile.pending.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></details>`:''}
+    </div>` : ''}
+
+    ${h2('产品词','标题里反复出现的词')}
+    <div>${b.products.slice(0,10).map(([w,c])=>`<span style="display:inline-block;background:var(--line);border-radius:10px;padding:2px 10px;margin:2px;font-size:12px">${esc(w)} <span style="color:var(--gray)">${c}</span></span>`).join('')}</div>
+
+    ${h2('各平台投放')}
+    ${b.platforms.map(p=>`<div style="display:flex;align-items:center;gap:8px;margin:3px 0">
+      <span style="width:64px;font-size:12px">${p.cn}</span><div style="flex:1">${bar(p.n,pMax)}</div>
+      <span class="num2" style="font-size:11px;width:110px">${p.n} 条 · 赞 ${fmt(p.likes)}</span></div>`).join('')}
+    ${b.natures.length?`<div style="margin-top:6px;font-size:12px;color:var(--sub)">内容类型：${b.natures.map(n=>esc(n.nature)+'×'+n.n).join(' · ')}</div>`:''}
+
+    ${h2('价格线索','正文中自动捕捉，点击看原文')}
+    ${b.prices.length?b.prices.map(p=>`<div style="font-size:12px;margin:3px 0;color:var(--sub)">¥${esc(p.price)} — <a href="#" onclick="openItem(${p.id});return false" style="color:inherit;text-decoration:underline">${esc(trunc(p.ctx,56))}</a></div>`).join(''):'<div style="color:var(--gray);font-size:12px">投放内容中未捕捉到明确价格</div>'}
+
+    ${h2('爆款内容 TOP','含首图素材')}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${b.tops.slice(0,6).map(t=>`
+      <div style="border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:pointer" onclick="openItem(${t.id})">
+        ${t.img||t.cover?`<img src="${esc(t.img||t.cover)}" style="width:100%;height:80px;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:''}
+        <div style="padding:6px;font-size:11px">${esc(trunc(t.title,30))}
+        <div style="color:var(--gray);margin-top:3px">${t.platform_cn} · 赞 ${fmt(t.likes)}</div></div>
+      </div>`).join('')}</div>
+
+    ${h2('评论区声音','按点赞最高的真实评论')}
+    ${b.voices.map(v=>`<div style="font-size:12px;margin:4px 0;color:var(--sub)">「${esc(trunc(v.body,50))}」<span style="color:var(--gray)">（${v.platform==='xhs'?'小红书':v.platform==='douyin'?'抖音':CN[v.platform]||v.platform} · 赞${fmt(v.like_count)}）</span></div>`).join('')}
+    </div>`;
+  }).join('') + '</div>';
+  el.innerHTML = html;
+}
+/* ---------------- 档案库：知识库文档 + 媒体素材 ---------------- */
+const kbURL = p => '/kb/' + p + '?' + new URLSearchParams({k:KEY, sharecode:SHARECODE});
+const human = n => n>1048576 ? (n/1048576).toFixed(1)+' MB' : n>1024 ? (n/1024).toFixed(0)+' KB' : n+' B';
+const KIND_CN = {logo:'品牌 Logo', product:'产品图', post:'内容配图', cover:'平台封面', video:'视频'};
+
+/* 极简 Markdown 渲染：标题/表格/加粗/行内码/列表/引用/分割线/链接 */
+function md2html(src){
+  const lines = esc(src).split('\n');
+  let html = '', i = 0, inUl = false, inQuote = false;
+  const closeAll = () => { if(inUl){html+='</ul>';inUl=false;} if(inQuote){html+='</blockquote>';inQuote=false;} };
+  const inline = s => s
+    .replace(/`([^`]+)`/g,'<code style="background:#eef1f6;border-radius:4px;padding:1px 5px;font-size:11.5px">$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  while(i < lines.length){
+    const L = lines[i];
+    if(/^\s*\|.*\|\s*$/.test(L) && i+1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i+1])){
+      closeAll();
+      const head = L.split('|').slice(1,-1).map(s=>s.trim());
+      let body = [];
+      i += 2;
+      while(i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])){
+        body.push(lines[i].split('|').slice(1,-1).map(s=>s.trim())); i++;
+      }
+      html += '<table style="margin:10px 0"><thead><tr>' + head.map(h=>`<th>${inline(h)}</th>`).join('') + '</tr></thead><tbody>'
+        + body.map(r=>'<tr>'+r.map(c=>`<td>${inline(c)}</td>`).join('')+'</tr>').join('') + '</tbody></table>';
+      continue;
+    }
+    if(/^#{1,4}\s/.test(L)){
+      closeAll();
+      const lv = L.match(/^#+/)[0].length;
+      html += `<h${lv+1} style="margin:${lv<=2?'16px':'10px'} 0 6px;font-size:${[17,15,13.5,12.5][lv-1]}px">${inline(L.replace(/^#+\s*/,''))}</h${lv+1}>`;
+    } else if(/^\s*[-*]\s+/.test(L)){
+      if(inQuote){html+='</blockquote>';inQuote=false;}
+      if(!inUl){html+='<ul style="padding-left:20px">';inUl=true;}
+      html += `<li style="margin:3px 0">${inline(L.replace(/^\s*[-*]\s+/,''))}</li>`;
+    } else if(/^\s*>\s?/.test(L)){
+      if(inUl){html+='</ul>';inUl=false;}
+      if(!inQuote){html+='<blockquote style="border-left:3px solid var(--line);padding:2px 12px;color:var(--sub);margin:8px 0">';inQuote=true;}
+      html += inline(L.replace(/^\s*>\s?/,'')) + '<br>';
+    } else if(/^\s*(---+|===+)\s*$/.test(L)){
+      closeAll(); html += '<hr style="border:0;border-top:1px solid var(--line);margin:14px 0">';
+    } else if(/^\s*$/.test(L)){
+      closeAll();
+    } else {
+      if(inQuote){html+='</blockquote>';inQuote=false;}
+      if(inUl){html+='</ul>';inUl=false;}
+      html += `<p style="margin:6px 0">${inline(L)}</p>`;
+    }
+    i++;
+  }
+  closeAll();
+  return html;
+}
+
+async function loadDoc(path){
+  const el = document.getElementById('list');
+  el.innerHTML = '<div class="empty">加载中…</div>';
+  const r = await api('/api/kb_doc?p='+encodeURIComponent(path));
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <button class="btn" onclick="loadDocs()">← 返回档案库</button>
+      <b style="font-size:13px">${esc(path)}</b>
+      <a class="btn" style="margin-left:auto;text-decoration:none" href="${kbURL(path)}" download>⬇ 下载原文</a>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 26px;font-size:13.5px;line-height:1.75">${md2html(r.content||'')}</div>`;
+  el.scrollTop = 0;
+}
+
+async function loadDocs(){
+  const el = document.getElementById('list');
+  el.innerHTML = '<div class="empty">档案库加载中…</div>';
+  const [docs, media] = await Promise.all([api('/api/kb_docs'), api('/api/kb_media')]);
+  const DOC_CN = p => ({'README.md':'知识库总纲','cosmobounty/README.md':'COSMOBOUNTY 品牌档案',
+    'cosmobounty/keywords.json':'COSMOBOUNTY 搜索词配置','competitors/MitoQ.md':'竞品档案 · MitoQ',
+    'competitors/GRANVER.md':'竞品档案 · GRANVER','competitors/LAIFE.md':'竞品档案 · LAIFE 乐梵',
+    'competitors/塞乐瑞.md':'竞品档案 · 塞乐瑞 Cellerior','competitors/W+端粒塔.md':'竞品档案 · W+端粒塔'}[p] || p);
+
+  const dl = `/api/kb_export?${new URLSearchParams({k:KEY, sharecode:SHARECODE})}`;
+  let html = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+      <span style="font-size:14px;font-weight:700">档案库</span>
+      <span style="color:var(--gray);font-size:12px">品牌档案 · 监测总纲 · 搜索词配置 · 官方/内容素材，与内容数据同平台查阅下载</span>
+      <a class="btn" style="margin-left:auto;text-decoration:none" href="${dl}" download>⬇ 打包下载全部文档</a></div>`;
+
+  /* 文档区 */
+  html += h2('文档档案', `${docs.count} 份，点击在线阅读`) + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">'
+    + docs.docs.map(d=>`<div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer" onclick="loadDoc('${esc(d.path)}')">
+      <div style="font-weight:600;font-size:13px">${esc(DOC_CN(d.path))}</div>
+      <div style="color:var(--gray);font-size:11.5px;margin-top:4px">${esc(d.path)} · ${human(d.size)} · 更新 ${d.mtime}</div>
+    </div>`).join('') + '</div>';
+
+  /* 媒体区：品牌筛选 chips */
+  const brands = [...new Set(media.items.map(m=>m.brand))];
+  const _mb = media.items.reduce((a,m)=>a+(m.size||0),0);
+  const _cdnN = media.items.filter(m=>m.cdn).length;
+  const _byKind = {}; media.items.forEach(m=>{_byKind[m.kind]=(_byKind[m.kind]||0)+1});
+  const _kindTxt = Object.entries(_byKind).sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>`${KIND_CN[k]||k} ${v}`).join(' · ');
+  html += h2('媒体素材库', `${media.count} 个文件 · ${_kindTxt}`)
+    + `<div style="color:var(--gray);font-size:11.5px;margin:-2px 0 6px">本地落盘 ${human(_mb)}，${media.count-_cdnN} 个可直接下载；另有 ${_cdnN} 个在七牛对象存储（视频为主，在线播放走 CDN，不进发布包）。</div>`
+    + (media.manifest_expired?`<div style="color:var(--gray);font-size:11.5px;margin:-2px 0 6px">10-23 首批下载台账中另有 ${media.manifest_expired} 条源链接已过期（平台 CDN 有时效，过期不可恢复）；上面列出的是已落盘可用的素材。</div>`:'')
+    + `<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px">
+      <span class="kw ${!state.docBrand?'hot':''}" style="cursor:pointer" onclick="state.docBrand='';loadDocs()">全部</span>
+      ${brands.map(b=>`<span class="kw ${state.docBrand===b?'hot':''}" style="cursor:pointer" onclick="state.docBrand='${esc(b)}';loadDocs()">${esc(b)}</span>`).join('')}</div>`;
+
+  const items = media.items.filter(m => !state.docBrand || m.brand === state.docBrand);
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">'
+    + items.map(m=>{
+      const u = m.url || kbURL(m.path);
+      const kindTag = `<span style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,.55);color:#fff;border-radius:6px;padding:1px 7px;font-size:10.5px">${KIND_CN[m.kind]||m.kind}</span>`;
+      const inner = m.kind==='video'
+        ? `<video src="${u}" controls preload="none" style="width:100%;height:150px;object-fit:cover;border-radius:8px;background:#000"></video>`
+        : `<img src="${u}" loading="lazy" style="width:100%;height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#eef1f6" onerror="this.style.opacity=.25">`;
+      return `<div style="position:relative">
+        ${kindTag}${inner}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:11px;color:var(--gray)">
+          <span>${esc(m.brand)} · ${m.cdn?'七牛 CDN':human(m.size)+' · '+m.mtime}</span>
+          <a href="${u}" download style="text-decoration:none">⬇</a>
+        </div></div>`;
+    }).join('') + '</div>';
+  el.innerHTML = html;
+  el.scrollTop = 0;
+}
+
+async function loadReport(){
+  const el = document.getElementById('list');
+  el.innerHTML = '<div class="empty">报告生成中…</div>';
+  const r = await api('/api/report');
+  const maxLikes = Math.max(...r.brands.map(b=>b.likes||0), 1);
+  const kwMax = r.hot_keywords.length ? r.hot_keywords[0][1] : 1;
+
+  let html = `<div style="color:var(--gray);font-size:12px;margin-bottom:6px">基于原始数据自动聚合 · 数据版本 ${r.data_version} · ${r.contents} 条内容 / ${r.comments} 条评论</div>`;
+
+  /* 1. 品牌横评 */
+  html += h2('品牌声量与互动横评', '按总点赞排序');
+  html += `<table><thead><tr><th>品牌</th><th>内容量</th><th style="min-width:160px">总点赞</th>
+    <th class="num">藏</th><th class="num">评</th><th class="num">转</th><th class="num">SEO均分</th><th class="num">GEO均分</th><th>主力阵地</th></tr></thead><tbody>${
+    r.brands.map(b=>`<tr>
+      <td><b>${esc(b.brand)}</b></td><td class="num2">${b.n}</td>
+      <td>${bar(b.likes,maxLikes)} <span class="num2" style="font-size:11px">${fmt(b.likes)}</span></td>
+      <td class="num">${fmt(b.collects)}</td><td class="num">${fmt(b.comments)}</td><td class="num">${fmt(b.shares)}</td>
+      <td class="num">${b.avg_seo??'—'}</td><td class="num">${b.avg_geo??'—'}</td>
+      <td>${b.platforms.slice(0,3).map(p=>`${p.cn||p.p} ${p.n}`).join(' · ')}</td>
+    </tr>`).join('')}</tbody></table>`;
+
+  /* 品牌卡片：TOP内容 + 关键词 */
+  html += h2('各品牌亮点内容与高频词');
+  html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px">` +
+    r.brands.map(b=>`<div style="border:1px solid var(--line);border-radius:8px;padding:10px">
+      <b>${esc(b.brand)}</b>
+      ${b.top?`<div style="margin:6px 0;color:var(--sub);font-size:12px">🏆 <a href="#" onclick="openItem(${b.top.id});return false" style="color:inherit;text-decoration:underline">${esc(trunc(b.top.title,36))}</a> <span style="color:var(--gray)">（${CN[b.top.platform]||b.top.platform} · 赞 ${fmt(b.top.likes)}）</span></div>`:''}
+      <div>${b.keywords.slice(0,8).map(([w,c])=>`<span style="display:inline-block;background:var(--line);border-radius:10px;padding:1px 8px;margin:2px;font-size:11px">${esc(w)} ${c}</span>`).join('')}</div>
+    </div>`).join('') + '</div>';
+
+  /* 2. 平台与类型 */
+  const pMax = Math.max(...r.platforms.map(p=>p.n), 1);
+  html += h2('平台分布') + r.platforms.map(p=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+    <span style="width:70px;font-size:12px">${p.cn}</span><div style="flex:1">${bar(p.n,pMax)}</div>
+    <span class="num2" style="font-size:12px;width:120px">${p.n} 条 · 赞 ${fmt(p.likes)}</span></div>`).join('');
+  const nMax = Math.max(...r.natures.map(n=>n.n), 1);
+  html += h2('内容类型分布', '来自逐条分析标注') + r.natures.map(n=>`<div style="display:flex;align-items:center;gap:8px;margin:4px 0">
+    <span style="width:90px;font-size:12px">${esc(n.nature)}</span><div style="flex:1">${bar(n.n,nMax,'var(--acc2,#8a7)')}</div>
+    <span class="num2" style="font-size:12px;width:120px">${n.n} 条 · 赞 ${fmt(n.likes)}</span></div>`).join('');
+
+  /* 3. 热词 */
+  html += h2('内容高频词', '全库内容关键词聚合') + '<div>' +
+    r.hot_keywords.map(([w,c])=>`<span style="display:inline-block;border-radius:10px;padding:2px 10px;margin:3px;font-size:${11+Math.round(c/kwMax*5)}px;background:var(--line)">${esc(w)} <span style="color:var(--gray)">${c}</span></span>`).join('') + '</div>';
+
+  /* 4. 评论热词 */
+  html += h2('评论区热词', '1350 条真实评论分词') + '<div>' +
+    r.comment_words.slice(0,14).map(([w,c])=>`<span style="display:inline-block;border-radius:10px;padding:2px 10px;margin:3px;font-size:12px;background:var(--line)">${esc(w)} <span style="color:var(--gray)">${c}</span></span>`).join('') + '</div>';
+
+  /* 5. TOP10 */
+  html += h2('互动 TOP10 内容') + `<table><thead><tr><th>#</th><th>品牌</th><th>渠道</th><th>标题</th><th class="num">赞</th><th class="num">藏</th><th class="num">评</th><th style="min-width:200px">最热评论</th></tr></thead><tbody>${
+    r.tops.map((t,i)=>`<tr onclick="openItem(${t.id})" style="cursor:pointer">
+      <td class="num2">${i+1}</td><td>${esc(t.brand)}</td><td>${t.platform_cn}</td>
+      <td>${esc(trunc(t.title,36))}</td>
+      <td class="num">${fmt(t.likes)}</td><td class="num">${fmt(t.collects)}</td><td class="num">${fmt(t.comments)}</td>
+      <td style="color:var(--sub);font-size:12px">${t.hot_comment?esc(trunc(t.hot_comment.body,50))+`（赞${fmt(t.hot_comment.like_count)}）`:'—'}</td>
+    </tr>`).join('')}</tbody></table>`;
+
+  /* 6. 高GEO */
+  html += h2('高 GEO 内容', 'GEO≥60，易被 AI 搜索引用') + `<table><thead><tr><th>品牌</th><th>渠道</th><th>标题</th><th class="num">GEO</th><th class="num">赞</th></tr></thead><tbody>${
+    r.geo_picks.map(g=>`<tr onclick="openItem(${g.id})" style="cursor:pointer">
+      <td>${esc(g.brand)}</td><td>${g.platform_cn}</td><td>${esc(trunc(g.title,44))}</td>
+      <td class="num">${g.geo}</td><td class="num">${fmt(g.likes)}</td></tr>`).join('')}</tbody></table>`;
+
+  html += `<p style="color:var(--gray);font-size:12px;margin-top:14px">以上全部指标由原始数据表实时聚合计算，无人工录入；原始明细见「原始数据」标签页。</p>`;
+  el.innerHTML = html;
+}
+async function loadRaw(reset=true){
+  const el = document.getElementById('list');
+  if(reset){ state.rawItems = []; state.rawOffset = 0; state.rawTotal = null; }
+  const p = new URLSearchParams({brand:state.brand, platform:state.platform,
+                                 limit:300, offset:state.rawOffset||0});
+  const d = await api('/api/raw?'+p);
+  state.rawItems = (state.rawItems||[]).concat(d.items);
+  // 游标按「服务端已走的条数」推进（含被隐藏的仅标题），
+  // 不能按前端已渲染行数推进，否则会重复拉同一批。
+  state.rawOffset = (state.rawOffset||0) + 300;
+  if(d.total!=null) state.rawTotal = d.total;
+  renderRaw(d);
+}
+function renderRaw(d){
+  const el = document.getElementById('list');
+  let items = state.rawItems||[];
+  if(state.q){ const q = state.q.toLowerCase();
+    items = items.filter(i => (i.title||'').toLowerCase().includes(q) || (i.body||'').toLowerCase().includes(q)
+      || (i.ocr||'').toLowerCase().includes(q) || (i.asr||'').toLowerCase().includes(q) || (i.cmts||'').toLowerCase().includes(q)); }
+  if(!items.length){ el.innerHTML = '<div class="empty">没有数据</div>'; return; }
+  const dl = `/api/raw_export?${new URLSearchParams({k:KEY, sharecode:SHARECODE})}`;
+  const shown = (state.rawItems||[]).length, total = state.rawTotal==null ? shown : state.rawTotal;
+  const more = total > (state.rawOffset||0)
+    ? `<button class="btn" onclick="loadRaw(false)" style="cursor:pointer">加载更多（还有 ${fmt(total-(state.rawOffset||0))} 条）</button>`
+    : `<span style="color:var(--gray);font-size:12px">已全部加载</span>`;
+  el.innerHTML = `<div style="margin-bottom:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><a class="btn" href="${dl}" download style="text-decoration:none">⬇ 下载完整原始数据表（CSV，全字段不截断）</a>${more}</div>
+  <table class="raw"><thead><tr>
+    <th>ID</th><th>品牌</th><th>渠道</th><th>标题</th><th>正文内容</th><th>完整度</th>
+    <th>图片</th><th>视频链接</th><th>图片识别内容(OCR)</th><th>视频识别内容(ASR)</th>
+    <th>原文链接</th><th>SEO词</th><th class="num2">SEO分</th><th>GEO词</th><th class="num2">GEO分</th>
+    <th class="num2">赞</th><th class="num2">藏</th><th class="num2">评</th><th class="num2">转发</th><th>评论内容</th>
+    </tr></thead><tbody>${items.map(i=>{
+      const escT = s => esc(s||'');
+      const isLoc = u => !!u && (u.startsWith('/kb/') || u.startsWith('/cdn/') || u.startsWith('/archives/'));
+      const hasLocalImg = (i.image_urls||[]).some(isLoc);
+      const imgs = i.n_images ? (hasLocalImg
+        ? `${i.n_images}张 <a href="${escT(mediaUrl((i.image_urls||[]).find(isLoc)))}" target="_blank" onclick="event.stopPropagation()">首图↗</a>`
+        : `<span style="color:var(--gray)" title="采集时拿到的是带签名的临时链接，约 24 小时过期，没存到本地；点右侧「原文」可看原帖">${i.n_images}张·未存</span>`) : '—';
+      const srcCell = `<a href="${escT(i.url)}" target="_blank" onclick="event.stopPropagation()">原文↗</a>`
+        + (i.archived ? `<br><a href="${escT(mediaUrl(i.archived))}" target="_blank" onclick="event.stopPropagation()" style="color:#2b7a4b">本站页↗</a>` : '');
+      const vid = isLoc(i.video_url)
+        ? `<a href="${escT(mediaUrl(i.video_url))}" target="_blank" onclick="event.stopPropagation()">播放▶</a>`
+        : (i.video_url
+            ? `<span style="color:var(--gray);font-size:11px" title="采集时拿到的是带签名的临时链接，约 24 小时过期，没存到本地；点右侧「原文」可看原视频">有视频·未存</span>`
+            : '—');
+      const ocr = i.ocr ? `${escT(i.ocr)}${i.ocr_full>160?`<br><span style="color:var(--gray)">（全文${i.ocr_full}字）</span>`:''}` : '—';
+      const asr = i.asr ? `${escT(i.asr)}${i.asr_full>160?`<br><span style="color:var(--gray)">（全文${i.asr_full}字）</span>`:''}` : '—';
+      const bodyCell = i.body ? escT(trunc(i.body,80))
+        : (i.asr ? `<span style="color:#2b7a4b">[视频口播]</span> ${escT(trunc(i.asr,70))}`
+        : (i.ocr ? `<span style="color:#2b7a4b">[图片文字]</span> ${escT(trunc(i.ocr,70))}`
+        : `<span style="color:var(--gray)">仅标题·点开看原页</span>`));
+      const LV_COLOR = {full:'#2b7a4b', partial:'#8a6d1f', media:'#2a5d8f', thin:'#a0503c'};
+      const lvCell = `<span style="font-size:11px;color:${LV_COLOR[i.level]||'#888'};white-space:nowrap">${escT(i.level_txt||'')}</span>`;
+      const brandCell = i.brand === '品类场景词'
+        ? `<span title="不是品牌：这是品类/场景/痛点类笔记的独立轨道，只用于场景与话术分析，不参与六品牌横评">品类场景词<span style="font-size:10px;color:#8a6d1f">·非品牌</span></span>`
+        : escT(i.brand);
+      return `<tr onclick="openItem(${i.id})">
+        <td class="num2">${i.id}</td><td>${brandCell}</td><td class="p-${i.platform}">${PNAME[i.platform]||i.platform}</td>
+        <td>${escT(trunc(i.title,40))}${i.cross_n>1?`<br><span style="font-size:11px;color:#8a4b8a" title="这篇内容同时点名了 ${i.cross_n} 个品牌，属于横向对比稿：归到本品牌只代表「本品牌在自己的稿子里被提到」，不代表单品牌独立口碑">多品牌横评×${i.cross_n}</span>`:''}${i.bulk_n>1?`<br><span style="font-size:11px;color:#8a4b8a" title="同一段文案被连续发布 ${i.bulk_n} 条，均为真实不同视频，但不算 ${i.bulk_n} 个独立观点">同文案×${i.bulk_n}</span>`:''}</td><td title="${escT(i.body)}">${bodyCell}</td><td>${lvCell}</td>
+        <td>${imgs}</td><td>${vid}</td><td>${ocr}</td><td>${asr}</td>
+        <td>${srcCell}</td>
+        <td>${escT(i.seo)||'—'}</td>
+        <td class="num2">${i.seo_score??'—'}</td>
+        <td>${escT(i.geo)||'—'}</td>
+        <td class="num2">${i.geo_score??'—'}</td>
+        <td class="num2">${fmt(i.likes)}</td><td class="num2">${fmt(i.collects)}</td>
+        <td class="num2">${fmt(i.comments_n)}</td><td class="num2">${fmt(i.shares)}</td>
+        <td title="${escT(i.cmts)}">${i.cmts?escT(trunc(i.cmts,160))+(i.cmts.length>=300?'…':''):'—'}</td>
+      </tr>`;}).join('')}</tbody></table>
+    <p style="color:var(--gray);margin-top:10px">${state.q?`筛选后 ${items.length} / `:''}已显示 ${fmt(shown)} / 共 ${fmt(total)} 条 · OCR/ASR/评论每格显示前 160 字，点击行看全文 · 表格可横向滚动${d.hidden_thin?` · 本批另有 ${d.hidden_thin} 条「仅标题」记录未列出（正文和图片/视频解读都没取到，内容不可用，见「数据完整度」）`:''}</p>`;
+}
+
+async function loadList(){
+  const el = document.getElementById('list');
+  if(state.tab==='pending'){
+    const d = await api('/api/pending?'+new URLSearchParams({brand:state.brand, platform:state.platform}));
+    el.innerHTML = `<table><thead><tr><th>完整度</th><th>品牌</th><th>平台</th><th>标题</th><th>缺失原因</th></tr></thead><tbody>${
+      d.items.map(i=>`<tr onclick="openItem(${i.id})">
+        <td><span class="badge b-${i.level}">${{full:'全文',partial:'摘要',serp:'仅标题',missing:'缺'}[i.level]||i.level}</span></td>
+        <td>${i.brand}</td><td class="p-${i.platform}">${PNAME[i.platform]||i.platform}</td>
+        <td><span class="ttl">${esc(i.title)}</span></td>
+        <td style="color:var(--sub)">${i.level==='serp'?'站外软文站反爬，只拿到标题+来源域名':i.level==='partial'?'仅有摘要，正文未取到':'原文可能已删除'}</td>
+      </tr>`).join('')}</tbody></table>
+      <p style="color:var(--gray);margin-top:10px">共 ${d.count} 条非全文条目（小红书/抖音均为全文级，不在此列）</p>`;
+    return;
+  }
+  const p = new URLSearchParams({brand:state.brand, platform:state.platform, ctype:state.ctype,q:state.q,sort:state.sort, limit:400});
+  const d = await api('/api/list?'+p);
+  if(!d.items.length){ el.innerHTML = '<div class="empty">没有符合条件的内容</div>'; return; }
+  el.innerHTML = `<table><thead><tr><th>品牌</th><th>平台</th><th>标题</th><th style="min-width:260px">正文内容</th><th>性质</th>
+      <th class="num">赞</th><th class="num">藏</th><th class="num">评</th><th class="num">SEO</th><th class="num">GEO</th><th>完整度</th></tr></thead><tbody>${
+    d.items.map(i=>`<tr onclick="openItem(${i.id})">
+      <td>${i.brand}</td><td class="p-${i.platform}">${PNAME[i.platform]||i.platform}</td>
+      <td><span class="ttl">${esc(i.title)}</span></td>
+      <td style="color:var(--sub)">${esc(trunc(i.body_snippet,100))||'—'}${i.body_len>120?'…':''}</td>
+      <td style="color:var(--sub)">${i.nature||''}</td>
+      <td class="num">${fmt(i.likes)}</td><td class="num">${fmt(i.collects)}</td><td class="num">${fmt(i.comments)}</td>
+      <td class="num">${i.seo??'—'}</td><td class="num">${i.geo??'—'}</td>
+      <td><span class="badge b-${i.level}">${i.level==='full'?'全文':i.level==='partial'?'摘要':i.level==='serp'?'仅标题':'缺'}</span></td>
+    </tr>`).join('')}</tbody></table>
+    <p style="color:var(--gray);margin-top:10px">共 ${d.count} 条（最多展示 400 条，可用左侧筛选收敛）</p>`;
+}
+
+async function openItem(id){
+  const it = await api('/api/item?id='+id);
+  document.getElementById('mask').classList.add('on');
+  document.getElementById('drawer').classList.add('on');
+  document.getElementById('d-badge').className = 'badge b-'+it.level;
+  document.getElementById('d-badge').textContent = it.level_txt;
+  document.getElementById('d-title').textContent = it.title;
+  document.getElementById('d-link').href = it.url;
+
+  const m = it.media || {}, ml = it.media_local || {}, a = it.analysis || {};
+  // 只渲染「本站能取到字节」的图：/cdn（七牛）或 /kb（本地）。
+  // 原始 CDN 签名链 24h 就过期，直接塞进 <img> 只会得到一片 403 破图。
+  // 注意：it.media 放的是**当时的原始外链**（溯源用，已过期），
+  // 真正打得开的是 it.media_local —— 只读 media 会把落地成功的图全判成"已过期"。
+  const _isLoc = u => !!u && (u.startsWith('/kb/') || u.startsWith('/cdn/') || u.startsWith('/archives/'));
+  let mediaHtml = '';
+  const rawImgs = m.images || [];
+  let imgsOk = (ml.images || []).filter(_isLoc);
+  if(!imgsOk.length) imgsOk = rawImgs.filter(_isLoc);
+  const imgsLost = Math.max(0, rawImgs.length - imgsOk.length);
+  if(imgsOk.length){
+    mediaHtml = `<div class="gallery">${imgsOk.map(u=>`<a href="${esc(mediaUrl(u))}" target="_blank"><img src="${esc(mediaUrl(u))}" loading="lazy" onerror="this.style.opacity=.25"></a>`).join('')}</div>`;
+  }
+  if(imgsLost>0){
+    mediaHtml += `<p class="note">另有 ${imgsLost} 张图在采集时只拿到临时链接（已过期），未落地本地；可点右上「原文」回原帖查看。</p>`;
+  }
+  const vLoc = _isLoc(ml.video) ? ml.video : (_isLoc(m.video) ? m.video : '');
+  const cLoc = _isLoc(ml.cover) ? ml.cover : (_isLoc(m.cover) ? m.cover : '');
+  // 有视频但没落地：不留空播放器，改成一句实话 + 原文入口，别让人以为页面坏了。
+  const hadVideo = !!(vLoc || m.video || ml.video);
+  if(vLoc){ mediaHtml += `<div class="video-box"><p class="note">视频（站内可播）：<a href="${esc(mediaUrl(vLoc))}" target="_blank">播放/下载 ↗</a></p></div>`; }
+  else if(cLoc){ mediaHtml += `<div class="video-box"><img class="vcover" src="${esc(mediaUrl(cLoc))}" onerror="this.style.display='none'"></div>`; }
+  if(hadVideo && !vLoc){
+    mediaHtml += `<p class="note">该条原帖是视频，视频文件未落地本站（原帖签名链接已过期）；封面/正文照常可看，可点右上「原文」看视频。</p>`;
+  }
+  const cmts = (it.comments_list||[]).map(c=>`<div class="cmt">${esc(c.body)}<b>${c.like_count||0} 赞 · ${esc(c.publish_time||'')}</b></div>`).join('')
+               || '<p class="note">该条未采到评论</p>';
+  document.getElementById('d-left').innerHTML = `
+    <div class="card">
+      <div class="meta">
+        <span><b>${it.brand}</b></span><span>${PNAME[it.platform]}</span>
+        <span>${esc(it.author||'未知作者')}</span><span>${esc(it.publish_time||'')}</span>
+        <span>赞 ${fmt(it.likes)} · 藏 ${fmt(it.collects)} · 评 ${fmt(it.comments)} · 转 ${fmt(it.shares)}</span>
+      </div>
+      <div class="body-text">${esc(it.body) || '<span style="color:var(--gray)">（该条未抓到正文）</span>'}</div>
+      ${it.tags?`<p class="note" style="margin-top:10px">话题：${esc(it.tags)}</p>`:''}
+    </div>
+    ${mediaHtml?`<div class="card"><h3>图片 / 视频素材</h3>${mediaHtml}</div>`:''}
+    <div class="card"><h3>评论（${it.comment_count}）</h3>${cmts}</div>`;
+
+  const mt = it.media_text || [];
+  const ocrItems = mt.filter(x => x.kind === 'ocr');
+  const asrItems = mt.filter(x => x.kind === 'asr');
+  let mtHtml = '';
+  if (ocrItems.length) {
+    mtHtml += `<div class="card"><h3>图片文字（OCR 提取）</h3>${ocrItems.map(x =>
+      `<p class="note" style="margin:6px 0 2px">${esc(x.source)}</p><div class="body-text" style="font-size:12.5px">${esc(x.text)}</div>`).join('')}</div>`;
+  }
+  if (asrItems.length) {
+    mtHtml += `<div class="card"><h3>视频口播（AI 转写）</h3><div class="body-text" style="font-size:12.5px">${esc(asrItems[0].text)}</div></div>`;
+  }
+  document.getElementById('d-left').innerHTML += mtHtml;
+
+  const seo = a.seo||{score:0,notes:[]}, geo = a.geo||{score:0,notes:[]};
+  const bar = v=>`<div class="score"><div class="track"><div class="fill" style="width:${v}%;background:${v>=70?'#0e7a6e':v>=40?'#b97a1a':'#c7402d'}"></div></div><b style="font-variant-numeric:tabular-nums">${v}</b></div>`;
+  const chips = arr => (arr&&arr.length)?arr.map(x=>`<span class="kw">${esc(x)}</span>`).join(''):'<span class="note">未识别</span>';
+  document.getElementById('d-right').innerHTML = `
+    <div class="card">
+      <h3>内容性质判定</h3>
+      <p><span class="kw hot">${esc(a.content_type||'未知')}</span></p>
+      <p class="note">${esc(a.type_note||'')}</p>
+    </div>
+    <div class="card"><h3>SEO 分 <span class="note">（站内搜索可见性）</span></h3>${bar(seo.score||0)}
+      <ul style="padding-left:16px;margin-top:6px">${(seo.notes||[]).map(n=>`<li class="note">${esc(n)}</li>`).join('')}</ul></div>
+    <div class="card"><h3>GEO 分 <span class="note">（被 AI 引擎引用的概率）</span></h3>${bar(geo.score||0)}
+      <ul style="padding-left:16px;margin-top:6px">${(geo.notes||[]).map(n=>`<li class="note">${esc(n)}</li>`).join('')}</ul></div>
+    <div class="card"><h3>关键词（TF-IDF）</h3>${chips(a.keywords)}
+      <h3 style="margin-top:12px">成分</h3>${chips(a.ingredients)}
+      <h3 style="margin-top:12px">功效 / 场景</h3>${chips(a.efficacy)}
+      <h3 style="margin-top:12px">搜索意图词</h3>${chips(a.intent)}
+      <h3 style="margin-top:12px">转化引导</h3>${chips(a.cta)}</div>
+    <div class="card"><h3>合规风险</h3>
+      ${(a.compliance||[]).length?a.compliance.map(r=>`<div class="risk">${esc(r)}</div>`).join(''):'<p class="note">未检出绝对化/医疗化表述</p>'}</div>`;
+}
+
+function closeDrawer(){
+  document.getElementById('mask').classList.remove('on');
+  document.getElementById('drawer').classList.remove('on');
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 2400);
+}
+async function loadAll(){ try{ await loadStats(); }catch(e){ showErr(document.getElementById('side'), e); } reload(); }
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDrawer(); });
+// 浏览类接口已免密钥：直接进入；仅当请求被拒（401）时才弹密钥框兜底
+loadAll();
+document.getElementById('gate-key')?.addEventListener('keydown', e=>{ if(e.key==='Enter') saveKey(); });
+</script>
+</body>
+</html>
