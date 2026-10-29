@@ -1,0 +1,40 @@
+[Unit]
+Description=逆龄观察 · 内容数据底座（只读 SQLite + 知识库 + 七牛媒体）
+Documentation=file:///data/apps/cosmobounty/service/guide.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hzck
+Group=hzck
+WorkingDirectory=/data/apps/cosmobounty/service
+
+# 只绑本机：对外统一由星河网关(7777)反代 /api/cb、/api/wb、/niling、/kb、/cdn
+# 8080 被 nginx 占着，别用；8098 是约定的底座端口
+Environment=PORT=8098
+Environment=CB_HOST=127.0.0.1
+Environment=COSMOBOUNTY_ROOT=/data/apps/cosmobounty
+Environment=COSMOBOUNTY_DB=/data/apps/cosmobounty/db/cosmobounty.db
+Environment=COSMOBOUNTY_KB=/data/apps/cosmobounty/knowledge
+Environment=COSMOBOUNTY_CDN_MAP=/data/apps/cosmobounty/data/media_cdn.json
+
+# 七牛测试域名只有 HTTP —— 写成 https 会让所有图片都挂
+Environment=CB_CDN_BASE=http://tni044vir.hn-bkt.clouddn.com
+
+ExecStart=/usr/bin/python3 /data/apps/cosmobounty/service/app.py
+
+Restart=always
+RestartSec=3
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=niling
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
