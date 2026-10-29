@@ -41,23 +41,29 @@
 
 ## 一分钟看懂
 
-```
-                    ┌──────────────── 公网唯一入口 :7777 ────────────────┐
-                    │  星河网关 server.js（另一个仓库 / 另一个项目）      │
-                    │    /          星河 AI 内容工场                     │
-                    │    /wb/       → public/wb/ 静态文件（本项目发布）   │
-                    │    /niling/   ┐                                    │
-                    │    /api/cb/*  ┴→ 反代 127.0.0.1:8098               │
-                    └────────────────────────┬───────────────────────────┘
-                                             │
-                    ┌────────────────────────▼───────────────────────────┐
-                    │  底座 app.py（本项目，Python 标准库，零依赖）       │
-                    │  只读打开 SQLite，所有数据出口都在这里              │
-                    └────────────────────────┬───────────────────────────┘
-                                             │
-        ┌────────────────┬───────────────────┼──────────────────┬─────────────────┐
-   db/cosmobounty.db  data/media_cdn.json  knowledge/      config/brands.json   七牛 chunke
-   （唯一数据源）      （本地→七牛映射）    （文档+报告）    （六品牌判定规则）   （16.9GB 媒体）
+```mermaid
+flowchart TB
+    subgraph PUB["公网唯一入口 :7777"]
+        GW["星河网关 server.js<br/>另一个仓库 · 另一个项目"]
+    end
+
+    subgraph BASE["底座 app.py · 本项目<br/>Python 标准库 · 零依赖 · 只读 SQLite"]
+        API["唯一数据出口<br/>/api/* · /api/wb/* · /mcp"]
+    end
+
+    WB["workbench/<br/>六品牌内容工作台"]
+    NILING["逆龄观察浏览页"]
+
+    GW -->|"/wb/ 静态文件"| WB
+    GW -->|"/niling/ · /api/cb/* 反代 8098"| API
+
+    API --> DB[("db/cosmobounty.db<br/>唯一数据源")]
+    API --> CDN[("七牛 chunke<br/>16.9GB 媒体")]
+    API --> KB[("knowledge/<br/>文档 · 报告")]
+    API --> CFG[("config/brands.json<br/>六品牌判定规则")]
+
+    WB -.->|"取数"| API
+    NILING -.->|"取数"| API
 ```
 
 三条不变量，破了任何一条，页面上的数字就不可信：
